@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CS6502.Core;
+using System;
 
 namespace CS6502.Console
 {
