@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CS6502.Console", "CS6502.Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CS6502.Benchmark", "CS6502.Benchmark\CS6502.Benchmark.csproj", "{8F66C48C-3C77-44E2-B2D4-BDB3C9436024}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CS6502.Tests", "CS6502.Tests\CS6502.Tests.csproj", "{2DE2FA2E-824E-41BB-99F5-7C5C6D3221F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{8F66C48C-3C77-44E2-B2D4-BDB3C9436024}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F66C48C-3C77-44E2-B2D4-BDB3C9436024}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F66C48C-3C77-44E2-B2D4-BDB3C9436024}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DE2FA2E-824E-41BB-99F5-7C5C6D3221F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DE2FA2E-824E-41BB-99F5-7C5C6D3221F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DE2FA2E-824E-41BB-99F5-7C5C6D3221F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DE2FA2E-824E-41BB-99F5-7C5C6D3221F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
