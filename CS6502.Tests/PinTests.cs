@@ -45,5 +45,31 @@ namespace CS6502.Tests
                     args.NewState == TriState.True
                 );
         }
+
+        [TestMethod]
+        public void DoExtensionsWork()
+        {
+            Pin[] pins = new Pin[8];
+            for (int i = 0; i < pins.Length; i++)
+            {
+                pins[i] = new Pin();
+            }
+            pins.SetAllTo(TriState.HighImpedance);
+
+            foreach (Pin pin in pins)
+            {
+                pin.State.Should().Be(TriState.HighImpedance);
+            }
+
+            pins.SetTo(0xAA);
+            pins[0].State.Should().Be(TriState.False);
+            pins[1].State.Should().Be(TriState.True);
+            pins[2].State.Should().Be(TriState.False);
+            pins[3].State.Should().Be(TriState.True);
+            pins[4].State.Should().Be(TriState.False);
+            pins[5].State.Should().Be(TriState.True);
+            pins[6].State.Should().Be(TriState.False);
+            pins[7].State.Should().Be(TriState.True);
+        }
     }
 }
