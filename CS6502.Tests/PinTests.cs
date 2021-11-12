@@ -1,6 +1,7 @@
 ﻿using CS6502.Core;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 
 namespace CS6502.Tests
 {
@@ -24,6 +25,20 @@ namespace CS6502.Tests
 
             pin = new Pin(TriState.HighImpedance);
             pin.State.Should().Be(TriState.HighImpedance);
+        }
+
+        [TestMethod]
+        public void CanConstructPinCollections()
+        {
+            Pin[] pinArray = Pin.CreatePinArray(4);
+            pinArray.Should().HaveCount(4);
+            for (int i = 0; i < 4; i++)
+            {
+                pinArray[i].Should().NotBeNull();
+            }
+
+            List<Pin> pinList = Pin.CreatePinList(4);
+            pinList.Should().HaveCount(4);
         }
 
         [TestMethod]

@@ -172,6 +172,54 @@ namespace CS6502.Core
             return value;
         }
 
+        public static byte ToByte(this List<Wire> wires)
+        {
+            if (wires.Count > 8)
+            {
+                throw new ArgumentException("Too many wires to resolve to a byte, must be <= 8");
+            }
+
+            byte value = 0;
+            for (int i = 0; i < wires.Count; i++)
+            {
+                value |= (byte)(Convert.ToByte(wires[i].State ? 1 : 0) << i);
+            }
+
+            return value;
+        }
+
+        public static ushort ToUshort(this List<Wire> wires)
+        {
+            if (wires.Count > 16)
+            {
+                throw new ArgumentException("Too many wires to resolve to a ushort, must be <= 16");
+            }
+
+            ushort value = 0;
+            for (int i = 0; i < wires.Count; i++)
+            {
+                value |= (ushort)(Convert.ToByte(wires[i].State ? 1 : 0) << i);
+            }
+
+            return value;
+        }
+
+        public static uint ToUint(this List<Wire> wires)
+        {
+            if (wires.Count > 32)
+            {
+                throw new ArgumentException("Too many wires to resolve to a uint, must be <= 32");
+            }
+
+            uint value = 0;
+            for (int i = 0; i < wires.Count; i++)
+            {
+                value |= (uint)(Convert.ToByte(wires[i].State ? 1 : 0) << i);
+            }
+
+            return value;
+        }
+
         #endregion
     }
 }

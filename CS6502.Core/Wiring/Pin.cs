@@ -1,4 +1,6 @@
-﻿namespace CS6502.Core
+﻿using System.Collections.Generic;
+
+namespace CS6502.Core
 {
     /// <summary>
     /// Represents a physical pin that can be driven.
@@ -48,6 +50,28 @@
                 default:
                     return "Unkown";
             }
+        }
+
+        public static Pin[] CreatePinArray(int size)
+        {
+            Pin[] pins = new Pin[size];
+            for (int i = 0; i < size; i++)
+            {
+                pins[i] = new Pin();
+            }
+
+            return pins;
+        }
+
+        public static List<Pin> CreatePinList(int size)
+        {
+            List<Pin> pins = new List<Pin>();
+            for (int i = 0; i < size; i++)
+            {
+                pins.Add(new Pin());
+            }
+
+            return pins;
         }
 
         private TriState state;

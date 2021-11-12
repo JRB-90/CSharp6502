@@ -63,6 +63,21 @@ namespace CS6502.Core
             }
         }
 
+        public Pin CreateConnectedPin()
+        {
+            Pin pin = new Pin();
+            ConnectPin(pin);
+
+            return pin;
+        }
+
+        public void ClearConnectedPins()
+        {
+            bool oldState = State;
+            pins.Clear();
+            CheckNewState(oldState);
+        }
+
         private void CheckNewState(bool oldState)
         {
             bool newState = State;

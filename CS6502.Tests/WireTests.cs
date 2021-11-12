@@ -38,6 +38,34 @@ namespace CS6502.Tests
         }
 
         [TestMethod]
+        public void CanClearWire()
+        {
+            Wire wire = new Wire(WirePull.PullDown);
+            Pin[] pins = new Pin[8];
+            for (int i = 0; i < pins.Length; i++)
+            {
+                pins[i] = new Pin();
+                wire.ConnectPin(pins[i]);
+            }
+
+            wire.ConnectedPins.Count.Should().Be(8);
+            wire.ClearConnectedPins();
+            wire.ConnectedPins.Count.Should().Be(0);
+        }
+
+        [TestMethod]
+        public void CanCreateConnectedPin()
+        {
+            Wire wire = new Wire(WirePull.PullDown);
+            wire.State.Should().Be(false);
+            wire.ConnectedPins.Count.Should().Be(0);
+            Pin pin = wire.CreateConnectedPin();
+            wire.ConnectedPins.Count.Should().Be(1);
+            pin.State = TriState.True;
+            wire.State.Should().Be(true);
+        }
+
+        [TestMethod]
         public void CanResolveWireCorrectly()
         {
             Wire wire = new Wire(WirePull.PullDown);
