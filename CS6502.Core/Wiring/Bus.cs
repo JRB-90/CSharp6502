@@ -84,6 +84,19 @@ namespace CS6502.Core
             ConnectPins(pins.ToArray());
         }
 
+        public void DisconnectPins(Pin[] pins)
+        {
+            for (int i = 0; i < pins.Length; i++)
+            {
+                Wires[i].DisconnectPin(pins[i]);
+            }
+        }
+
+        public void DisconnectPins(List<Pin> pins)
+        {
+            DisconnectPins(pins.ToArray());
+        }
+
         public Pin[] CreateAndConnectPinArray()
         {
             Pin[] pins = Pin.CreatePinArray(Size);
