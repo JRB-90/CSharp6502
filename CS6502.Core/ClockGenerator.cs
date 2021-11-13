@@ -164,6 +164,7 @@ namespace CS6502.Core
                 if (delta >= tickInterval)
                 {
                     clk.State = clk.State == TriState.False ? TriState.True : TriState.False;
+                    lastTime = currentTime;
                 }
 
                 Thread.Sleep(0);
