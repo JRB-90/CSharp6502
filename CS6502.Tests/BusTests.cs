@@ -71,12 +71,35 @@ namespace CS6502.Tests
         public void CanConnectPins()
         {
             Bus bus = new Bus(8);
-            Pin[] pins = Pin.CreatePinArray(8);
-            bus.ConnectPins(pins);
+            Pin[] pinArray = Pin.CreatePinArray(8);
+
+            bus.ConnectPins(pinArray);
             for (int i = 0; i < 8; i++)
             {
                 bus.Wires[i].ConnectedPins.Should().HaveCount(1);
-                bus.Wires[i].ConnectedPins[0].Should().BeSameAs(pins[i]);
+                bus.Wires[i].ConnectedPins[0].Should().BeSameAs(pinArray[i]);
+            }
+
+            bus.DisconnectPins(pinArray);
+            for (int i = 0; i < 8; i++)
+            {
+                bus.Wires[i].ConnectedPins.Should().HaveCount(0);
+            }
+
+            bus = new Bus(8);
+            List<Pin> pinList = Pin.CreatePinList(8);
+
+            bus.ConnectPins(pinList);
+            for (int i = 0; i < 8; i++)
+            {
+                bus.Wires[i].ConnectedPins.Should().HaveCount(1);
+                bus.Wires[i].ConnectedPins[0].Should().BeSameAs(pinList[i]);
+            }
+
+            bus.DisconnectPins(pinList);
+            for (int i = 0; i < 8; i++)
+            {
+                bus.Wires[i].ConnectedPins.Should().HaveCount(0);
             }
         }
 

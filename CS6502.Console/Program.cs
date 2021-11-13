@@ -7,6 +7,7 @@ namespace CS6502.Console
     {
         static void Main(string[] args)
         {
+
         }
     }
 }
