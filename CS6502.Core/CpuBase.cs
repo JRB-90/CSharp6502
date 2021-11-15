@@ -10,6 +10,7 @@ namespace CS6502.Core
         public CpuBase(string name)
         {
             Name = name;
+            state = CpuState.Init;
 
             IRQ_N = new Wire(WirePull.PullUp);
             NMI_N = new Wire(WirePull.PullUp);
@@ -39,6 +40,8 @@ namespace CS6502.Core
             addressPins = AddressBus.CreateAndConnectPinArray();
             DataBus = new Bus(8);
             dataPins = DataBus.CreateAndConnectPinArray();
+
+            TransitionState(CpuState.Startup);
         }
 
         public string Name { get; }
@@ -129,6 +132,43 @@ namespace CS6502.Core
             return Name;
         }
 
+        #region Helper Functions
+
+        protected RWState GetRW()
+        {
+            return RW_N.State ? RWState.Read : RWState.Write;
+        }
+
+        protected void SetRW(RWState rwState)
+        {
+            if (rwState == RWState.Read)
+            {
+                dataPins.SetAllTo(TriState.HighImpedance);
+                rw_n.State = TriState.True;
+            }
+            else if (rwState == RWState.Write)
+            {
+                rw_n.State = TriState.False;
+            }
+        }
+
+        protected EnableState GetSync()
+        {
+            return SYNC_N.State ? EnableState.Disabled : EnableState.Enabled;
+        }
+
+        protected void SetSync(EnableState enableState)
+        {
+            if (enableState == EnableState.Enabled)
+            {
+                sync_n.State = TriState.False;
+            }
+            else if (enableState == EnableState.Disabled)
+            {
+                sync_n.State = TriState.True;
+            }
+        }
+
         protected void SetAddressBus(ushort address)
         {
             addressPins.SetTo(address);
@@ -136,8 +176,7 @@ namespace CS6502.Core
 
         protected byte ReadFromDataBus()
         {
-            dataPins.SetAllTo(TriState.HighImpedance);
-            rw_n.State = TriState.True;
+            SetRW(RWState.Read);
 
             return dataBus.ToByte();
         }
@@ -145,10 +184,10 @@ namespace CS6502.Core
         protected void WriteToDataBus(byte value)
         {
             dataPins.SetTo(value);
-            rw_n.State = TriState.False;
+            SetRW(RWState.Write);
         }
 
-        protected abstract void Cycle(SignalEdge signalEdge);
+        #endregion
 
         private void Irq_n_StateChanged(object sender, WireStateChangedEventArgs e)
         {
@@ -190,6 +229,143 @@ namespace CS6502.Core
             phi2o.State = PHI2.State ? TriState.True : TriState.False;
         }
 
+        #region Cycle Handling
+
+        private void Cycle(SignalEdge signalEdge)
+        {
+            switch (state)
+            {
+                case CpuState.ResetActive:
+                    HandleResetActive();
+                    break;
+                case CpuState.IrqActive:
+                    HandleIrqActive();
+                    break;
+                case CpuState.NmiActive:
+                    HandleNmiActive();
+                    break;
+                case CpuState.BrkActive:
+                    HandlerBrkActive();
+                    break;
+                case CpuState.Startup:
+                    HandleStartupCycle(signalEdge);
+                    break;
+                case CpuState.ReadingOpcode:
+                    HandleReadingOpcodeCycle(signalEdge);
+                    break;
+                case CpuState.HandlingAddressingMode:
+                    HandleAddressingModeCycle(signalEdge);
+                    break;
+                case CpuState.ExecutingInstruction:
+                    HandleExecutingInstructionCycle(signalEdge);
+                    break;
+                default:
+                    throw new InvalidOperationException($"CPU State {state} not supported");
+            }
+        }
+
+        private void HandleResetActive()
+        {
+            // TODO
+        }
+
+        private void HandleIrqActive()
+        {
+            // TODO
+        }
+
+        private void HandleNmiActive()
+        {
+            // TODO
+        }
+
+        private void HandlerBrkActive()
+        {
+            // TODO
+        }
+
+        private void HandleStartupCycle(SignalEdge signalEdge)
+        {
+            // TODO
+        }
+
+        private void HandleReadingOpcodeCycle(SignalEdge signalEdge)
+        {
+            // TODO
+        }
+
+        private void HandleAddressingModeCycle(SignalEdge signalEdge)
+        {
+            // TODO
+        }
+
+        private void HandleExecutingInstructionCycle(SignalEdge signalEdge)
+        {
+            // TODO
+        }
+
+        #endregion
+
+        #region State Transitions
+
+        private void TransitionState(CpuState newState)
+        {
+            if (state == CpuState.Init && newState == CpuState.Startup)
+            {
+                SetCpuToStartupState();
+                state = newState;
+            }
+            else if (state == CpuState.Startup && newState == CpuState.ReadingOpcode)
+            {
+                ExitStartup();
+                state = newState;
+            }
+            else if (state == CpuState.ReadingOpcode && newState == CpuState.ExecutingInstruction)
+            {
+                ExitReadingOpcode();
+                state = newState;
+            }
+            else if (state == CpuState.ExecutingInstruction && newState == CpuState.ReadingOpcode)
+            {
+                ExitExecutingInstruction();
+                state = newState;
+            }
+            else
+            {
+                // This exception flags any non-defined transitions from occuring
+                throw new InvalidOperationException($"Cannot transition states from {state.ToString()} to {newState.ToString()}");
+            }
+        }
+
+        private void SetCpuToStartupState()
+        {
+            // TODO
+
+            registers = new CpuRegisters();
+            startupCycleCount = 0;
+        }
+
+        private void ExitStartup()
+        {
+            // TODO
+            startupCycleCount = 0;
+        }
+
+        private void ExitReadingOpcode()
+        {
+            // TODO
+        }
+
+        private void ExitExecutingInstruction()
+        {
+            // TODO
+        }
+
+        #endregion
+
+        private CpuState state;
+        private int startupCycleCount;
+        private CpuRegisters registers;
         private Wire irq_n;
         private Wire nmi_n;
         private Wire res_n;
