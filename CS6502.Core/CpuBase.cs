@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace CS6502.Core
 {
@@ -7,6 +8,15 @@ namespace CS6502.Core
     /// </summary>
     public abstract class CpuBase : ICpu
     {
+        const ushort IRQ_VECTOR_HI = 0xFFFF;
+        const ushort IRQ_VECTOR_LO = 0xFFFE;
+        const ushort RST_VECTOR_HI = 0xFFFD;
+        const ushort RST_VECTOR_LO = 0xFFFC;
+        const ushort NMI_VECTOR_HI = 0xFFFB;
+        const ushort NMI_VECTOR_LO = 0xFFFA;
+        
+        const int STARTUP_CYCLES = 12;
+
         public CpuBase(string name)
         {
             Name = name;
@@ -25,9 +35,6 @@ namespace CS6502.Core
             sync_n = new Pin();
             SYNC_N.ConnectPin(sync_n);
 
-            PHI2 = new Wire(WirePull.PullDown);
-            SetPhiOutput();
-
             PHI1O = new Wire(WirePull.PullDown);
             phi1o = new Pin();
             PHI1O.ConnectPin(phi1o);
@@ -36,10 +43,16 @@ namespace CS6502.Core
             phi2o = new Pin();
             PHI2O.ConnectPin(phi2o);
 
-            AddressBus = new Bus(16);
-            addressPins = AddressBus.CreateAndConnectPinArray();
-            DataBus = new Bus(8);
-            dataPins = DataBus.CreateAndConnectPinArray();
+            PHI2 = new Wire(WirePull.PullDown);
+            SetPhiOutput();
+
+            addressBus = new Bus(16);
+            addressPins = addressBus.CreateAndConnectPinArray();
+            AddressBus = addressBus;
+
+            dataBus = new Bus(8);
+            dataPins = dataBus.CreateAndConnectPinArray();
+            DataBus = dataBus;
 
             TransitionState(CpuState.Startup);
         }
@@ -130,6 +143,21 @@ namespace CS6502.Core
         public override string ToString()
         {
             return Name;
+        }
+
+        public string GetCurrentStateString(char delimiter)
+        {
+            return
+                $"{RW_N.State.ToNumStr()}{delimiter}" +
+                $"{registers.A.ToHexString()}{delimiter}" +
+                $"{registers.X.ToHexString()}{delimiter}" +
+                $"{registers.Y.ToHexString()}{delimiter}" +
+                $"{registers.IR.Opcode.ToHexString()}{delimiter}" +
+                $"{registers.P.ToHexString()}{delimiter}" +
+                $"{registers.SP.ToHexString()}{delimiter}" +
+                $"{registers.PC.ToHexString()}{delimiter}" +
+                $"{AddressBus.ToUshort().ToHexString()}{delimiter}" +
+                $"{registers.DataBusBuffer.ToHexString()}";
         }
 
         #region Helper Functions
@@ -286,7 +314,38 @@ namespace CS6502.Core
 
         private void HandleStartupCycle(SignalEdge signalEdge)
         {
-            // TODO
+            if (startupCycleCount >= STARTUP_CYCLES)
+            {
+                if (startupCycleCount == 12)
+                {
+                    SetAddressBus(RST_VECTOR_LO);
+                    SetRW(RWState.Read);
+                    addressBuffer = 0;
+                    addressReadingState = AddressReadingState.ReadingLoByte;
+                }
+                else if (startupCycleCount == 13)
+                {
+                    byte data = ReadFromDataBus();
+                    // Latch data?
+
+                    addressBuffer = data;
+                }
+                else if (startupCycleCount == 14)
+                {
+                    SetAddressBus(RST_VECTOR_HI);
+                    SetRW(RWState.Read);
+                    addressReadingState = AddressReadingState.ReadingLoByte;
+                }
+                else if (startupCycleCount == 15)
+                {
+                    byte data = ReadFromDataBus();
+                    // Latch data?
+
+                    addressBuffer |= (ushort)(data << 8);
+                    TransitionState(CpuState.ReadingOpcode);
+                }
+            }
+            startupCycleCount++;
         }
 
         private void HandleReadingOpcodeCycle(SignalEdge signalEdge)
@@ -366,6 +425,9 @@ namespace CS6502.Core
         private CpuState state;
         private int startupCycleCount;
         private CpuRegisters registers;
+        private AddressReadingState addressReadingState;
+        private ushort addressBuffer;
+
         private Wire irq_n;
         private Wire nmi_n;
         private Wire res_n;

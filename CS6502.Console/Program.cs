@@ -7,7 +7,13 @@ namespace CS6502.Console
     {
         static void Main(string[] args)
         {
+            BasicCpuSystem system =
+                new BasicCpuSystem("C:\\Development\\Sim6502\\tests\\main.bin");
 
+            for (int i = 0; i < 20; i++)
+            {
+                system.Cycle();
+            }
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace CS6502.Core
+﻿using System;
+
+namespace CS6502.Core
 {
     /// <summary>
     /// Factory class for creating instructions from their opcode.
@@ -7,8 +9,15 @@
     {
         public static IInstruction DecodeOpcode(byte opcode)
         {
-            // TODO - switch on opcode
-            return new NOP();
+            switch (opcode)
+            {
+                case 0X00:
+                    return new BRK();
+                case 0xEA:
+                    return new NOP();
+                default:
+                    throw new ArgumentException("Opcode not supported yet");
+            }
         }
     }
 }

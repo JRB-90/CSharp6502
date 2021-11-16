@@ -49,7 +49,8 @@
             if (CS_N.State == false &&
                 OE_N.State == false)
             {
-                byte dataValue = data[AddressBus.ToUint()];
+                ushort addr = AddressBus.ToUshort();
+                byte dataValue = data[addr];
                 dataPins.SetTo(dataValue);
             }
             else

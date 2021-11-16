@@ -8,6 +8,14 @@
     {
         public CpuRegisters()
         {
+            A = 0x00;
+            X = 0xC0;
+            Y = 0x00;
+            IR = InstructionDecoder.DecodeOpcode(0x00);
+            SP = 0xC0;
+            PC = 0x00FF;
+            InputDataLatch = 0x00;
+            DataBusBuffer = 0x00;
         }
 
         public byte A { get; private set; }

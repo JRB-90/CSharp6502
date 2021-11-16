@@ -78,6 +78,11 @@ namespace CS6502.Core
             CheckNewState(oldState);
         }
 
+        public override string ToString()
+        {
+            return State ? "1" : "0";
+        }
+
         private void CheckNewState(bool oldState)
         {
             bool newState = State;
