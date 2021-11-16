@@ -13,10 +13,12 @@ namespace CS6502.Core
             {
                 case 0X00:
                     return new BRK();
+                case 0x4C:
+                    return JMP.CreateJMP(AddressingMode.Absolute);
                 case 0xEA:
                     return new NOP();
                 default:
-                    throw new ArgumentException("Opcode not supported yet");
+                    throw new ArgumentException($"Opcode {opcode.ToHexString()} not supported yet");
             }
         }
     }

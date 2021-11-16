@@ -11,11 +11,12 @@
             A = 0x00;
             X = 0xC0;
             Y = 0x00;
-            IR = InstructionDecoder.DecodeOpcode(0x00);
             SP = 0xC0;
             PC = 0x00FF;
+            P = new StatusRegister(0x02);
             InputDataLatch = 0x00;
             DataBusBuffer = 0x00;
+            IR = InstructionDecoder.DecodeOpcode(0x00);
         }
 
         public byte A { get; private set; }
@@ -28,12 +29,32 @@
 
         public ushort PC { get; private set; }
 
-        public byte P { get; private set; }
+        public StatusRegister P { get; private set; }
 
         public byte InputDataLatch { get; private set; }
 
         public byte DataBusBuffer { get; private set; }
 
         public IInstruction IR { get; private set; }
+
+        public void SetProgramCounter(ushort value)
+        {
+            PC = value;
+        }
+
+        public void IncrementProgramCounter()
+        {
+            PC++;
+        }
+
+        public void LatchDataBus(byte dataBusValue)
+        {
+            DataBusBuffer = dataBusValue;
+        }
+
+        public void DecodeOpcode()
+        {
+            IR = InstructionDecoder.DecodeOpcode(DataBusBuffer);
+        }
     }
 }

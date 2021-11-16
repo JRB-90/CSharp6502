@@ -153,7 +153,7 @@ namespace CS6502.Core
                 $"{registers.X.ToHexString()}{delimiter}" +
                 $"{registers.Y.ToHexString()}{delimiter}" +
                 $"{registers.IR.Opcode.ToHexString()}{delimiter}" +
-                $"{registers.P.ToHexString()}{delimiter}" +
+                $"{registers.P.Value.ToHexString()}{delimiter}" +
                 $"{registers.SP.ToHexString()}{delimiter}" +
                 $"{registers.PC.ToHexString()}{delimiter}" +
                 $"{AddressBus.ToUshort().ToHexString()}{delimiter}" +
@@ -202,6 +202,11 @@ namespace CS6502.Core
             addressPins.SetTo(address);
         }
 
+        protected void TransferPCToAddressBus()
+        {
+            addressPins.SetTo(registers.PC);
+        }
+
         protected byte ReadFromDataBus()
         {
             SetRW(RWState.Read);
@@ -213,6 +218,18 @@ namespace CS6502.Core
         {
             dataPins.SetTo(value);
             SetRW(RWState.Write);
+        }
+
+        protected void ReadAddressBufferLo()
+        {
+            addressBuffer &= 0xFF00;
+            addressBuffer |= registers.DataBusBuffer;
+        }
+
+        protected void ReadAddressBufferHi()
+        {
+            addressBuffer &= 0x00FF;
+            addressBuffer |= (ushort)(registers.DataBusBuffer << 8);
         }
 
         #endregion
@@ -325,10 +342,8 @@ namespace CS6502.Core
                 }
                 else if (startupCycleCount == 13)
                 {
-                    byte data = ReadFromDataBus();
-                    // Latch data?
-
-                    addressBuffer = data;
+                    registers.LatchDataBus(ReadFromDataBus());
+                    ReadAddressBufferLo();
                 }
                 else if (startupCycleCount == 14)
                 {
@@ -338,10 +353,8 @@ namespace CS6502.Core
                 }
                 else if (startupCycleCount == 15)
                 {
-                    byte data = ReadFromDataBus();
-                    // Latch data?
-
-                    addressBuffer |= (ushort)(data << 8);
+                    registers.LatchDataBus(ReadFromDataBus());
+                    ReadAddressBufferHi();
                     TransitionState(CpuState.ReadingOpcode);
                 }
             }
@@ -350,17 +363,110 @@ namespace CS6502.Core
 
         private void HandleReadingOpcodeCycle(SignalEdge signalEdge)
         {
-            // TODO
+            if (signalEdge == SignalEdge.FallingEdge)
+            {
+                instructionCycleCount = 0;
+                registers.SetProgramCounter(addressBuffer);
+                TransferPCToAddressBus();
+            }
+            else if (signalEdge == SignalEdge.RisingEdge)
+            {
+                registers.LatchDataBus(ReadFromDataBus());
+                TransitionState(CpuState.HandlingAddressingMode);
+                instructionCycleCount++;
+            }
         }
 
         private void HandleAddressingModeCycle(SignalEdge signalEdge)
         {
-            // TODO
+            if (signalEdge == SignalEdge.FallingEdge)
+            {
+                if (instructionCycleCount == 1)
+                {
+                    registers.DecodeOpcode();
+                }
+
+                switch (registers.IR.AddressingMode)
+                {
+                    case AddressingMode.Implied:
+                        if (instructionCycleCount == 1)
+                        {
+                            registers.IncrementProgramCounter();
+                            TransferPCToAddressBus();
+                        }
+                        break;
+
+                    case AddressingMode.Absolute:
+                        if (instructionCycleCount == 1)
+                        {
+                            registers.IncrementProgramCounter();
+                            TransferPCToAddressBus();
+                        }
+                        else if (instructionCycleCount == 2)
+                        {
+                            registers.IncrementProgramCounter();
+                            TransferPCToAddressBus();
+                        }
+                        break;
+
+                    default:
+                        throw new NotImplementedException("Addressign mode not supported");
+                }
+            }
+            else if (signalEdge == SignalEdge.RisingEdge)
+            {
+                registers.LatchDataBus(ReadFromDataBus());
+
+                switch (registers.IR.AddressingMode)
+                {
+                    case AddressingMode.Implied:
+                        if (instructionCycleCount == 1)
+                        {
+                            addressBuffer = registers.PC;
+                            TransitionState(CpuState.ReadingOpcode);
+                        }
+                        break;
+
+                    case AddressingMode.Absolute:
+                        if (instructionCycleCount == 1)
+                        {
+                            ReadAddressBufferLo();
+                        }
+                        else if (instructionCycleCount == 2)
+                        {
+                            ReadAddressBufferHi();
+
+                            // TODO - Different instructions might want to do different things here?
+                            // Rather than just transistion to reading opcode?
+                            // Maybe this is where you pass off to the instruction implementation?
+                            // registers.IR.Execute?
+                            TransitionState(CpuState.ReadingOpcode); 
+                        }
+                        break;
+
+                    default:
+                        throw new NotImplementedException($"Addressing mode {registers.IR.AddressingMode.ToString()} not supported");
+                }
+
+                instructionCycleCount++;
+            }
         }
 
         private void HandleExecutingInstructionCycle(SignalEdge signalEdge)
         {
-            // TODO
+            if (signalEdge == SignalEdge.FallingEdge)
+            {
+                // TODO
+                registers.IncrementProgramCounter();
+                TransferPCToAddressBus();
+            }
+            else if (signalEdge == SignalEdge.RisingEdge)
+            {
+                // TODO
+                registers.LatchDataBus(ReadFromDataBus());
+            }
+
+            instructionCycleCount++;
         }
 
         #endregion
@@ -379,9 +485,14 @@ namespace CS6502.Core
                 ExitStartup();
                 state = newState;
             }
-            else if (state == CpuState.ReadingOpcode && newState == CpuState.ExecutingInstruction)
+            else if (state == CpuState.ReadingOpcode && newState == CpuState.HandlingAddressingMode)
             {
                 ExitReadingOpcode();
+                state = newState;
+            }
+            else if (state == CpuState.HandlingAddressingMode && newState == CpuState.ReadingOpcode)
+            {
+                ExitExecutingInstruction();
                 state = newState;
             }
             else if (state == CpuState.ExecutingInstruction && newState == CpuState.ReadingOpcode)
@@ -402,6 +513,7 @@ namespace CS6502.Core
 
             registers = new CpuRegisters();
             startupCycleCount = 0;
+            SetRW(RWState.Read);
         }
 
         private void ExitStartup()
@@ -424,6 +536,7 @@ namespace CS6502.Core
 
         private CpuState state;
         private int startupCycleCount;
+        private int instructionCycleCount;
         private CpuRegisters registers;
         private AddressReadingState addressReadingState;
         private ushort addressBuffer;
