@@ -12,7 +12,6 @@
         {
             RomLocation = romLocation;
             RamLocation = ramLocation;
-            AddressBus = new Bus();
 
             RomCS_N = new Wire(WirePull.PullUp);
             rom_cs_n = new Pin(TriState.True);
@@ -29,6 +28,10 @@
             RamOE_N = new Wire(WirePull.PullUp);
             ram_oe_n = new Pin(TriState.True);
             RamOE_N.ConnectPin(ram_oe_n);
+
+            phi2 = new Wire(WirePull.PullDown);
+            phi2.StateChanged += Phi2_StateChanged;
+            AddressBus = new Bus();
 
             CalculatePinEnables();
         }
@@ -40,7 +43,6 @@
         {
             RomLocation = romLocation;
             RamLocation = ramLocation;
-            AddressBus = addressBus;
 
             RomCS_N = new Wire(WirePull.PullUp);
             rom_cs_n = new Pin(TriState.True);
@@ -57,6 +59,10 @@
             RamOE_N = new Wire(WirePull.PullUp);
             ram_oe_n = new Pin(TriState.True);
             RamOE_N.ConnectPin(ram_oe_n);
+
+            phi2 = new Wire(WirePull.PullDown);
+            phi2.StateChanged += Phi2_StateChanged;
+            AddressBus = addressBus;
 
             CalculatePinEnables();
         }
@@ -72,6 +78,18 @@
             {
                 addressBus = value;
                 addressBus.StateChanged += AddressBus_StateChanged;
+                CalculatePinEnables();
+            }
+        }
+
+        public Wire PHI2
+        {
+            get => phi2;
+            set
+            {
+                phi2 = value;
+                phi2.StateChanged += Phi2_StateChanged;
+                CalculatePinEnables();
             }
         }
 
@@ -88,9 +106,15 @@
             CalculatePinEnables();
         }
 
+        private void Phi2_StateChanged(object sender, WireStateChangedEventArgs e)
+        {
+            CalculatePinEnables();
+        }
+
         private void CalculatePinEnables()
         {
-            if (RomLocation.IsInAddressSpace(AddressBus.ToUshort()))
+            if (PHI2.State == true &&
+                RomLocation.IsInAddressSpace(AddressBus.ToUshort()))
             {
                 rom_cs_n.State = TriState.False;
                 rom_oe_n.State = TriState.False;
@@ -101,7 +125,8 @@
                 rom_oe_n.State = TriState.True;
             }
 
-            if (RamLocation.IsInAddressSpace(AddressBus.ToUshort()))
+            if (PHI2.State == true &&
+                RamLocation.IsInAddressSpace(AddressBus.ToUshort()))
             {
                 ram_cs_n.State = TriState.False;
                 ram_oe_n.State = TriState.False;
@@ -114,6 +139,7 @@
         }
 
         private Bus addressBus;
+        private Wire phi2;
         private Pin rom_cs_n;
         private Pin rom_oe_n;
         private Pin ram_cs_n;

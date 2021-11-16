@@ -12,7 +12,7 @@ namespace CS6502.Core
         {
             TargetFrequency = -1;
             mode = ClockMode.StepHalfCycle;
-            clk = new Pin(TriState.False);
+            clk = new Pin(TriState.True);
             CLK = new Wire(WirePull.PullDown);
             CLK.ConnectPin(clk);
             SYNC_N = new Wire(WirePull.PullUp);
@@ -25,7 +25,7 @@ namespace CS6502.Core
         {
             TargetFrequency = -1;
             this.mode = mode;
-            clk = new Pin(TriState.False);
+            clk = new Pin(TriState.True);
             CLK = new Wire(WirePull.PullDown);
             CLK.ConnectPin(clk);
             SYNC_N = new Wire(WirePull.PullUp);
@@ -38,7 +38,7 @@ namespace CS6502.Core
         {
             TargetFrequency = targetFrequency;
             mode = ClockMode.FreeRunning;
-            clk = new Pin(TriState.False);
+            clk = new Pin(TriState.True);
             CLK = new Wire(WirePull.PullDown);
             CLK.ConnectPin(clk);
             SYNC_N = new Wire(WirePull.PullUp);

@@ -29,11 +29,19 @@ namespace CS6502.Core
         public Bus(Wire[] wires)
         {
             this.wires = wires.ToList();
+            foreach (Wire wire in wires)
+            {
+                wire.StateChanged += Wire_StateChanged;
+            }
         }
 
         public Bus(List<Wire> wires)
         {
             this.wires = wires;
+            foreach (Wire wire in wires)
+            {
+                wire.StateChanged += Wire_StateChanged;
+            }
         }
 
         public Bus(Bus bus)
@@ -42,6 +50,7 @@ namespace CS6502.Core
             for (int i = 0; i < bus.Wires.Count; i++)
             {
                 wires.Add(bus.Wires[i]);
+                Wires[i].StateChanged += Wire_StateChanged;
             }
         }
 
@@ -56,7 +65,9 @@ namespace CS6502.Core
             wires = new List<Wire>();
             for (int i = startIndex; i < startIndex + length; i++)
             {
-                wires.Add(bus.Wires[i]);
+                Wire w = bus.Wires[i];
+                wires.Add(w);
+                w.StateChanged += Wire_StateChanged;
             }
         }
 
@@ -132,6 +143,24 @@ namespace CS6502.Core
         public uint ToUint()
         {
             return wires.ToUint();
+        }
+
+        public override string ToString()
+        {
+            string hexStr = ToUint().ToHexString();
+            if (Size <= 16)
+            {
+                hexStr = ToUshort().ToHexString();
+            }
+            if (Size <= 8)
+            {
+                hexStr = ToByte().ToHexString();
+            }
+
+            return
+                hexStr +
+                " - " +
+                wires.ToBinaryString();
         }
 
         private void Wire_StateChanged(object sender, WireStateChangedEventArgs e)

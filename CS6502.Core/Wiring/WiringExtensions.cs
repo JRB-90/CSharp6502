@@ -72,6 +72,11 @@ namespace CS6502.Core
             return sb.ToString();
         }
 
+        public static string ToNumStr(this bool value)
+        {
+            return value == true ? "1" : "0";
+        }
+
         #endregion
 
         #region Pin
@@ -218,6 +223,24 @@ namespace CS6502.Core
             }
 
             return value;
+        }
+
+        public static string ToBinaryString(this Wire[] wires)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("0b");
+
+            for (int i = wires.Length - 1; i >= 0; i--)
+            {
+                sb.Append(wires[i].ToString());
+            }
+
+            return sb.ToString();
+        }
+
+        public static string ToBinaryString(this IList<Wire> wires)
+        {
+            return wires.ToArray().ToBinaryString();
         }
 
         #endregion
