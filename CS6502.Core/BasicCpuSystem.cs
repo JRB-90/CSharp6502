@@ -57,13 +57,22 @@
             );
         }
 
-        public void Cycle()
+        public void Cycle(bool printState = false)
         {
             clock.Cycle();
 
-            string stateStr = cpu.GetCurrentStateString('\t');
-            System.Console.WriteLine($"{halfCycleCount}\t{stateStr}");
+            if (printState)
+            {
+                string stateStr = cpu.GetCurrentStateString('\t');
+                System.Console.WriteLine($"{halfCycleCount}\t{stateStr}");
+            }
+
             halfCycleCount++;
+        }
+
+        public CycleState GetCurrentCycleState()
+        {
+            return cpu.GetCurrentCycleState(halfCycleCount - 1);
         }
 
         private void ConnectBusesAndWires()

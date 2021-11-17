@@ -160,6 +160,24 @@ namespace CS6502.Core
                 $"{registers.DataBusBuffer.ToHexString()}";
         }
 
+        public CycleState GetCurrentCycleState(int cycleID)
+        {
+            return
+                new CycleState(
+                    cycleID,
+                    Convert.ToByte(RW_N.State),
+                    registers.A,
+                    registers.X,
+                    registers.Y,
+                    registers.IR.Opcode,
+                    registers.P.Value,
+                    registers.SP,
+                    registers.PC,
+                    AddressBus.ToUshort(),
+                    registers.DataBusBuffer
+                );
+        }
+
         #region Helper Functions
 
         protected RWState GetRW()
