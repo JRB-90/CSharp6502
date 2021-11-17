@@ -12,7 +12,7 @@ namespace CS6502.Console
 
             for (int i = 0; i < 100; i++)
             {
-                system.Cycle();
+                system.Cycle(true);
             }
         }
     }
