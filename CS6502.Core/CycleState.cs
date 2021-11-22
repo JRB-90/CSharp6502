@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace CS6502.Core
 {
@@ -100,6 +101,37 @@ namespace CS6502.Core
                     Address == cycleState.Address,
                     Data == cycleState.Data
                 );
+        }
+
+        public string ToString(char delimiter)
+        {
+            return
+                $"{RW}{delimiter}" +
+                $"{A.ToHexString()}{delimiter}" +
+                $"{X.ToHexString()}{delimiter}" +
+                $"{Y.ToHexString()}{delimiter}" +
+                $"{IR.ToHexString()}{delimiter}" +
+                $"{P.ToHexString()}{delimiter}" +
+                $"{SP.ToHexString()}{delimiter}" +
+                $"{PC.ToHexString()}{delimiter}" +
+                $"{Address.ToHexString()}{delimiter}" +
+                $"{Data.ToHexString()}";
+        }
+
+        public static string GetHeaderString(char delimiter)
+        {
+            return
+                $"Cycle{delimiter}" +
+                $"RW{delimiter}" +
+                $"A{delimiter}" +
+                $"X{delimiter}" +
+                $"Y{delimiter}" +
+                $"IR{delimiter}" +
+                $"Status{delimiter}" +
+                $"SP{delimiter}" +
+                $"PC{delimiter}" +
+                $"Addr{delimiter}" +
+                $"Data";
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CS6502.Core;
+using System;
 
 namespace CS6502.Benchmark
 {
@@ -9,23 +10,51 @@ namespace CS6502.Benchmark
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Loading benchmark file...");
+            Program p = new Program();
+            p.LoadBenchmarkFromFile();
+            //p.LoadBenchmarkFromP6502(100);
+            p.RunBenchark();
+        }
 
-            BenchmarkSession benchmark = new BenchmarkSession();
+        public Program()
+        {
+            benchmark = new BenchmarkSession();
+        }
 
+        public void LoadBenchmarkFromP6502(int cyclesToRun)
+        {
             try
             {
-                benchmark.LoadFIle(BENCH_PATH);
+                Console.WriteLine("Building benchmark from P6502 simulation...");
+                benchmark.LoadFile(BENCH_PATH);
+                Console.WriteLine("P6502 simulation ran successuflly, beginning test..");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Failed to load benchmarking file: {ex.Message}");
                 Environment.Exit(1);
             }
+        }
 
+        public void LoadBenchmarkFromFile()
+        {
             try
             {
+                Console.WriteLine("Loading benchmark file...");
+                benchmark.LoadFile(BENCH_PATH);
                 Console.WriteLine("File loaded successuflly, beginning test..");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load benchmarking file: {ex.Message}");
+                Environment.Exit(1);
+            }
+        }
+
+        public void RunBenchark()
+        {
+            try
+            {
                 benchmark.Run(CPU_PROG);
                 Console.WriteLine("Test complete");
             }
@@ -35,5 +64,7 @@ namespace CS6502.Benchmark
                 Environment.Exit(1);
             }
         }
+
+        private BenchmarkSession benchmark;
     }
 }
