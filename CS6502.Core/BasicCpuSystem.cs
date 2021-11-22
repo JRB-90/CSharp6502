@@ -42,19 +42,7 @@
 
             ConnectBusesAndWires();
 
-            System.Console.WriteLine(
-                "Cycle\t" +
-                "RW\t" +
-                "A\t" +
-                "X\t" +
-                "Y\t" +
-                "IR\t" +
-                "Status\t" +
-                "SP\t" +
-                "PC\t" +
-                "Addr\t" +
-                "Data"
-            );
+            System.Console.WriteLine(CycleState.GetHeaderString('\t'));
         }
 
         public void Cycle(bool printState = false)

@@ -17,7 +17,7 @@ namespace CS6502.Benchmark
             cycleStates = new List<CycleState>();
         }
 
-        public void LoadFIle(string path)
+        public void LoadFile(string path)
         {
             string[] lines = File.ReadAllLines(path);
 
@@ -28,6 +28,32 @@ namespace CS6502.Benchmark
                     continue;
                 }
                 cycleStates.Add(new CycleState(line));
+            }
+        }
+
+        public void LoadFromP6502(string path, int cyclesToRun)
+        {
+            int res = P6502.SetupChipAndMemory(path);
+            if (res < 0)
+            {
+                throw new InvalidOperationException("Failed to initialise CPU and Memory");
+            }
+
+            for (int i = 0; i < cyclesToRun; i++)
+            {
+                res = P6502.StepCpu();
+                if (res < 0)
+                {
+                    throw new InvalidOperationException("Failed to step CPU");
+                }
+
+                cycleStates.Add(P6502.GetCurrentState(i));
+            }
+
+            res = P6502.DestroyChipAndMemory();
+            if (res < 0)
+            {
+                throw new InvalidOperationException("Failed to destroy CPU and Memory");
             }
         }
 
