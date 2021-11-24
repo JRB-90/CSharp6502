@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
 
 namespace CS6502.Core
@@ -67,15 +68,15 @@ namespace CS6502.Core
 
             CycleID = int.Parse(tokens[0]);
             RW = byte.Parse(tokens[1]);
-            A = byte.Parse(tokens[2]);
-            X = byte.Parse(tokens[3]);
-            Y = byte.Parse(tokens[4]);
-            IR = byte.Parse(tokens[5]);
-            P = byte.Parse(tokens[6]);
-            SP = byte.Parse(tokens[7]);
-            PC = ushort.Parse(tokens[8]);
-            Address = ushort.Parse(tokens[9]);
-            Data = byte.Parse(tokens[10]);
+            A = byte.Parse(tokens[2].Trim().Remove(0, 2), NumberStyles.HexNumber);
+            X = byte.Parse(tokens[3].Trim().Remove(0, 2), NumberStyles.HexNumber);
+            Y = byte.Parse(tokens[4].Trim().Remove(0, 2), NumberStyles.HexNumber);
+            IR = byte.Parse(tokens[5].Trim().Remove(0, 2), NumberStyles.HexNumber);
+            P = byte.Parse(tokens[6].Trim().Remove(0, 2), NumberStyles.HexNumber);
+            SP = byte.Parse(tokens[7].Trim().Remove(0, 2), NumberStyles.HexNumber);
+            PC = ushort.Parse(tokens[8].Trim().Remove(0, 2), NumberStyles.HexNumber);
+            Address = ushort.Parse(tokens[9].Trim().Remove(0, 2), NumberStyles.HexNumber);
+            Data = byte.Parse(tokens[10].Trim().Remove(0, 2), NumberStyles.HexNumber);
         }
 
         public ComparisonResult Compare(CycleState cycleState)
