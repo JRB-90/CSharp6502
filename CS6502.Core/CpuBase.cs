@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 
 namespace CS6502.Core
 {
@@ -349,10 +348,31 @@ namespace CS6502.Core
 
         private void HandleStartupCycle(SignalEdge signalEdge)
         {
+            if (startupCycleCount == 6)
+            {
+                // Simulate the push off of CPU params from stack
+                SetAddressBus(0x01C0);
+            }
+            else if (startupCycleCount == 8)
+            {
+                // Simulate the push off of CPU params from stack
+                SetAddressBus(0x01BF);
+            }
+            else if (startupCycleCount == 10)
+            {
+                // Simulate the push off of CPU params from stack
+                SetAddressBus(0x01BE);
+            }
+
             if (startupCycleCount >= STARTUP_CYCLES)
             {
                 if (startupCycleCount == 12)
                 {
+                    // Simulate the push off of CPU params from stack
+                    registers.DecrementStackPointer();
+                    registers.DecrementStackPointer();
+                    registers.DecrementStackPointer();
+
                     SetAddressBus(RST_VECTOR_LO);
                     SetRW(RWState.Read);
                     addressBuffer = 0;
@@ -360,11 +380,13 @@ namespace CS6502.Core
                 }
                 else if (startupCycleCount == 13)
                 {
+                    registers.SetIRQ();
                     registers.LatchDataBus(ReadFromDataBus());
                     ReadAddressBufferLo();
                 }
                 else if (startupCycleCount == 14)
                 {
+                    registers.SetBRK();
                     SetAddressBus(RST_VECTOR_HI);
                     SetRW(RWState.Read);
                     addressReadingState = AddressReadingState.ReadingLoByte;
@@ -532,6 +554,7 @@ namespace CS6502.Core
             registers = new CpuRegisters();
             startupCycleCount = 0;
             SetRW(RWState.Read);
+            SetAddressBus(0x00FF);
         }
 
         private void ExitStartup()
