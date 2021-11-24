@@ -26,10 +26,8 @@ namespace CS6502.Core
 
         public int CurrentCycle { get; }
 
-        public void Cycle()
+        public virtual void Execute(CpuRegisters registers)
         {
-            // TODO
-            throw new NotImplementedException();
         }
     }
 }

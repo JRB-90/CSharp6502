@@ -405,6 +405,10 @@ namespace CS6502.Core
         {
             if (signalEdge == SignalEdge.FallingEdge)
             {
+                // We have transisiton to next opcode so execute the last instruction
+                // as this happens on the falling edge..
+                registers.IR.Execute(registers);
+
                 instructionCycleCount = 0;
                 registers.SetProgramCounter(addressBuffer);
                 TransferPCToAddressBus();
@@ -475,11 +479,6 @@ namespace CS6502.Core
                         else if (instructionCycleCount == 2)
                         {
                             ReadAddressBufferHi();
-
-                            // TODO - Different instructions might want to do different things here?
-                            // Rather than just transistion to reading opcode?
-                            // Maybe this is where you pass off to the instruction implementation?
-                            // registers.IR.Execute?
                             TransitionState(CpuState.ReadingOpcode); 
                         }
                         break;

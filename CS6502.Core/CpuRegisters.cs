@@ -142,6 +142,16 @@
             P.BrkFlag = true;
         }
 
+        public void ClearOverflow()
+        {
+            P.OverflowFlag = false;
+        }
+
+        public void SetOverflow()
+        {
+            P.OverflowFlag = true;
+        }
+
         public void LatchInputData(byte inputDataValue)
         {
             InputDataLatch = inputDataValue;

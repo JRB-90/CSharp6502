@@ -13,6 +13,6 @@
 
         int CurrentCycle { get; }
 
-        void Cycle();
+        void Execute(CpuRegisters registers);
     }
 }
