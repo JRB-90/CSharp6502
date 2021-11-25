@@ -5,12 +5,14 @@
     /// </summary>
     public enum AddressingMode
     {
-        Imediate,
+        Immediate,
         ZeroPage,
         ZeroPageX,
         ZeroPageY,
         Relative,
         Indirect,
+        IndirectX,
+        IndirectY,
         Implied,
         Absolute,
         AbsoluteX,

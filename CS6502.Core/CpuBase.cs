@@ -318,9 +318,6 @@ namespace CS6502.Core
                 case CpuState.HandlingAddressingMode:
                     HandleAddressingModeCycle(signalEdge);
                     break;
-                case CpuState.ExecutingInstruction:
-                    HandleExecutingInstructionCycle(signalEdge);
-                    break;
                 default:
                     throw new InvalidOperationException($"CPU State {state} not supported");
             }
@@ -405,6 +402,7 @@ namespace CS6502.Core
         {
             if (signalEdge == SignalEdge.FallingEdge)
             {
+                registers.PollInternalAluQueue();
                 // We have transisiton to next opcode so execute the last instruction
                 // as this happens on the falling edge..
                 registers.IR.Execute(registers);
@@ -425,6 +423,7 @@ namespace CS6502.Core
         {
             if (signalEdge == SignalEdge.FallingEdge)
             {
+                registers.PollInternalAluQueue();
                 if (instructionCycleCount == 1)
                 {
                     registers.DecodeOpcode();
@@ -440,6 +439,22 @@ namespace CS6502.Core
                         }
                         break;
 
+                    case AddressingMode.Immediate:
+                        if (instructionCycleCount == 1)
+                        {
+                            registers.IncrementProgramCounter();
+                            TransferPCToAddressBus();
+                        }
+                        break;
+
+                    case AddressingMode.ZeroPage:
+                        if (instructionCycleCount == 1)
+                        {
+                            registers.IncrementProgramCounter();
+                            TransferPCToAddressBus();
+                        }
+                        break;
+
                     case AddressingMode.Absolute:
                         if (instructionCycleCount == 1)
                         {
@@ -447,6 +462,29 @@ namespace CS6502.Core
                             TransferPCToAddressBus();
                         }
                         else if (instructionCycleCount == 2)
+                        {
+                            registers.IncrementProgramCounter();
+                            TransferPCToAddressBus();
+                        }
+                        break;
+
+                    case AddressingMode.Indirect:
+                        if (instructionCycleCount == 1)
+                        {
+                            registers.IncrementProgramCounter();
+                            TransferPCToAddressBus();
+                        }
+                        else if (instructionCycleCount == 2)
+                        {
+                            registers.IncrementProgramCounter();
+                            TransferPCToAddressBus();
+                        }
+                        else if (instructionCycleCount == 3)
+                        {
+                            registers.SetProgramCounter(addressBuffer);
+                            TransferPCToAddressBus();
+                        }
+                        else if (instructionCycleCount == 4)
                         {
                             registers.IncrementProgramCounter();
                             TransferPCToAddressBus();
@@ -471,6 +509,14 @@ namespace CS6502.Core
                         }
                         break;
 
+                    case AddressingMode.Immediate:
+                        if (instructionCycleCount == 1)
+                        {
+                            addressBuffer = (ushort)(registers.PC + 1);
+                            TransitionState(CpuState.ReadingOpcode);
+                        }
+                        break;
+
                     case AddressingMode.Absolute:
                         if (instructionCycleCount == 1)
                         {
@@ -483,29 +529,32 @@ namespace CS6502.Core
                         }
                         break;
 
+                    case AddressingMode.Indirect:
+                        if (instructionCycleCount == 1)
+                        {
+                            ReadAddressBufferLo();
+                        }
+                        else if (instructionCycleCount == 2)
+                        {
+                            ReadAddressBufferHi();
+                        }
+                        else if (instructionCycleCount == 3)
+                        {
+                            ReadAddressBufferLo();
+                        }
+                        else if (instructionCycleCount == 4)
+                        {
+                            ReadAddressBufferHi();
+                            TransitionState(CpuState.ReadingOpcode);
+                        }
+                        break;
+
                     default:
                         throw new NotImplementedException($"Addressing mode {registers.IR.AddressingMode.ToString()} not supported");
                 }
 
                 instructionCycleCount++;
             }
-        }
-
-        private void HandleExecutingInstructionCycle(SignalEdge signalEdge)
-        {
-            if (signalEdge == SignalEdge.FallingEdge)
-            {
-                // TODO
-                registers.IncrementProgramCounter();
-                TransferPCToAddressBus();
-            }
-            else if (signalEdge == SignalEdge.RisingEdge)
-            {
-                // TODO
-                registers.LatchDataBus(ReadFromDataBus());
-            }
-
-            instructionCycleCount++;
         }
 
         #endregion
@@ -530,11 +579,6 @@ namespace CS6502.Core
                 state = newState;
             }
             else if (state == CpuState.HandlingAddressingMode && newState == CpuState.ReadingOpcode)
-            {
-                ExitExecutingInstruction();
-                state = newState;
-            }
-            else if (state == CpuState.ExecutingInstruction && newState == CpuState.ReadingOpcode)
             {
                 ExitExecutingInstruction();
                 state = newState;

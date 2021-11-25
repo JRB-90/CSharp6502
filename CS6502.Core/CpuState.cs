@@ -12,7 +12,6 @@
         BrkActive,
         Startup,
         ReadingOpcode,
-        HandlingAddressingMode,
-        ExecutingInstruction
+        HandlingAddressingMode
     }
 }

@@ -29,5 +29,10 @@ namespace CS6502.Core
         public virtual void Execute(CpuRegisters registers)
         {
         }
+
+        public override string ToString()
+        {
+            return $"{Name} - {Opcode.ToHexString()} - {AddressingMode.ToString()}";
+        }
     }
 }

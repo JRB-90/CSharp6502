@@ -1,4 +1,6 @@
-﻿namespace CS6502.Core
+﻿using System.Collections.Generic;
+
+namespace CS6502.Core
 {
     /// <summary>
     /// Represents the state of the internal CPU registers.
@@ -17,6 +19,7 @@
             InputDataLatch = 0x00;
             DataBusBuffer = 0x00;
             IR = InstructionDecoder.DecodeOpcode(0x00);
+            aluResultQueue = new Queue<(InternalRegister, byte)>();
         }
 
         public byte A { get; private set; }
@@ -37,39 +40,82 @@
 
         public byte DataBusBuffer { get; private set; }
 
-        public void LoadA(byte value)
+        public void PollInternalAluQueue()
         {
-            A = value;
+            if (aluResultQueue.Count > 0)
+            {
+                var result = aluResultQueue.Dequeue();
+                if (result.Item1 == InternalRegister.X)
+                {
+                    X = result.Item2;
+                }
+                else if (result.Item1 == InternalRegister.Y)
+                {
+                    Y = result.Item2;
+                }
+            }
         }
 
-        public void LoadX(byte value)
+        public void LoadA()
         {
-            X = value;
+            A = DataBusBuffer;
+            LatchInputData(A);
         }
 
-        public void LoadY(byte value)
+        public void LoadX()
         {
-            Y = value;
+            X = DataBusBuffer;
+            LatchInputData(X);
+        }
+
+        public void LoadY()
+        {
+            Y = DataBusBuffer;
+            LatchInputData(Y);
         }
 
         public void TransferAtoX()
         {
             X = A;
+            // TODO - Latch here?
         }
 
         public void TransferAtoY()
         {
             Y = A;
+            // TODO - Latch here?
         }
 
         public void TransferXtoA()
         {
-            A = X; ;
+            A = X;
+            // TODO - Latch here?
         }
 
         public void TransferYtoA()
         {
             A = Y;
+            // TODO - Latch here?
+        }
+
+        public void IncrementX()
+        {
+            aluResultQueue.Enqueue((InternalRegister.X, (byte)(X + 1)));
+        }
+
+        public void DecrementX()
+        {
+            aluResultQueue.Enqueue((InternalRegister.X, (byte)(X - 1)));
+        }
+
+        public void IncrementY()
+        {
+            aluResultQueue.Enqueue((InternalRegister.Y, (byte)(Y + 1)));
+        }
+
+        public void DecrementY()
+        {
+            aluResultQueue.Enqueue((InternalRegister.Y, (byte)(Y - 1)));
         }
 
         public void DecodeOpcode()
@@ -152,15 +198,15 @@
             P.OverflowFlag = true;
         }
 
-        public void LatchInputData(byte inputDataValue)
-        {
-            InputDataLatch = inputDataValue;
-            UpdateP();
-        }
-
         public void LatchDataBus(byte dataBusValue)
         {
             DataBusBuffer = dataBusValue;
+        }
+
+        private void LatchInputData(byte value)
+        {
+            InputDataLatch = value;
+            UpdateP();
         }
 
         private void UpdateP()
@@ -169,6 +215,6 @@
             P.NegativeFlag = (InputDataLatch & 0b10000000) > 0;
         }
 
-        private byte a;
+        private Queue<(InternalRegister, byte)> aluResultQueue; 
     }
 }
