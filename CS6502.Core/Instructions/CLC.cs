@@ -7,7 +7,8 @@
             base(
                 "CLC",
                 0x18,
-                AddressingMode.Implied)
+                AddressingMode.Implied,
+                OperationType.Internal)
         {
         }
 

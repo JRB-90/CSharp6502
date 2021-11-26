@@ -198,9 +198,29 @@ namespace CS6502.Core
             P.OverflowFlag = true;
         }
 
+        public void TransferAToDataBus()
+        {
+            DataBusBuffer = A;
+        }
+
+        public void TransferXToDataBus()
+        {
+            DataBusBuffer = X;
+        }
+
+        public void TransferYToDataBus()
+        {
+            DataBusBuffer = Y;
+        }
+
         public void LatchDataBus(byte dataBusValue)
         {
             DataBusBuffer = dataBusValue;
+        }
+
+        public void LatchInputDataBusBuffer()
+        {
+            LatchInputData(DataBusBuffer);
         }
 
         private void LatchInputData(byte value)

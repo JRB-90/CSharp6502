@@ -7,7 +7,8 @@
             base(
                 "DEX",
                 0xCA,
-                AddressingMode.Implied)
+                AddressingMode.Implied,
+                OperationType.Internal)
         {
         }
 

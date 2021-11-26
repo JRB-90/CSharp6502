@@ -10,11 +10,13 @@ namespace CS6502.Core
         public InstructionBase(
             string name,
             byte opcode,
-            AddressingMode addressingMode)
+            AddressingMode addressingMode,
+            OperationType operationType)
         {
             Name = name;
             Opcode = opcode;
             AddressingMode = addressingMode;
+            OperationType = operationType;
             CurrentCycle = 0;
         }
 
@@ -23,6 +25,8 @@ namespace CS6502.Core
         public byte Opcode { get; }
 
         public AddressingMode AddressingMode { get; }
+
+        public OperationType OperationType { get; }
 
         public int CurrentCycle { get; }
 

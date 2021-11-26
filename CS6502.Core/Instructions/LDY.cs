@@ -51,7 +51,8 @@ namespace CS6502.Core
             base(
                 "LDY",
                 opcode,
-                addressingMode)
+                addressingMode,
+                OperationType.Read)
         {
         }
     }

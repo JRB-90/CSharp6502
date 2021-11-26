@@ -7,7 +7,8 @@
             base(
                 "INX",
                 0xE8,
-                AddressingMode.Implied)
+                AddressingMode.Implied,
+                OperationType.Internal)
         {
         }
 

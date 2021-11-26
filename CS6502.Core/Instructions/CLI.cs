@@ -7,7 +7,8 @@
             base(
                 "CLI",
                 0x58,
-                AddressingMode.Implied)
+                AddressingMode.Implied,
+                OperationType.Internal)
         {
         }
 

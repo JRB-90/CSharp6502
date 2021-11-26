@@ -7,7 +7,8 @@
             base(
                 "CLD",
                 0xD8,
-                AddressingMode.Implied)
+                AddressingMode.Implied,
+                OperationType.Internal)
         {
         }
 

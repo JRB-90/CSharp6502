@@ -7,7 +7,8 @@
             base(
                 "DEY",
                 0x88,
-                AddressingMode.Implied)
+                AddressingMode.Implied,
+                OperationType.Internal)
         {
         }
 

@@ -2,61 +2,58 @@
 
 namespace CS6502.Core
 {
-    public class LDA : InstructionBase
+    public class STA : InstructionBase
     {
-        public static LDA CreateLDA(AddressingMode addressingMode)
+        public static STA CreateSTA(AddressingMode addressingMode)
         {
             switch (addressingMode)
             {
-                case AddressingMode.Immediate:
-                    return new LDA(0xA9, addressingMode);
-
                 case AddressingMode.ZeroPage:
-                    return new LDA(0xA5, addressingMode);
+                    return new STA(0x85, addressingMode);
 
                 case AddressingMode.ZeroPageX:
                     throw new NotImplementedException(); // TODO
-                    //return new LDA(0xB5, addressingMode);
+                    //return new STA(0x95, addressingMode);
 
                 case AddressingMode.Absolute:
                     throw new NotImplementedException(); // TODO
-                    //return new LDA(0xAD, addressingMode);
+                    //return new STA(0x8D, addressingMode);
 
                 case AddressingMode.AbsoluteX:
                     throw new NotImplementedException(); // TODO
-                    //return new LDA(0xBD, addressingMode);
+                    //return new STA(0x9D, addressingMode);
 
                 case AddressingMode.AbsoluteY:
                     throw new NotImplementedException(); // TODO
-                    //return new LDA(0xB9, addressingMode);
+                    //return new STA(0x99, addressingMode);
 
                 case AddressingMode.IndirectX:
                     throw new NotImplementedException(); // TODO
-                    //return new LDA(0xA1, addressingMode);
+                    //return new STA(0x81, addressingMode);
 
                 case AddressingMode.IndirectY:
                     throw new NotImplementedException(); // TODO
-                    //return new LDA(0xB1, addressingMode);
+                    //return new STA(0x91, addressingMode);
 
                 default:
-                    throw new ArgumentException($"LDA does not support {addressingMode.ToString()} addressing mode");
+                    throw new ArgumentException($"STA does not support {addressingMode.ToString()} addressing mode");
             }
         }
 
         public override void Execute(CpuRegisters registers)
         {
-            registers.LoadA();
+            registers.TransferAToDataBus();
         }
 
-        private LDA(
+        private STA(
             byte opcode,
             AddressingMode addressingMode)
           :
             base(
-                "LDA",
+                "STA",
                 opcode,
                 addressingMode,
-                OperationType.Read)
+                OperationType.Write)
         {
         }
     }

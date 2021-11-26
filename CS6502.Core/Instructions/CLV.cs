@@ -7,7 +7,8 @@
             base(
                 "CLV",
                 0xB8,
-                AddressingMode.Implied)
+                AddressingMode.Implied,
+                OperationType.Internal)
         {
         }
 

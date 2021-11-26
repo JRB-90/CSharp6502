@@ -7,7 +7,8 @@
             base(
                 "SED",
                 0xF8,
-                AddressingMode.Implied)
+                AddressingMode.Implied,
+                OperationType.Internal)
         {
         }
 

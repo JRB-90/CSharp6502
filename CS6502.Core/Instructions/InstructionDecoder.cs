@@ -25,12 +25,16 @@ namespace CS6502.Core
                     return JMP.CreateJMP(AddressingMode.Indirect);
                 case 0x78:
                     return new SEI();
+                case 0x85:
+                    return STA.CreateSTA(AddressingMode.ZeroPage);
                 case 0x88:
                     return new DEY();
                 case 0xA0:
                     return LDY.CreateLDY(AddressingMode.Immediate);
                 case 0xA2:
                     return LDX.CreateLDX(AddressingMode.Immediate);
+                case 0xA5:
+                    return LDA.CreateLDA(AddressingMode.ZeroPage);
                 case 0xA9:
                     return LDA.CreateLDA(AddressingMode.Immediate);
                 case 0xB8:

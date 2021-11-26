@@ -7,7 +7,8 @@
             base(
                 "SEC",
                 0x38,
-                AddressingMode.Implied)
+                AddressingMode.Implied,
+                OperationType.Internal)
         {
         }
 

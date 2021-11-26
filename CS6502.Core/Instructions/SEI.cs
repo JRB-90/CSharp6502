@@ -7,7 +7,8 @@
             base(
                 "SEI",
                 0x78,
-                AddressingMode.Implied)
+                AddressingMode.Implied,
+                OperationType.Internal)
         {
         }
 
