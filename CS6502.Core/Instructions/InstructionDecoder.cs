@@ -29,6 +29,8 @@ namespace CS6502.Core
                     return STA.CreateSTA(AddressingMode.ZeroPage);
                 case 0x88:
                     return new DEY();
+                case 0x95:
+                    return STA.CreateSTA(AddressingMode.ZeroPageX);
                 case 0xA0:
                     return LDY.CreateLDY(AddressingMode.Immediate);
                 case 0xA2:

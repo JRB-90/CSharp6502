@@ -57,13 +57,18 @@ namespace CS6502.Benchmark
             }
         }
 
-        public void Run(string path)
+        public void Run(string path, int cyclesToIgnore = 0)
         {
             BasicCpuSystem system = new BasicCpuSystem(path);
 
             for (int i = 0; i < cycleStates.Count; i++)
             {
                 system.Cycle();
+
+                if (i < cyclesToIgnore)
+                {
+                    continue;
+                }
 
                 ComparisonResult result =
                     cycleStates[i].Compare(system.GetCurrentCycleState());

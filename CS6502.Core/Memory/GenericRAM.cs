@@ -14,7 +14,7 @@
                 size,
                 addressWidth,
                 dataWidth,
-                0xFF
+                0x00
             )
         {
             OE_N = new Wire(WirePull.PullUp);
