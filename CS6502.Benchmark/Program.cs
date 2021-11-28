@@ -13,7 +13,7 @@ namespace CS6502.Benchmark
             Program p = new Program();
             p.LoadBenchmarkFromFile();
             //p.LoadBenchmarkFromP6502(100);
-            p.RunBenchark();
+            p.RunBenchark(1);
         }
 
         public Program()
@@ -51,11 +51,11 @@ namespace CS6502.Benchmark
             }
         }
 
-        public void RunBenchark()
+        public void RunBenchark(int cyclesToIgnore)
         {
             try
             {
-                benchmark.Run(CPU_PROG);
+                benchmark.Run(CPU_PROG, cyclesToIgnore);
                 Console.WriteLine("Test complete");
             }
             catch (Exception ex)

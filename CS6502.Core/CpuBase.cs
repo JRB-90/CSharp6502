@@ -7,6 +7,8 @@ namespace CS6502.Core
     /// </summary>
     public abstract class CpuBase : ICpu
     {
+        #region Constants
+
         const ushort IRQ_VECTOR_HI = 0xFFFF;
         const ushort IRQ_VECTOR_LO = 0xFFFE;
         const ushort RST_VECTOR_HI = 0xFFFD;
@@ -15,6 +17,10 @@ namespace CS6502.Core
         const ushort NMI_VECTOR_LO = 0xFFFA;
         
         const int STARTUP_CYCLES = 12;
+
+        #endregion
+
+        #region Constructors
 
         public CpuBase(string name)
         {
@@ -43,7 +49,7 @@ namespace CS6502.Core
             PHI2O.ConnectPin(phi2o);
 
             PHI2 = new Wire(WirePull.PullDown);
-            SetPhiOutput();
+            RecalculatePhiOutputs();
 
             addressBus = new Bus(16);
             addressPins = addressBus.CreateAndConnectPinArray();
@@ -53,8 +59,13 @@ namespace CS6502.Core
             dataPins = dataBus.CreateAndConnectPinArray();
             DataBus = dataBus;
 
+            SetCpuToStartupState();
             TransitionState(CpuState.Startup);
         }
+
+        #endregion
+
+        #region Properties
 
         public string Name { get; }
 
@@ -108,7 +119,7 @@ namespace CS6502.Core
             set
             {
                 phi2 = value;
-                SetPhiOutput();
+                RecalculatePhiOutputs();
                 phi2.StateChanged += Phi2_StateChanged;
             }
         }
@@ -138,6 +149,10 @@ namespace CS6502.Core
                 dataBus.ConnectPins(dataPins);
             }
         }
+
+        #endregion
+
+        #region Helper Functions
 
         public override string ToString()
         {
@@ -176,8 +191,6 @@ namespace CS6502.Core
                     registers.DataBusBuffer
                 );
         }
-
-        #region Helper Functions
 
         protected RWState GetRW()
         {
@@ -250,7 +263,20 @@ namespace CS6502.Core
             addressBuffer |= (ushort)(registers.DataBusBuffer << 8);
         }
 
+        protected void ClearAddressBuffer()
+        {
+            addressBuffer = 0;
+        }
+
+        private void RecalculatePhiOutputs()
+        {
+            phi1o.State = PHI2.State ? TriState.False : TriState.True;
+            phi2o.State = PHI2.State ? TriState.True : TriState.False;
+        }
+
         #endregion
+
+        #region EventHandlers
 
         private void Irq_n_StateChanged(object sender, WireStateChangedEventArgs e)
         {
@@ -274,7 +300,7 @@ namespace CS6502.Core
 
         private void Phi2_StateChanged(object sender, WireStateChangedEventArgs e)
         {
-            SetPhiOutput();
+            RecalculatePhiOutputs();
 
             if (e.NewState == true)
             {
@@ -286,11 +312,7 @@ namespace CS6502.Core
             }
         }
 
-        private void SetPhiOutput()
-        {
-            phi1o.State = PHI2.State ? TriState.False : TriState.True;
-            phi2o.State = PHI2.State ? TriState.True : TriState.False;
-        }
+        #endregion
 
         #region Cycle Handling
 
@@ -298,18 +320,6 @@ namespace CS6502.Core
         {
             switch (state)
             {
-                case CpuState.ResetActive:
-                    HandleResetActive();
-                    break;
-                case CpuState.IrqActive:
-                    HandleIrqActive();
-                    break;
-                case CpuState.NmiActive:
-                    HandleNmiActive();
-                    break;
-                case CpuState.BrkActive:
-                    HandlerBrkActive();
-                    break;
                 case CpuState.Startup:
                     HandleStartupCycle(signalEdge);
                     break;
@@ -324,81 +334,68 @@ namespace CS6502.Core
             }
         }
 
-        private void HandleResetActive()
-        {
-            // TODO
-        }
-
-        private void HandleIrqActive()
-        {
-            // TODO
-        }
-
-        private void HandleNmiActive()
-        {
-            // TODO
-        }
-
-        private void HandlerBrkActive()
-        {
-            // TODO
-        }
-
+        /// <summary>
+        /// Simulate register activity of the CPU during the startup.
+        /// </summary>
         private void HandleStartupCycle(SignalEdge signalEdge)
         {
-            if (startupCycleCount == 6)
+            switch (startupCycleCount)
             {
-                // Simulate the push off of CPU params from stack
-                SetAddressBus(0x01C0);
-            }
-            else if (startupCycleCount == 8)
-            {
-                // Simulate the push off of CPU params from stack
-                SetAddressBus(0x01BF);
-            }
-            else if (startupCycleCount == 10)
-            {
-                // Simulate the push off of CPU params from stack
-                SetAddressBus(0x01BE);
-            }
+                case 0:
+                    SetRW(RWState.Read);
+                    ClearAddressBuffer();
+                    break;
 
-            if (startupCycleCount >= STARTUP_CYCLES)
-            {
-                if (startupCycleCount == 12)
-                {
-                    // Simulate the push off of CPU params from stack
+                case 6:
+                    // Simulate stack activity during startup
+                    SetAddressBus(0x01C0);
+                    break;
+
+                case 8:
+                    // Simulate stack activity during startup
+                    SetAddressBus(0x01BF);
+                    break;
+
+                case 10:
+                    // Simulate stack activity during startup
+                    SetAddressBus(0x01BE);
+                    break;
+
+                case STARTUP_CYCLES:
+                    // Simulate stack activity during startup
                     registers.DecrementStackPointer();
                     registers.DecrementStackPointer();
                     registers.DecrementStackPointer();
 
                     SetAddressBus(RST_VECTOR_LO);
-                    SetRW(RWState.Read);
-                    addressBuffer = 0;
-                    addressReadingState = AddressReadingState.ReadingLoByte;
-                }
-                else if (startupCycleCount == 13)
-                {
+                    break;
+
+                case STARTUP_CYCLES + 1:
                     registers.SetIRQ();
                     registers.LatchDataBus(ReadFromDataBus());
                     ReadAddressBufferLo();
-                }
-                else if (startupCycleCount == 14)
-                {
+                    break;
+
+                case STARTUP_CYCLES + 2:
                     registers.SetBRK();
                     SetAddressBus(RST_VECTOR_HI);
-                    SetRW(RWState.Read);
-                    addressReadingState = AddressReadingState.ReadingLoByte;
-                }
-                else if (startupCycleCount == 15)
-                {
+                    break;
+
+                case STARTUP_CYCLES + 3:
                     registers.LatchDataBus(ReadFromDataBus());
                     ReadAddressBufferHi();
                     TransitionState(CpuState.ReadingOpcode);
-                }
+                    break;
             }
+
             startupCycleCount++;
         }
 
+        /// <summary>
+        /// Control reading and decoding of an opcode from memory.
+        /// Sets the addressing mode that will determine how the next
+        /// cycles are handled.
+        /// </summary>
         private void HandleReadingOpcodeCycle(SignalEdge signalEdge)
         {
             if (signalEdge == SignalEdge.FallingEdge)
@@ -604,63 +601,17 @@ namespace CS6502.Core
             }
         }
 
-        #endregion
-
-        #region State Transitions
-
         private void TransitionState(CpuState newState)
         {
-            if (state == CpuState.Init && newState == CpuState.Startup)
-            {
-                SetCpuToStartupState();
-                state = newState;
-            }
-            else if (state == CpuState.Startup && newState == CpuState.ReadingOpcode)
-            {
-                ExitStartup();
-                state = newState;
-            }
-            else if (state == CpuState.ReadingOpcode && newState == CpuState.HandlingAddressingMode)
-            {
-                ExitReadingOpcode();
-                state = newState;
-            }
-            else if (state == CpuState.HandlingAddressingMode && newState == CpuState.ReadingOpcode)
-            {
-                ExitExecutingInstruction();
-                state = newState;
-            }
-            else
-            {
-                // This exception flags any non-defined transitions from occuring
-                throw new InvalidOperationException($"Cannot transition states from {state.ToString()} to {newState.ToString()}");
-            }
+            state = newState;
         }
 
         private void SetCpuToStartupState()
         {
-            // TODO
-
             registers = new CpuRegisters();
             startupCycleCount = 0;
             SetRW(RWState.Read);
             SetAddressBus(0x00FF);
-        }
-
-        private void ExitStartup()
-        {
-            // TODO
-            startupCycleCount = 0;
-        }
-
-        private void ExitReadingOpcode()
-        {
-            // TODO
-        }
-
-        private void ExitExecutingInstruction()
-        {
-            // TODO
         }
 
         #endregion
@@ -669,7 +620,6 @@ namespace CS6502.Core
         private int startupCycleCount;
         private int instructionCycleCount;
         private CpuRegisters registers;
-        private AddressReadingState addressReadingState;
         private ushort addressBuffer;
 
         private Wire irq_n;
