@@ -59,19 +59,19 @@ namespace CS6502.Core
         public void LoadA()
         {
             A = DataBusBuffer;
-            LatchInputData(A);
+            UpdateP(A);
         }
 
         public void LoadX()
         {
             X = DataBusBuffer;
-            LatchInputData(X);
+            UpdateP(X);
         }
 
         public void LoadY()
         {
             Y = DataBusBuffer;
-            LatchInputData(Y);
+            UpdateP(Y);
         }
 
         public void TransferAtoX()
@@ -220,19 +220,13 @@ namespace CS6502.Core
 
         public void LatchInputDataBusBuffer()
         {
-            LatchInputData(DataBusBuffer);
+            InputDataLatch = DataBusBuffer;
         }
 
-        private void LatchInputData(byte value)
+        private void UpdateP(byte value)
         {
-            InputDataLatch = value;
-            UpdateP();
-        }
-
-        private void UpdateP()
-        {
-            P.ZeroFlag = InputDataLatch == 0x00;
-            P.NegativeFlag = (InputDataLatch & 0b10000000) > 0;
+            P.ZeroFlag = value == 0x00;
+            P.NegativeFlag = (value & 0b10000000) > 0;
         }
 
         private Queue<(InternalRegister, byte)> aluResultQueue; 

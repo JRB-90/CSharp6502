@@ -718,6 +718,7 @@ namespace CS6502.Core
                     addressBuffer = registers.PC;
                     if (registers.IR.OperationType == OperationType.Write)
                     {
+                        registers.LatchInputDataBusBuffer();
                         SetRW(RWState.Write);
                     }
                     else
