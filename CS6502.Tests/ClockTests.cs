@@ -27,33 +27,33 @@ namespace CS6502.Tests
         public void CanHalfCycle()
         {
             ClockGenerator clock = new ClockGenerator(ClockMode.StepHalfCycle);
-            clock.CLK.State.Should().BeFalse();
-            clock.Cycle();
             clock.CLK.State.Should().BeTrue();
             clock.Cycle();
             clock.CLK.State.Should().BeFalse();
+            clock.Cycle();
+            clock.CLK.State.Should().BeTrue();
         }
 
         [TestMethod]
         public void CanFullCycle()
         {
             ClockGenerator clock = new ClockGenerator(ClockMode.StepFullCycle);
-            clock.CLK.State.Should().BeFalse();
-            clock.Cycle();
-            clock.CLK.State.Should().BeFalse();
-            clock.Cycle();
-            clock.CLK.State.Should().BeFalse();
-
-            clock = new ClockGenerator(ClockMode.StepHalfCycle);
-            clock.CLK.State.Should().BeFalse();
+            clock.CLK.State.Should().BeTrue();
             clock.Cycle();
             clock.CLK.State.Should().BeTrue();
+            clock.Cycle();
+            clock.CLK.State.Should().BeTrue();
+
+            clock = new ClockGenerator(ClockMode.StepHalfCycle);
+            clock.CLK.State.Should().BeTrue();
+            clock.Cycle();
+            clock.CLK.State.Should().BeFalse();
 
             clock.Mode = ClockMode.StepFullCycle;
             clock.Cycle();
-            clock.CLK.State.Should().BeTrue();
+            clock.CLK.State.Should().BeFalse();
             clock.Cycle();
-            clock.CLK.State.Should().BeTrue();
+            clock.CLK.State.Should().BeFalse();
         }
 
         int transitionCount = 0;
