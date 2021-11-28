@@ -10,7 +10,8 @@
             base(
                 "NOP",
                 0xEA,
-                AddressingMode.Implied
+                AddressingMode.Implied,
+                OperationType.Internal
             )
         {
         }

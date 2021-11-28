@@ -10,11 +10,13 @@ namespace CS6502.Core
         public InstructionBase(
             string name,
             byte opcode,
-            AddressingMode addressingMode)
+            AddressingMode addressingMode,
+            OperationType operationType)
         {
             Name = name;
             Opcode = opcode;
             AddressingMode = addressingMode;
+            OperationType = operationType;
             CurrentCycle = 0;
         }
 
@@ -24,12 +26,17 @@ namespace CS6502.Core
 
         public AddressingMode AddressingMode { get; }
 
+        public OperationType OperationType { get; }
+
         public int CurrentCycle { get; }
 
-        public void Cycle()
+        public virtual void Execute(CpuRegisters registers)
         {
-            // TODO
-            throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            return $"{Name} - {Opcode.ToHexString()} - {AddressingMode.ToString()}";
         }
     }
 }

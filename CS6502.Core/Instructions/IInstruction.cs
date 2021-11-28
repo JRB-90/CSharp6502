@@ -11,8 +11,10 @@
 
         AddressingMode AddressingMode { get; }
 
+        OperationType OperationType { get; }
+
         int CurrentCycle { get; }
 
-        void Cycle();
+        void Execute(CpuRegisters registers);
     }
 }

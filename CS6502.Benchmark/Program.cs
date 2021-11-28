@@ -5,8 +5,8 @@ namespace CS6502.Benchmark
 {
     class Program
     {
-        const string BENCH_PATH = "C:\\Development\\Sim6502\\tests\\perfect6502cycles.csv";
-        const string CPU_PROG = "C:\\Development\\Sim6502\\tests\\main.bin";
+        const string CPU_PROG = "C:\\Development\\Sim6502\\asm\\asmtest\\build\\main.bin";
+        const string BENCH_PATH = "C:\\Development\\Sim6502\\asm\\asmtest\\build\\cpu.csv";
 
         static void Main(string[] args)
         {

@@ -11,8 +11,8 @@ namespace CS6502.Core
         {
             switch (addressingMode)
             {
-                //case AddressingMode.Indirect:
-                    //return new JMP(0x6C, addressingMode);
+                case AddressingMode.Indirect:
+                    return new JMP(0x6C, addressingMode);
                 case AddressingMode.Absolute:
                     return new JMP(0x4C, addressingMode);
                 default:
@@ -27,7 +27,8 @@ namespace CS6502.Core
             base(
                 "JMP", 
                 opcode, 
-                addressingMode)
+                addressingMode,
+                OperationType.Internal)
         {
         }
     }
