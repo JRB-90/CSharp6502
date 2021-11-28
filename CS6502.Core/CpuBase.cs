@@ -329,6 +329,9 @@ namespace CS6502.Core
 
         #region Cycle Handling
 
+        /// <summary>
+        /// Handle a clock transition.
+        /// </summary>
         private void Cycle(SignalEdge signalEdge)
         {
             switch (state)
@@ -336,19 +339,24 @@ namespace CS6502.Core
                 case CpuState.Startup:
                     HandleStartupCycle(signalEdge);
                     break;
+
                 case CpuState.ReadingOpcode:
                     HandleReadingOpcodeCycle(signalEdge);
                     break;
+
                 case CpuState.HandlingAddressingMode:
                     HandleAddressingModeCycle(signalEdge);
                     break;
+
+                // TODO - Handle interupt states here
+
                 default:
                     throw new InvalidOperationException($"CPU State {state} not supported");
             }
         }
 
         /// <summary>
-        /// Simulate register activity of the CPU during the startup.
+        /// Simulate register activity of the CPU during startup.
         /// </summary>
         private void HandleStartupCycle(SignalEdge signalEdge)
         {
@@ -681,10 +689,35 @@ namespace CS6502.Core
                 {
                     SetAddressBus(addressBuffer);
                     registers.IncrementProgramCounter();
+
+                    if (registers.IR.AddressingMode == AddressingMode.ZeroPage)
+                    {
+                        addressBuffer = registers.PC;
+                        if (registers.IR.OperationType == OperationType.Write)
+                        {
+                            registers.LatchInputDataBusBuffer();
+                            SetRW(RWState.Write);
+                        }
+                        else
+                        {
+                            SetRW(RWState.Read);
+                        }
+                    }
+                }
+                else if (instructionCycleCount == 3)
+                {
+                    if (registers.IR.AddressingMode == AddressingMode.ZeroPageX)
+                    {
+                        SetAddressBus((ushort)(addressBuffer + registers.X));
+                    }
+                    else if (registers.IR.AddressingMode == AddressingMode.ZeroPageY)
+                    {
+                        SetAddressBus((ushort)(addressBuffer + registers.Y));
+                    }
+
                     addressBuffer = registers.PC;
                     if (registers.IR.OperationType == OperationType.Write)
                     {
-                        registers.LatchInputDataBusBuffer();
                         SetRW(RWState.Write);
                     }
                     else
@@ -700,6 +733,28 @@ namespace CS6502.Core
                     addressBuffer = registers.DataBusBuffer;
                 }
                 else if (instructionCycleCount == 2)
+                {
+                    if (registers.IR.AddressingMode == AddressingMode.ZeroPage)
+                    {
+                        if (registers.IR.OperationType == OperationType.Write)
+                        {
+                            // We have transisiton to next opcode so execute the last instruction
+                            // if it is a write operation as this happens on the rising edge..
+                            registers.IR.Execute(registers);
+                            SetRW(RWState.Write);
+                        }
+                        else
+                        {
+                            SetRW(RWState.Read);
+                        }
+                        TransitionState(CpuState.ReadingOpcode);
+                    }
+                    else
+                    {
+                        SetRW(RWState.Read);
+                    }
+                }
+                else if (instructionCycleCount == 3)
                 {
                     if (registers.IR.OperationType == OperationType.Write)
                     {
@@ -719,10 +774,10 @@ namespace CS6502.Core
 
         #endregion
 
+        private CpuRegisters registers;
         private CpuState state;
         private int startupCycleCount;
         private int instructionCycleCount;
-        private CpuRegisters registers;
         private ushort addressBuffer;
 
         private Wire irq_n;

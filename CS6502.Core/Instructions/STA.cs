@@ -12,8 +12,7 @@ namespace CS6502.Core
                     return new STA(0x85, addressingMode);
 
                 case AddressingMode.ZeroPageX:
-                    throw new NotImplementedException(); // TODO
-                    //return new STA(0x95, addressingMode);
+                    return new STA(0x95, addressingMode);
 
                 case AddressingMode.Absolute:
                     throw new NotImplementedException(); // TODO
