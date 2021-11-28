@@ -274,6 +274,19 @@ namespace CS6502.Core
             phi2o.State = PHI2.State ? TriState.True : TriState.False;
         }
 
+        private void TransitionState(CpuState newState)
+        {
+            state = newState;
+        }
+
+        private void SetCpuToStartupState()
+        {
+            registers = new CpuRegisters();
+            startupCycleCount = 0;
+            SetRW(RWState.Read);
+            SetAddressBus(0x00FF);
+        }
+
         #endregion
 
         #region EventHandlers
@@ -426,6 +439,12 @@ namespace CS6502.Core
             }
         }
 
+        /// <summary>
+        /// Control the addressing stage of an instruction lifecycle.
+        /// Allows the CPU to handle the logic for supporting each of
+        /// the different addressing modes available in the 6502 instruction
+        /// set.
+        /// </summary>
         private void HandleAddressingModeCycle(SignalEdge signalEdge)
         {
             if (signalEdge == SignalEdge.FallingEdge)
@@ -435,183 +454,267 @@ namespace CS6502.Core
                 {
                     registers.DecodeOpcode();
                 }
-
-                switch (registers.IR.AddressingMode)
-                {
-                    case AddressingMode.Implied:
-                        if (instructionCycleCount == 1)
-                        {
-                            registers.IncrementProgramCounter();
-                            TransferPCToAddressBus();
-                        }
-                        break;
-
-                    case AddressingMode.Immediate:
-                        if (instructionCycleCount == 1)
-                        {
-                            registers.IncrementProgramCounter();
-                            TransferPCToAddressBus();
-                        }
-                        break;
-
-                    case AddressingMode.ZeroPage:
-                        if (instructionCycleCount == 1)
-                        {
-                            registers.IncrementProgramCounter();
-                            TransferPCToAddressBus();
-                        }
-                        else if (instructionCycleCount == 2)
-                        {
-                            SetAddressBus(addressBuffer);
-                            registers.IncrementProgramCounter();
-                            addressBuffer = registers.PC;
-                            if (registers.IR.OperationType == OperationType.Write)
-                            {
-                                registers.LatchInputDataBusBuffer();
-                                SetRW(RWState.Write);
-                            }
-                            else
-                            {
-                                SetRW(RWState.Read);
-                            }
-                        }
-                        break;
-
-                    case AddressingMode.Absolute:
-                        if (instructionCycleCount == 1)
-                        {
-                            registers.IncrementProgramCounter();
-                            TransferPCToAddressBus();
-                        }
-                        else if (instructionCycleCount == 2)
-                        {
-                            registers.IncrementProgramCounter();
-                            TransferPCToAddressBus();
-                        }
-                        break;
-
-                    case AddressingMode.Indirect:
-                        if (instructionCycleCount == 1)
-                        {
-                            registers.IncrementProgramCounter();
-                            TransferPCToAddressBus();
-                        }
-                        else if (instructionCycleCount == 2)
-                        {
-                            registers.IncrementProgramCounter();
-                            TransferPCToAddressBus();
-                        }
-                        else if (instructionCycleCount == 3)
-                        {
-                            registers.SetProgramCounter(addressBuffer);
-                            TransferPCToAddressBus();
-                        }
-                        else if (instructionCycleCount == 4)
-                        {
-                            registers.IncrementProgramCounter();
-                            TransferPCToAddressBus();
-                        }
-                        break;
-
-                    default:
-                        throw new NotImplementedException("Addressign mode not supported");
-                }
             }
             else if (signalEdge == SignalEdge.RisingEdge)
             {
                 registers.LatchDataBus(ReadFromDataBus());
+            }
 
-                switch (registers.IR.AddressingMode)
-                {
-                    case AddressingMode.Implied:
-                        if (instructionCycleCount == 1)
-                        {
-                            addressBuffer = registers.PC;
-                            TransitionState(CpuState.ReadingOpcode);
-                        }
-                        break;
+            if (registers.IR.AddressingMode == AddressingMode.Implied)
+            {
+                HandleImpliedAddressingCycle(signalEdge);
+            }
+            else if (registers.IR.AddressingMode == AddressingMode.Immediate)
+            {
+                HandleImmediateAddressingCycle(signalEdge);
+            }
+            else if (registers.IR.AddressingMode == AddressingMode.Relative)
+            {
+                HandleRelativeAddressingCycle(signalEdge);
+            }
+            else if (
+                registers.IR.AddressingMode == AddressingMode.Absolute ||
+                registers.IR.AddressingMode == AddressingMode.AbsoluteX ||
+                registers.IR.AddressingMode == AddressingMode.AbsoluteY)
+            {
+                HandleAbsoluteAddressingCycle(signalEdge);
+            }
+            else if (
+                registers.IR.AddressingMode == AddressingMode.Indirect ||
+                registers.IR.AddressingMode == AddressingMode.IndirectX ||
+                registers.IR.AddressingMode == AddressingMode.IndirectY)
+            {
+                HandleIndirectAddressingCycle(signalEdge);
+            }
+            else if (
+                registers.IR.AddressingMode == AddressingMode.ZeroPage ||
+                registers.IR.AddressingMode == AddressingMode.ZeroPageX ||
+                registers.IR.AddressingMode == AddressingMode.ZeroPageY)
+            {
+                HandleZeroPageAddressingCycle(signalEdge);
+            }
+            else
+            {
+                throw new NotImplementedException(
+                    $"Addressing mode {registers.IR.AddressingMode.ToString()} not supported"
+                );
+            }
 
-                    case AddressingMode.Immediate:
-                        if (instructionCycleCount == 1)
-                        {
-                            addressBuffer = (ushort)(registers.PC + 1);
-                            TransitionState(CpuState.ReadingOpcode);
-                        }
-                        break;
-
-                    case AddressingMode.ZeroPage:
-                        if (instructionCycleCount == 1)
-                        {
-                            addressBuffer = registers.DataBusBuffer;
-                        }
-                        else if (instructionCycleCount == 2)
-                        {
-                            if (registers.IR.OperationType == OperationType.Write)
-                            {
-                                // We have transisiton to next opcode so execute the last instruction
-                                // if it is a write operation as this happens on the rising edge..
-                                registers.IR.Execute(registers);
-                                SetRW(RWState.Write);
-                            }
-                            else
-                            {
-                                SetRW(RWState.Read);
-                            }
-                            TransitionState(CpuState.ReadingOpcode);
-                        }
-                        break;
-
-                    case AddressingMode.Absolute:
-                        if (instructionCycleCount == 1)
-                        {
-                            ReadAddressBufferLo();
-                        }
-                        else if (instructionCycleCount == 2)
-                        {
-                            ReadAddressBufferHi();
-                            TransitionState(CpuState.ReadingOpcode); 
-                        }
-                        break;
-
-                    case AddressingMode.Indirect:
-                        if (instructionCycleCount == 1)
-                        {
-                            ReadAddressBufferLo();
-                        }
-                        else if (instructionCycleCount == 2)
-                        {
-                            ReadAddressBufferHi();
-                        }
-                        else if (instructionCycleCount == 3)
-                        {
-                            ReadAddressBufferLo();
-                        }
-                        else if (instructionCycleCount == 4)
-                        {
-                            ReadAddressBufferHi();
-                            TransitionState(CpuState.ReadingOpcode);
-                        }
-                        break;
-
-                    default:
-                        throw new NotImplementedException($"Addressing mode {registers.IR.AddressingMode.ToString()} not supported");
-                }
-
+            if (signalEdge == SignalEdge.RisingEdge)
+            {
                 instructionCycleCount++;
             }
         }
 
-        private void TransitionState(CpuState newState)
+        #endregion
+
+        #region Addressing Logic
+
+        /// <summary>
+        /// Handles a cycle during implied addressing mode.
+        /// During implied addressing there is no addressing logic needed as
+        /// the operation is internal.
+        /// </summary>
+        private void HandleImpliedAddressingCycle(SignalEdge signalEdge)
         {
-            state = newState;
+            if (signalEdge == SignalEdge.FallingEdge)
+            {
+                if (instructionCycleCount == 1)
+                {
+                    registers.IncrementProgramCounter();
+                    TransferPCToAddressBus();
+                }
+            }
+            else if (signalEdge == SignalEdge.RisingEdge)
+            {
+                if (instructionCycleCount == 1)
+                {
+                    addressBuffer = registers.PC;
+                    TransitionState(CpuState.ReadingOpcode);
+                }
+            }
         }
 
-        private void SetCpuToStartupState()
+        /// <summary>
+        /// Handles a cycle during immediate addressing mode.
+        /// During immediate addressing, the data for the operation is supllied
+        /// in the operand, rather than at a memory location.
+        /// </summary>
+        private void HandleImmediateAddressingCycle(SignalEdge signalEdge)
         {
-            registers = new CpuRegisters();
-            startupCycleCount = 0;
-            SetRW(RWState.Read);
-            SetAddressBus(0x00FF);
+            if (signalEdge == SignalEdge.FallingEdge)
+            {
+                if (instructionCycleCount == 1)
+                {
+                    registers.IncrementProgramCounter();
+                    TransferPCToAddressBus();
+                }
+            }
+            else if (signalEdge == SignalEdge.RisingEdge)
+            {
+                if (instructionCycleCount == 1)
+                {
+                    addressBuffer = (ushort)(registers.PC + 1);
+                    TransitionState(CpuState.ReadingOpcode);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles a cycle during relative addressing mode.
+        /// During relative addressing, the desired address is a location relative
+        /// to the current PC address, given by a signed byte (-127, 127).
+        /// </summary>
+        private void HandleRelativeAddressingCycle(SignalEdge signalEdge)
+        {
+            // TODO
+            if (signalEdge == SignalEdge.FallingEdge)
+            {
+            }
+            else if (signalEdge == SignalEdge.RisingEdge)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Handles a cycle during absolute addressing mode.
+        /// During absolute addressing, the desired address is supplied in the
+        /// operand ($HHLL).
+        /// </summary>
+        private void HandleAbsoluteAddressingCycle(SignalEdge signalEdge)
+        {
+            if (signalEdge == SignalEdge.FallingEdge)
+            {
+                if (instructionCycleCount == 1)
+                {
+                    registers.IncrementProgramCounter();
+                    TransferPCToAddressBus();
+                }
+                else if (instructionCycleCount == 2)
+                {
+                    registers.IncrementProgramCounter();
+                    TransferPCToAddressBus();
+                }
+            }
+            else if (signalEdge == SignalEdge.RisingEdge)
+            {
+                if (instructionCycleCount == 1)
+                {
+                    ReadAddressBufferLo();
+                }
+                else if (instructionCycleCount == 2)
+                {
+                    ReadAddressBufferHi();
+                    TransitionState(CpuState.ReadingOpcode);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles a cycle during indirect addressing mode.
+        /// During indirect addressing, an address is given with the operand,
+        /// which itself stores an address to the data desired. This is
+        /// similar to a pointer in higher level languages.
+        /// </summary>
+        private void HandleIndirectAddressingCycle(SignalEdge signalEdge)
+        {
+            if (signalEdge == SignalEdge.FallingEdge)
+            {
+                if (instructionCycleCount == 1)
+                {
+                    registers.IncrementProgramCounter();
+                    TransferPCToAddressBus();
+                }
+                else if (instructionCycleCount == 2)
+                {
+                    registers.IncrementProgramCounter();
+                    TransferPCToAddressBus();
+                }
+                else if (instructionCycleCount == 3)
+                {
+                    registers.SetProgramCounter(addressBuffer);
+                    TransferPCToAddressBus();
+                }
+                else if (instructionCycleCount == 4)
+                {
+                    registers.IncrementProgramCounter();
+                    TransferPCToAddressBus();
+                }
+            }
+            else if (signalEdge == SignalEdge.RisingEdge)
+            {
+                if (instructionCycleCount == 1)
+                {
+                    ReadAddressBufferLo();
+                }
+                else if (instructionCycleCount == 2)
+                {
+                    ReadAddressBufferHi();
+                }
+                else if (instructionCycleCount == 3)
+                {
+                    ReadAddressBufferLo();
+                }
+                else if (instructionCycleCount == 4)
+                {
+                    ReadAddressBufferHi();
+                    TransitionState(CpuState.ReadingOpcode);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles a cycle during zero page addressing mode.
+        /// During zero page addressing, the address of a zero page memory is
+        /// given in the operand.
+        /// </summary>
+        private void HandleZeroPageAddressingCycle(SignalEdge signalEdge)
+        {
+            if (signalEdge == SignalEdge.FallingEdge)
+            {
+                if (instructionCycleCount == 1)
+                {
+                    registers.IncrementProgramCounter();
+                    TransferPCToAddressBus();
+                }
+                else if (instructionCycleCount == 2)
+                {
+                    SetAddressBus(addressBuffer);
+                    registers.IncrementProgramCounter();
+                    addressBuffer = registers.PC;
+                    if (registers.IR.OperationType == OperationType.Write)
+                    {
+                        registers.LatchInputDataBusBuffer();
+                        SetRW(RWState.Write);
+                    }
+                    else
+                    {
+                        SetRW(RWState.Read);
+                    }
+                }
+            }
+            else if (signalEdge == SignalEdge.RisingEdge)
+            {
+                if (instructionCycleCount == 1)
+                {
+                    addressBuffer = registers.DataBusBuffer;
+                }
+                else if (instructionCycleCount == 2)
+                {
+                    if (registers.IR.OperationType == OperationType.Write)
+                    {
+                        // We have transisiton to next opcode so execute the last instruction
+                        // if it is a write operation as this happens on the rising edge..
+                        registers.IR.Execute(registers);
+                        SetRW(RWState.Write);
+                    }
+                    else
+                    {
+                        SetRW(RWState.Read);
+                    }
+                    TransitionState(CpuState.ReadingOpcode);
+                }
+            }
         }
 
         #endregion
