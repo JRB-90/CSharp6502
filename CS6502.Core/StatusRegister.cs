@@ -152,6 +152,12 @@ namespace CS6502.Core
             }
         }
 
+        public void SetFlagsFromData(byte value)
+        {
+            ZeroFlag = value == 0x00;
+            NegativeFlag = (value & 0b10000000) > 0;
+        }
+
         public override string ToString()
         {
             return 
