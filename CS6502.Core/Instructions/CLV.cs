@@ -1,6 +1,8 @@
-﻿namespace CS6502.Core
+﻿using System;
+
+namespace CS6502.Core
 {
-    public class CLV : InstructionBase
+    internal class CLV : InstructionBase
     {
         public CLV()
           :
@@ -12,9 +14,9 @@
         {
         }
 
-        public override void Execute(CpuRegisters registers)
+        public override CpuMicroCode Execute(int instructionCycle)
         {
-            registers.ClearOverflow();
+            throw new NotImplementedException();
         }
     }
 }

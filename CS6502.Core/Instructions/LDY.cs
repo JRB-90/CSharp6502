@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    public class LDY : InstructionBase
+    internal class LDY : InstructionBase
     {
         public static LDY CreateLDY(AddressingMode addressingMode)
         {
@@ -32,16 +32,9 @@ namespace CS6502.Core
             }
         }
 
-        public override void Execute(CpuRegisters registers)
+        public override CpuMicroCode Execute(int instructionCycle)
         {
-            switch (AddressingMode)
-            {
-                case AddressingMode.Immediate:
-                    registers.LoadY();
-                    break;
-                default:
-                    break;
-            }
+            throw new NotImplementedException();
         }
 
         private LDY(

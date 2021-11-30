@@ -1,6 +1,8 @@
-﻿namespace CS6502.Core
+﻿using System;
+
+namespace CS6502.Core
 {
-    public class SEI : InstructionBase
+    internal class SEI : InstructionBase
     {
         public SEI()
           :
@@ -12,9 +14,9 @@
         {
         }
 
-        public override void Execute(CpuRegisters registers)
+        public override CpuMicroCode Execute(int instructionCycle)
         {
-            registers.SetIRQ();
+            throw new NotImplementedException();
         }
     }
 }

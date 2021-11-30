@@ -5,13 +5,13 @@ namespace CS6502.Core
     /// <summary>
     /// Factory class for creating instructions from their opcode.
     /// </summary>
-    public static class InstructionDecoder
+    internal static class InstructionDecoder
     {
         public static IInstruction DecodeOpcode(byte opcode)
         {
             switch (opcode)
             {
-                case 0X00:
+                case 0x00:
                     return new BRK();
                 case 0x18:
                     return new CLC();

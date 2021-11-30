@@ -1,6 +1,8 @@
-﻿namespace CS6502.Core
+﻿using System;
+
+namespace CS6502.Core
 {
-    public class CLI : InstructionBase
+    internal class CLI : InstructionBase
     {
         public CLI()
           :
@@ -12,9 +14,9 @@
         {
         }
 
-        public override void Execute(CpuRegisters registers)
+        public override CpuMicroCode Execute(int instructionCycle)
         {
-            registers.ClearIRQ();
+            throw new NotImplementedException();
         }
     }
 }

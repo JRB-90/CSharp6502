@@ -1,6 +1,11 @@
-﻿namespace CS6502.Core
+﻿using System;
+
+namespace CS6502.Core
 {
-    public class AccurateCpu : ICpu
+    /// <summary>
+    /// Abstract base class to share funcitonality amongst all CPU implementations.
+    /// </summary>
+    public abstract class CpuBase : ICpu
     {
         #region Constants
 
@@ -15,9 +20,9 @@
 
         #region Constructors
 
-        public AccurateCpu()
+        public CpuBase(string name)
         {
-            Name = "Accurat6502";
+            Name = name;
 
             IRQ_N = new Wire(WirePull.PullUp);
             NMI_N = new Wire(WirePull.PullUp);

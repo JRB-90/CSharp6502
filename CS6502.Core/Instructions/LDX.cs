@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    public class LDX : InstructionBase
+    internal class LDX : InstructionBase
     {
         public static LDX CreateLDX(AddressingMode addressingMode)
         {
@@ -32,16 +32,9 @@ namespace CS6502.Core
             }
         }
 
-        public override void Execute(CpuRegisters registers)
+        public override CpuMicroCode Execute(int instructionCycle)
         {
-            switch (AddressingMode)
-            {
-                case AddressingMode.Immediate:
-                    registers.LoadX();
-                    break;
-                default:
-                    break;
-            }
+            throw new NotImplementedException();
         }
 
         private LDX(

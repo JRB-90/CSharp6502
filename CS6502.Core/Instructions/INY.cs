@@ -1,6 +1,8 @@
-﻿namespace CS6502.Core
+﻿using System;
+
+namespace CS6502.Core
 {
-    public class INY : InstructionBase
+    internal class INY : InstructionBase
     {
         public INY()
           :
@@ -12,9 +14,9 @@
         {
         }
 
-        public override void Execute(CpuRegisters registers)
+        public override CpuMicroCode Execute(int instructionCycle)
         {
-            registers.IncrementY();
+            throw new NotImplementedException();
         }
     }
 }

@@ -3,7 +3,7 @@
     /// <summary>
     /// NOP (No Operation) instruction, used as a blank instruction.
     /// </summary>
-    public class NOP : InstructionBase
+    internal class NOP : InstructionBase
     {
         public NOP()
           :

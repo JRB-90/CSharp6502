@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    public class STA : InstructionBase
+    internal class STA : InstructionBase
     {
         public static STA CreateSTA(AddressingMode addressingMode)
         {
@@ -39,9 +39,9 @@ namespace CS6502.Core
             }
         }
 
-        public override void Execute(CpuRegisters registers)
+        public override CpuMicroCode Execute(int instructionCycle)
         {
-            registers.TransferAToDataBus();
+            throw new NotImplementedException();
         }
 
         private STA(

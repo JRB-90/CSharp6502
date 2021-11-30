@@ -3,7 +3,7 @@
     /// <summary>
     /// Interface to define the behaviour of all 6502 instructions.
     /// </summary>
-    public interface IInstruction
+    internal interface IInstruction
     {
         string Name { get; }
 
@@ -13,8 +13,8 @@
 
         OperationType OperationType { get; }
 
-        int CurrentCycle { get; }
+        bool IsInstructionComplete { get; }
 
-        void Execute(CpuRegisters registers);
+        CpuMicroCode Execute(int instructionCycle);
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace CS6502.Core
+﻿using System;
+
+namespace CS6502.Core
 {
-    public class DEX : InstructionBase
+    internal class DEX : InstructionBase
     {
         public DEX()
           :
@@ -12,9 +14,9 @@
         {
         }
 
-        public override void Execute(CpuRegisters registers)
+        public override CpuMicroCode Execute(int instructionCycle)
         {
-            registers.DecrementX();
+            throw new NotImplementedException();
         }
     }
 }

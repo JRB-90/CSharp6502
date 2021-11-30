@@ -5,7 +5,7 @@ namespace CS6502.Core
     /// <summary>
     /// JMP (Jump) instruction, used to jump to the program to a new position memory.
     /// </summary>
-    public class JMP : InstructionBase
+    internal class JMP : InstructionBase
     {
         public static JMP CreateJMP(AddressingMode addressingMode)
         {

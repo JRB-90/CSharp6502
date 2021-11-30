@@ -1,6 +1,8 @@
-﻿namespace CS6502.Core
+﻿using System;
+
+namespace CS6502.Core
 {
-    public class DEY : InstructionBase
+    internal class DEY : InstructionBase
     {
         public DEY()
           :
@@ -12,9 +14,9 @@
         {
         }
 
-        public override void Execute(CpuRegisters registers)
+        public override CpuMicroCode Execute(int instructionCycle)
         {
-            registers.DecrementY();
+            throw new NotImplementedException();
         }
     }
 }

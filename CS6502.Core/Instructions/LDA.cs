@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    public class LDA : InstructionBase
+    internal class LDA : InstructionBase
     {
         public static LDA CreateLDA(AddressingMode addressingMode)
         {
@@ -43,9 +43,9 @@ namespace CS6502.Core
             }
         }
 
-        public override void Execute(CpuRegisters registers)
+        public override CpuMicroCode Execute(int instructionCycle)
         {
-            registers.LoadA();
+            throw new NotImplementedException();
         }
 
         private LDA(
