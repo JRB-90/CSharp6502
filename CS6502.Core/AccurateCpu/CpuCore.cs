@@ -4,8 +4,9 @@ namespace CS6502.Core
 {
     /// <summary>
     /// Class designed to replicate the internal register structure of a
-    /// 6502 CPU, as in the diagram below:
+    /// 6502 CPU, as in the diagrams below:
     /// http://www.baltissen.org/images/6502.png
+    /// https://i.imgur.com/gJB7m.png
     /// </summary>
     internal class CpuCore
     {
@@ -13,6 +14,8 @@ namespace CS6502.Core
         {
             // TODO - Set initial states
 
+            pcls = 0x00;
+            pchs = 0x80;
             p = new StatusRegister();
             decodeLogic = new DecodeLogic();
         }
@@ -30,7 +33,7 @@ namespace CS6502.Core
         public string GetCurrentStateString(char delimiter)
         {
             return
-                $"{(RW == RWState.Write ? 1 : 0)}{delimiter}" +
+                $"{(RW == RWState.Read ? 1 : 0)}{delimiter}" +
                 $"{a.ToHexString()}{delimiter}" +
                 $"{x.ToHexString()}{delimiter}" +
                 $"{y.ToHexString()}{delimiter}" +
@@ -47,7 +50,7 @@ namespace CS6502.Core
             return
                 new CycleState(
                     cycleID,
-                    Convert.ToByte(RW == RWState.Write),
+                    Convert.ToByte(RW == RWState.Read),
                     a,
                     x,
                     y,
@@ -62,13 +65,16 @@ namespace CS6502.Core
 
         public void Cycle(SignalEdge signalEdge)
         {
-            // TODO - Precycle ops?
-            RTInstruction instruction = decodeLogic.Cycle(signalEdge);
-            SetDataBuffers();
-            PerformRegisterTransfers(instruction);
+            if (latchIREnable)
+            {
+                decodeLogic.LatchIR(dl);
+                latchIREnable = false;
+            }
+            CpuMicroCode cpuMicroCode = decodeLogic.Cycle(signalEdge);
+            ExecuteCycleMicroCode(cpuMicroCode);
         }
 
-        private void SetDataBuffers()
+        private void LatchData()
         {
             if (RW == RWState.Read)
             {
@@ -80,103 +86,92 @@ namespace CS6502.Core
             }
         }
 
-        private void PerformRegisterTransfers(RTInstruction instruction)
+        private void ExecuteCycleMicroCode(CpuMicroCode cpuMicroCode)
         {
-            // TODO
+            for (int i = 0; i < cpuMicroCode.MicroCode.Count; i++)
+            {
+                ExecuteMicroCodeInstruction(cpuMicroCode.MicroCode[i]);
+            }
+        }
+
+        private void ExecuteMicroCodeInstruction(MicroCodeInstruction instruction)
+        {
+            switch (instruction)
+            {
+                #region PC
+                case MicroCodeInstruction.TransferDataToPCLS:
+                    pcls = dl;
+                    break;
+                case MicroCodeInstruction.TransferDataToPCHS:
+                    pchs = dl;
+                    break;
+                case MicroCodeInstruction.TransferPCLToPCLS:
+                    pcls = pcl;
+                    break;
+                case MicroCodeInstruction.TransferPCHToPCHS:
+                    pchs = pch;
+                    break;
+                case MicroCodeInstruction.TransferPCToPCS:
+                    pcls = pcl;
+                    pchs = pch;
+                    break;
+                case MicroCodeInstruction.TransferPCLSToPCL:
+                    pcl = pcls;
+                    break;
+                case MicroCodeInstruction.TransferPCHSToPCH:
+                    pch = pchs;
+                    break;
+                case MicroCodeInstruction.TransferPCSToPC_NoIncrement:
+                    pcl = pcls;
+                    pch = pchs;
+                    break;
+                case MicroCodeInstruction.TransferPCSToPC_WithCarryIncrement:
+                    if (pcls == byte.MaxValue)
+                    {
+                        pch = (byte)(pchs + 1);
+                    }
+                    else
+                    {
+                        pch = pchs;
+                    }
+                    pcl = (byte)(pcls + 1);
+                    break;
+                case MicroCodeInstruction.IncrementPC:
+                    if (pcl == byte.MaxValue)
+                    {
+                        pch = (byte)(pch + 1);
+                    }
+                    pcl = (byte)(pcl + 1);
+                    break;
+                #endregion
+
+                #region Address
+                case MicroCodeInstruction.TransferPCToAddressBus:
+                    abl = pcl;
+                    abh = pch;
+                    break;
+                #endregion
+
+                #region Data
+                case MicroCodeInstruction.LatchDataBus:
+                    LatchData();
+                    break;
+                #endregion
+
+                #region IR
+                case MicroCodeInstruction.LatchIRToData:
+                    latchIREnable = true;
+                    break;
+                #endregion
+
+                default:
+                    throw new InvalidOperationException($"Micro Code Instruction [{instruction.ToString()}] not supported");
+            }
         }
 
         private ushort PC => (ushort)(pch << 8 | pcl);
 
-        #region RTL
-
-        private void LatchDataIntoA()
-        {
-            a = dl;
-        }
-
-        private void LatchAIntoData()
-        {
-            dl = a;
-        }
-
-        private void LatchDataIntoX()
-        {
-            x = dl;
-        }
-
-        private void LatchXIntoData()
-        {
-            dl = x;
-        }
-
-        private void LatchDataIntoY()
-        {
-            y = dl;
-        }
-
-        private void LatchYIntoData()
-        {
-            dl = y;
-        }
-
-        private void LatchDataIntoIR()
-        {
-            ir = dl;
-        }
-
-        private void LatchIRIntoData()
-        {
-            dl = ir;
-        }
-
-        private void LatchDataIntoSP()
-        {
-            sp = dl;
-        }
-
-        private void LatchSPIntoData()
-        {
-            dl = sp;
-        }
-
-        private void LatchDataIntoPCL()
-        {
-            pcl = dl;
-        }
-
-        private void LatchPCLIntoData()
-        {
-            dl = pcl;
-        }
-
-        private void LatchDataIntoPCH()
-        {
-            pch = dl;
-        }
-
-        private void LatchPCHIntoData()
-        {
-            dl = pch;
-        }
-
-        private void LatchDataIntoP()
-        {
-            p.SetFlagsFromData(dl);
-        }
-
-        private void LatchPIntoData()
-        {
-            dl = p.Value;
-        }
-
-        private void LatchPCIntoAddress()
-        {
-            abl = pcl;
-            abh = pch;
-        }
-
-        #endregion
-
+        private bool latchIREnable;
         private byte a;
         private byte x;
         private byte y;
@@ -184,9 +179,13 @@ namespace CS6502.Core
         private byte sp;
         private byte pcl;
         private byte pch;
+        private byte pcls;
+        private byte pchs;
         private byte abl;
         private byte abh;
         private byte dl;
+        private byte hold;
+        private ALU alu;
         private StatusRegister p;
         private DecodeLogic decodeLogic;
     }

@@ -4,8 +4,6 @@
     {
         ReadingOpcode,
         Addressing,
-        InternalOperation,
-        ReadOperation,
-        WriteOperation
+        Executing
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CS6502.Core
+﻿namespace CS6502.Core
 {
     public class AccurateCpu : ICpu
     {
@@ -222,30 +216,36 @@ namespace CS6502.Core
         private void Cycle(SignalEdge signalEdge)
         {
             RecalculatePhiOutputs();
+            SetDataValues();
             core.Cycle(signalEdge);
-
-            // TODO - Set ext pins to correct values
             SetPinValues();
+        }
+
+        private void SetDataValues()
+        {
+            if (core.RW == RWState.Read)
+            {
+                dataPins.SetAllTo(TriState.HighImpedance);
+                core.DataIn = dataBus.ToByte();
+            }
+            else if (core.RW == RWState.Write)
+            {
+                dataPins.SetTo(core.DataOut);
+            }
         }
 
         private void SetPinValues()
         {
+            addressPins.SetTo(core.Address);
             if (core.RW == RWState.Read)
             {
                 rw_n.State = TriState.True;
-                dataPins.SetTo(core.DataOut);
             }
             else if (core.RW == RWState.Write)
             {
                 rw_n.State = TriState.False;
-                dataPins.SetAllTo(TriState.HighImpedance);
-
-                // This might go here or on the next cycle?
-                //core.DataIn = dataBus.ToByte();
             }
-
             sync_n.State = core.Sync == EnableState.Enabled ? TriState.False : TriState.True;
-            addressPins.SetTo(core.Address);
         }
 
         #endregion
