@@ -72,7 +72,7 @@ namespace CS6502.Core
 
                 return 
                     new CpuMicroCode(
-                        MicroCodeInstruction.LatchDataBus,
+                        MicroCodeInstruction.LatchDataIntoDIL,
                         MicroCodeInstruction.LatchIRToData
                     );
             }
@@ -137,7 +137,7 @@ namespace CS6502.Core
                     new CpuMicroCode(
                         MicroCodeInstruction.TransferPCLToPCLS,
                         MicroCodeInstruction.TransferPCHToPCHS,
-                        MicroCodeInstruction.LatchDataBus
+                        MicroCodeInstruction.LatchDataIntoDIL
                     );
             }
         }
@@ -163,7 +163,7 @@ namespace CS6502.Core
 
                     return
                         new CpuMicroCode(
-                            MicroCodeInstruction.LatchDataBus
+                            MicroCodeInstruction.LatchDataIntoDIL
                         );
                 }
             }
@@ -192,7 +192,7 @@ namespace CS6502.Core
 
                     return
                         new CpuMicroCode(
-                            MicroCodeInstruction.LatchDataBus
+                            MicroCodeInstruction.LatchDataIntoDIL
                         );
                 }
             }
@@ -216,6 +216,8 @@ namespace CS6502.Core
                 {
                     return
                         new CpuMicroCode(
+                            MicroCodeInstruction.LatchDataIntoDIL,
+                            MicroCodeInstruction.TransferDILToPCLS,
                             MicroCodeInstruction.IncrementPC,
                             MicroCodeInstruction.TransferPCToAddressBus
                         );
@@ -223,23 +225,9 @@ namespace CS6502.Core
             }
             else
             {
-                if (instructionCycleCounter == 1)
-                {
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.LatchDataBus,
-                            MicroCodeInstruction.TransferDataToPCLS
-                        );
-                }
-                else if (instructionCycleCounter == 2)
+                if (instructionCycleCounter == 2)
                 {
                     state = DecodeState.Executing;
-
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.LatchDataBus,
-                            MicroCodeInstruction.TransferDataToPCHS
-                        );
                 }
             }
 

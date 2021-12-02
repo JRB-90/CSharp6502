@@ -221,21 +221,28 @@ namespace CS6502.Core
         private void Cycle(SignalEdge signalEdge)
         {
             RecalculatePhiOutputs();
-            SetDataValues();
             core.Cycle(signalEdge);
             SetPinValues();
+            SetDataValues(signalEdge);
         }
 
-        private void SetDataValues()
+        private void SetDataValues(SignalEdge signalEdge)
         {
-            if (core.RW == RWState.Read)
+            if (signalEdge == SignalEdge.RisingEdge)
+            {
+                if (core.RW == RWState.Read)
+                {
+                    dataPins.SetAllTo(TriState.HighImpedance);
+                    core.DataIn = dataBus.ToByte();
+                }
+                else if (core.RW == RWState.Write)
+                {
+                    dataPins.SetTo(core.DataOut);
+                }
+            }
+            else
             {
                 dataPins.SetAllTo(TriState.HighImpedance);
-                core.DataIn = dataBus.ToByte();
-            }
-            else if (core.RW == RWState.Write)
-            {
-                dataPins.SetTo(core.DataOut);
             }
         }
 

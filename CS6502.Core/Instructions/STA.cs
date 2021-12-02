@@ -72,6 +72,7 @@ namespace CS6502.Core
                     return
                        new CpuMicroCode(
                            MicroCodeInstruction.TransferZPDataToAB,
+                           MicroCodeInstruction.LatchDILIntoDOR,
                            MicroCodeInstruction.SetToWrite,
                            MicroCodeInstruction.IncrementPC
                        );
@@ -92,7 +93,7 @@ namespace CS6502.Core
                 {
                     return
                         new CpuMicroCode(
-                            MicroCodeInstruction.LatchAIntoData,
+                            MicroCodeInstruction.LatchAIntoDOR,
                             MicroCodeInstruction.TransferPCToPCS
                         );
                 }

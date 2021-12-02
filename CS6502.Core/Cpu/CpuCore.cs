@@ -26,9 +26,19 @@ namespace CS6502.Core
 
         public ushort Address => (ushort)(abh << 8 | abl);
 
-        public byte DataOut { get; private set; }
+        public byte DataOut => dor;
 
-        public byte DataIn { get; set; }
+        public byte DataIn
+        {
+            get => dil;
+            set
+            {
+                if (RW == RWState.Read)
+                {
+                    dil = value;
+                }
+            }
+        }
 
         public string GetCurrentStateString(char delimiter)
         {
@@ -42,7 +52,7 @@ namespace CS6502.Core
                 $"{sp.ToHexString()}{delimiter}" +
                 $"{PC.ToHexString()}{delimiter}" +
                 $"{Address.ToHexString()}{delimiter}" +
-                $"{dl.ToHexString()}";
+                $"{Data.ToHexString()}";
         }
 
         public CycleState GetCurrentCycleState(int cycleID)
@@ -59,7 +69,7 @@ namespace CS6502.Core
                     sp,
                     PC,
                     Address,
-                    dl
+                    Data
                 );
         }
 
@@ -67,23 +77,11 @@ namespace CS6502.Core
         {
             if (latchIREnable)
             {
-                decodeLogic.LatchIR(dl);
+                decodeLogic.LatchIR(dil);
                 latchIREnable = false;
             }
             CpuMicroCode cpuMicroCode = decodeLogic.Cycle(signalEdge);
             ExecuteCycleMicroCode(cpuMicroCode);
-        }
-
-        private void LatchData()
-        {
-            if (RW == RWState.Read)
-            {
-                dl = DataIn;
-            }
-            else if (RW == RWState.Write)
-            {
-                DataOut = dl;
-            }
         }
 
         private void ExecuteCycleMicroCode(CpuMicroCode cpuMicroCode)
@@ -116,14 +114,14 @@ namespace CS6502.Core
                 #endregion
 
                 #region Registers
-                case MicroCodeInstruction.LatchDataIntoA:
-                    a = dl;
+                case MicroCodeInstruction.LatchDILIntoA:
+                    a = dil;
                     break;
-                case MicroCodeInstruction.LatchDataIntoX:
-                    x = dl;
+                case MicroCodeInstruction.LatchDILIntoX:
+                    x = dil;
                     break;
-                case MicroCodeInstruction.LatchDataIntoY:
-                    y = dl;
+                case MicroCodeInstruction.LatchDILIntoY:
+                    y = dil;
                     break;
                 case MicroCodeInstruction.IncrementA:
                     if (a == byte.MaxValue)
@@ -149,11 +147,11 @@ namespace CS6502.Core
                 #endregion
 
                 #region PC
-                case MicroCodeInstruction.TransferDataToPCLS:
-                    pcls = dl;
+                case MicroCodeInstruction.TransferDILToPCLS:
+                    pcls = dil;
                     break;
-                case MicroCodeInstruction.TransferDataToPCHS:
-                    pchs = dl;
+                case MicroCodeInstruction.TransferDILToPCHS:
+                    pchs = dil;
                     break;
                 case MicroCodeInstruction.TransferPCLToPCLS:
                     pcls = pcl;
@@ -201,29 +199,32 @@ namespace CS6502.Core
                     abh = pch;
                     break;
                 case MicroCodeInstruction.TransferZPDataToAB:
-                    abl = dl;
+                    abl = dil;
                     abh = 0x00;
                     break;
-                case MicroCodeInstruction.TransferDataToABL:
-                    abl = dl;
+                case MicroCodeInstruction.TransferDILToABL:
+                    abl = dil;
                     break;
-                case MicroCodeInstruction.TransferDataToABH:
-                    abh = dl;
+                case MicroCodeInstruction.TransferDILToABH:
+                    abh = dil;
                     break;
                 #endregion
 
                 #region Data
-                case MicroCodeInstruction.LatchDataBus:
-                    LatchData();
+                case MicroCodeInstruction.LatchDataIntoDIL:
+                    dil = DataIn;
                     break;
-                case MicroCodeInstruction.LatchAIntoData:
-                    dl = a;
+                case MicroCodeInstruction.LatchDILIntoDOR:
+                    dor = dil;
                     break;
-                case MicroCodeInstruction.LatchXIntoData:
-                    dl = x;
+                case MicroCodeInstruction.LatchAIntoDOR:
+                    dor = a;
                     break;
-                case MicroCodeInstruction.LatchYIntoData:
-                    dl = y;
+                case MicroCodeInstruction.LatchXIntoDOR:
+                    dor = x;
+                    break;
+                case MicroCodeInstruction.LatchYIntoDOR:
+                    dor = y;
                     break;
                 #endregion
 
@@ -233,6 +234,7 @@ namespace CS6502.Core
         }
 
         private ushort PC => (ushort)(pch << 8 | pcl);
+        private byte Data => RW == RWState.Read ? dil : dor;
 
         private bool latchIREnable;
         private byte a;
@@ -246,7 +248,8 @@ namespace CS6502.Core
         private byte pchs;
         private byte abl;
         private byte abh;
-        private byte dl;
+        private byte dor;
+        private byte dil;
         private byte hold;
         private ALU alu;
         private StatusRegister p;

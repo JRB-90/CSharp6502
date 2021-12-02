@@ -15,9 +15,9 @@
         LatchIRToData,
 
         // Registers
-        LatchDataIntoA,
-        LatchDataIntoX,
-        LatchDataIntoY,
+        LatchDILIntoA,
+        LatchDILIntoX,
+        LatchDILIntoY,
         IncrementA,
         IncrementX,
         IncrementY,
@@ -25,8 +25,8 @@
         // ALU
 
         // PC
-        TransferDataToPCLS,
-        TransferDataToPCHS,
+        TransferDILToPCLS,
+        TransferDILToPCHS,
         TransferPCLToPCLS,
         TransferPCHToPCHS,
         TransferPCToPCS,
@@ -39,13 +39,14 @@
         // Address
         TransferPCToAddressBus,
         TransferZPDataToAB,
-        TransferDataToABL,
-        TransferDataToABH,
+        TransferDILToABL,
+        TransferDILToABH,
 
         // Data
-        LatchDataBus,
-        LatchAIntoData,
-        LatchXIntoData,
-        LatchYIntoData,
+        LatchDataIntoDIL,
+        LatchDILIntoDOR,
+        LatchAIntoDOR,
+        LatchXIntoDOR,
+        LatchYIntoDOR,
     }
 }

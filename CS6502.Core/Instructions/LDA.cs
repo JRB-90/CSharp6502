@@ -81,7 +81,7 @@ namespace CS6502.Core
                 {
                     return
                         new CpuMicroCode(
-                            MicroCodeInstruction.LatchDataIntoA,
+                            MicroCodeInstruction.LatchDILIntoA,
                             MicroCodeInstruction.IncrementPC,
                             MicroCodeInstruction.TransferPCToPCS
                         );
@@ -93,7 +93,39 @@ namespace CS6502.Core
 
         private CpuMicroCode ZeroPage(SignalEdge signalEdge, int instructionCycle)
         {
-            throw new NotImplementedException();
+            if (signalEdge == SignalEdge.FallingEdge)
+            {
+                if (instructionCycle == 2)
+                {
+                    return
+                       new CpuMicroCode(
+                           MicroCodeInstruction.TransferZPDataToAB,
+                           MicroCodeInstruction.LatchDataIntoDIL,
+                           MicroCodeInstruction.IncrementPC
+                       );
+                }
+                if (instructionCycle == 3)
+                {
+                    IsInstructionComplete = true;
+
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.LatchDILIntoA
+                        );
+                }
+            }
+            else
+            {
+                if (instructionCycle == 2)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.TransferPCToPCS
+                        );
+                }
+            }
+
+            return new CpuMicroCode();
         }
 
         private CpuMicroCode Absolute(SignalEdge signalEdge, int instructionCycle)
