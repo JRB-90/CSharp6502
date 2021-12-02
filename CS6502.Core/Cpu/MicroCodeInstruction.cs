@@ -10,6 +10,13 @@
         SetToWrite,
 
         // Status
+        ClearCarry,
+        SetCarry,
+        ClearIRQ,
+        SetIRQ,
+        ClearDecimal,
+        SetDecimal,
+        ClearOverflow,
 
         // IR
         LatchIRToData,
