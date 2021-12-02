@@ -14,6 +14,8 @@ namespace CS6502.Benchmark
             p.LoadBenchmarkFromFile();
             //p.LoadBenchmarkFromP6502(100);
             p.RunBenchark(1);
+
+            System.Console.ReadLine();
         }
 
         public Program()

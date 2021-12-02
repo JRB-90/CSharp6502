@@ -1,11 +1,9 @@
-﻿using System;
-
-namespace CS6502.Core
+﻿namespace CS6502.Core
 {
     /// <summary>
     /// Abstract base class to provide shared functionality amongst all instructions.
     /// </summary>
-    public abstract class InstructionBase : IInstruction
+    internal abstract class InstructionBase : IInstruction
     {
         public InstructionBase(
             string name,
@@ -17,7 +15,7 @@ namespace CS6502.Core
             Opcode = opcode;
             AddressingMode = addressingMode;
             OperationType = operationType;
-            CurrentCycle = 0;
+            IsInstructionComplete = false;
         }
 
         public string Name { get; }
@@ -28,10 +26,13 @@ namespace CS6502.Core
 
         public OperationType OperationType { get; }
 
-        public int CurrentCycle { get; }
+        public bool IsInstructionComplete { get; protected set; }
 
-        public virtual void Execute(CpuRegisters registers)
+        public virtual CpuMicroCode Execute(SignalEdge signalEdge, int instructionCycle)
         {
+            IsInstructionComplete = true;
+
+            return new CpuMicroCode();
         }
 
         public override string ToString()

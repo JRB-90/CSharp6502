@@ -14,6 +14,8 @@ namespace CS6502.Console
             {
                 system.Cycle(true);
             }
+
+            System.Console.ReadLine();
         }
     }
 }

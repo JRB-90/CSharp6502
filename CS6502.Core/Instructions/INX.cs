@@ -1,6 +1,8 @@
-﻿namespace CS6502.Core
+﻿using System;
+
+namespace CS6502.Core
 {
-    public class INX : InstructionBase
+    internal class INX : InstructionBase
     {
         public INX()
           :
@@ -12,9 +14,9 @@
         {
         }
 
-        public override void Execute(CpuRegisters registers)
+        public override CpuMicroCode Execute(SignalEdge signalEdge, int instructionCycle)
         {
-            registers.IncrementX();
+            throw new NotImplementedException();
         }
     }
 }

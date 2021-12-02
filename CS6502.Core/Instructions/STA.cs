@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    public class STA : InstructionBase
+    internal class STA : InstructionBase
     {
         public static STA CreateSTA(AddressingMode addressingMode)
         {
@@ -39,9 +39,77 @@ namespace CS6502.Core
             }
         }
 
-        public override void Execute(CpuRegisters registers)
+        public override CpuMicroCode Execute(SignalEdge signalEdge, int instructionCycle)
         {
-            registers.TransferAToDataBus();
+            if (AddressingMode == AddressingMode.ZeroPage ||
+                     AddressingMode == AddressingMode.ZeroPageX)
+            {
+                return ZeroPage(signalEdge, instructionCycle);
+            }
+            else if (AddressingMode == AddressingMode.Absolute ||
+                     AddressingMode == AddressingMode.AbsoluteX ||
+                     AddressingMode == AddressingMode.AbsoluteY)
+            {
+                return Absolute(signalEdge, instructionCycle);
+            }
+            else if (AddressingMode == AddressingMode.IndirectX ||
+                     AddressingMode == AddressingMode.IndirectY)
+            {
+                return Indirect(signalEdge, instructionCycle);
+            }
+            else
+            {
+                throw new ArgumentException($"STA does not support {AddressingMode.ToString()} addressing mode");
+            }
+        }
+
+        private CpuMicroCode ZeroPage(SignalEdge signalEdge, int instructionCycle)
+        {
+            if (signalEdge == SignalEdge.FallingEdge)
+            {
+                if (instructionCycle == 2)
+                {
+                    return
+                       new CpuMicroCode(
+                           MicroCodeInstruction.TransferZPDataToAB,
+                           MicroCodeInstruction.LatchDILIntoDOR,
+                           MicroCodeInstruction.SetToWrite,
+                           MicroCodeInstruction.IncrementPC
+                       );
+                }
+                if (instructionCycle == 3)
+                {
+                    IsInstructionComplete = true;
+
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.TransferPCToPCS
+                        );
+                }    
+            }
+            else
+            {
+                if (instructionCycle == 2)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.LatchAIntoDOR,
+                            MicroCodeInstruction.TransferPCToPCS
+                        );
+                }
+            }
+
+            return new CpuMicroCode();
+        }
+
+        private CpuMicroCode Absolute(SignalEdge signalEdge, int instructionCycle)
+        {
+            throw new NotImplementedException();
+        }
+
+        private CpuMicroCode Indirect(SignalEdge signalEdge, int instructionCycle)
+        {
+            throw new NotImplementedException();
         }
 
         private STA(

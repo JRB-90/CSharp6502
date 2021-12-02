@@ -6,7 +6,7 @@
     /// This allows a higher level to understand what to do on the last
     /// instruction cycle.
     /// </summary>
-    public enum OperationType
+    internal enum OperationType
     {
         Internal,
         Read,

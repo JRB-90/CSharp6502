@@ -1,6 +1,6 @@
 ﻿namespace CS6502.Core
 {
-    public class BRK : InstructionBase
+    internal class BRK : InstructionBase
     {
         public BRK()
           :
