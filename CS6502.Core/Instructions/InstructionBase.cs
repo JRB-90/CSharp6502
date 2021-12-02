@@ -26,9 +26,9 @@
 
         public OperationType OperationType { get; }
 
-        public bool IsInstructionComplete { get; private set; }
+        public bool IsInstructionComplete { get; protected set; }
 
-        public virtual CpuMicroCode Execute(int instructionCycle)
+        public virtual CpuMicroCode Execute(SignalEdge signalEdge, int instructionCycle)
         {
             IsInstructionComplete = true;
 

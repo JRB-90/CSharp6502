@@ -15,6 +15,6 @@
 
         bool IsInstructionComplete { get; }
 
-        CpuMicroCode Execute(int instructionCycle);
+        CpuMicroCode Execute(SignalEdge signalEdge, int instructionCycle);
     }
 }

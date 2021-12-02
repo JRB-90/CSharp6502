@@ -20,7 +20,7 @@ namespace CS6502.Core
             decodeLogic = new DecodeLogic();
         }
 
-        public RWState RW => decodeLogic.RW;
+        public RWState RW { get; private set; }
 
         public EnableState Sync => decodeLogic.Sync;
 
@@ -98,6 +98,56 @@ namespace CS6502.Core
         {
             switch (instruction)
             {
+                #region CPU State
+                case MicroCodeInstruction.SetToRead:
+                    RW = RWState.Read;
+                    break;
+                case MicroCodeInstruction.SetToWrite:
+                    RW = RWState.Write;
+                    break;
+                #endregion
+
+                // Status
+
+                #region IR
+                case MicroCodeInstruction.LatchIRToData:
+                    latchIREnable = true;
+                    break;
+                #endregion
+
+                #region Registers
+                case MicroCodeInstruction.LatchDataIntoA:
+                    a = dl;
+                    break;
+                case MicroCodeInstruction.LatchDataIntoX:
+                    x = dl;
+                    break;
+                case MicroCodeInstruction.LatchDataIntoY:
+                    y = dl;
+                    break;
+                case MicroCodeInstruction.IncrementA:
+                    if (a == byte.MaxValue)
+                    {
+                        p.CarryFlag = true;
+                    }
+                    a++;
+                    break;
+                case MicroCodeInstruction.IncrementX:
+                    if (x == byte.MaxValue)
+                    {
+                        p.CarryFlag = true;
+                    }
+                    x++;
+                    break;
+                case MicroCodeInstruction.IncrementY:
+                    if (y == byte.MaxValue)
+                    {
+                        p.CarryFlag = true;
+                    }
+                    y++;
+                    break;
+                #endregion
+
                 #region PC
                 case MicroCodeInstruction.TransferDataToPCLS:
                     pcls = dl;
@@ -150,17 +200,30 @@ namespace CS6502.Core
                     abl = pcl;
                     abh = pch;
                     break;
+                case MicroCodeInstruction.TransferZPDataToAB:
+                    abl = dl;
+                    abh = 0x00;
+                    break;
+                case MicroCodeInstruction.TransferDataToABL:
+                    abl = dl;
+                    break;
+                case MicroCodeInstruction.TransferDataToABH:
+                    abh = dl;
+                    break;
                 #endregion
 
                 #region Data
                 case MicroCodeInstruction.LatchDataBus:
                     LatchData();
                     break;
-                #endregion
-
-                #region IR
-                case MicroCodeInstruction.LatchIRToData:
-                    latchIREnable = true;
+                case MicroCodeInstruction.LatchAIntoData:
+                    dl = a;
+                    break;
+                case MicroCodeInstruction.LatchXIntoData:
+                    dl = x;
+                    break;
+                case MicroCodeInstruction.LatchYIntoData:
+                    dl = y;
                     break;
                 #endregion
 

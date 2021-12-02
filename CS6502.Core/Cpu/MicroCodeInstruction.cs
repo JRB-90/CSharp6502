@@ -5,6 +5,25 @@
     /// </summary>
     internal enum MicroCodeInstruction
     {
+        // CPU State
+        SetToRead,
+        SetToWrite,
+
+        // Status
+
+        // IR
+        LatchIRToData,
+
+        // Registers
+        LatchDataIntoA,
+        LatchDataIntoX,
+        LatchDataIntoY,
+        IncrementA,
+        IncrementX,
+        IncrementY,
+
+        // ALU
+
         // PC
         TransferDataToPCLS,
         TransferDataToPCHS,
@@ -19,13 +38,14 @@
 
         // Address
         TransferPCToAddressBus,
+        TransferZPDataToAB,
+        TransferDataToABL,
+        TransferDataToABH,
 
         // Data
         LatchDataBus,
-
-        // IR
-        LatchIRToData,
-
-        // ALU
+        LatchAIntoData,
+        LatchXIntoData,
+        LatchYIntoData,
     }
 }

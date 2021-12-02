@@ -43,7 +43,65 @@ namespace CS6502.Core
             }
         }
 
-        public override CpuMicroCode Execute(int instructionCycle)
+        public override CpuMicroCode Execute(SignalEdge signalEdge, int instructionCycle)
+        {
+            if (AddressingMode == AddressingMode.Immediate)
+            {
+                return Immediate(signalEdge, instructionCycle);
+            }
+            else if (AddressingMode == AddressingMode.ZeroPage ||
+                     AddressingMode == AddressingMode.ZeroPageX)
+            {
+                return ZeroPage(signalEdge, instructionCycle);
+            }
+            else if (AddressingMode == AddressingMode.Absolute ||
+                     AddressingMode == AddressingMode.AbsoluteX ||
+                     AddressingMode == AddressingMode.AbsoluteY)
+            {
+                return Absolute(signalEdge, instructionCycle);
+            }
+            else if (AddressingMode == AddressingMode.IndirectX ||
+                     AddressingMode == AddressingMode.IndirectY)
+            {
+                return Indirect(signalEdge, instructionCycle);
+            }
+            else
+            {
+                throw new ArgumentException($"LDA does not support {AddressingMode.ToString()} addressing mode");
+            }
+        }
+
+        private CpuMicroCode Immediate(SignalEdge signalEdge, int instructionCycle)
+        {
+            if (signalEdge == SignalEdge.FallingEdge)
+            {
+                IsInstructionComplete = true;
+
+                if (instructionCycle == 2)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.LatchDataIntoA,
+                            MicroCodeInstruction.IncrementPC,
+                            MicroCodeInstruction.TransferPCToPCS
+                        );
+                }
+            }
+
+            return new CpuMicroCode();
+        }
+
+        private CpuMicroCode ZeroPage(SignalEdge signalEdge, int instructionCycle)
+        {
+            throw new NotImplementedException();
+        }
+
+        private CpuMicroCode Absolute(SignalEdge signalEdge, int instructionCycle)
+        {
+            throw new NotImplementedException();
+        }
+
+        private CpuMicroCode Indirect(SignalEdge signalEdge, int instructionCycle)
         {
             throw new NotImplementedException();
         }

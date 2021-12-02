@@ -12,15 +12,12 @@ namespace CS6502.Core
     {
         public DecodeLogic()
         {
-            RW = RWState.Read;
             Sync = EnableState.Disabled;
             state = DecodeState.ReadingOpcode;
             LatchIR(0x00);
         }
 
         public byte IR => currentInstruction.Opcode;
-
-        public RWState RW { get; private set; }
 
         public EnableState Sync { get; private set; }
 
@@ -61,10 +58,10 @@ namespace CS6502.Core
             if (signalEdge == SignalEdge.FallingEdge)
             {
                 instructionCycleCounter = 0;
-                RW = RWState.Read;
 
-                return 
+                return
                     new CpuMicroCode(
+                        MicroCodeInstruction.SetToRead,
                         MicroCodeInstruction.TransferPCSToPC_NoIncrement,
                         MicroCodeInstruction.TransferPCToAddressBus
                     );
@@ -149,36 +146,58 @@ namespace CS6502.Core
         {
             if (signalEdge == SignalEdge.FallingEdge)
             {
-                return
-                    new CpuMicroCode(
-
-                    );
+                if (instructionCycleCounter == 1)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.IncrementPC,
+                            MicroCodeInstruction.TransferPCToAddressBus
+                        );
+                }
             }
             else
             {
-                return
-                    new CpuMicroCode(
+                if (instructionCycleCounter == 1)
+                {
+                    state = DecodeState.Executing;
 
-                    );
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.LatchDataBus
+                        );
+                }
             }
+
+            return new CpuMicroCode();
         }
 
         private CpuMicroCode ZeroPageCycle(SignalEdge signalEdge)
         {
             if (signalEdge == SignalEdge.FallingEdge)
             {
-                return
-                    new CpuMicroCode(
-
-                    );
+                if (instructionCycleCounter == 1)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.IncrementPC,
+                            MicroCodeInstruction.TransferPCToAddressBus
+                        );
+                }
             }
             else
             {
-                return
-                    new CpuMicroCode(
+                if (instructionCycleCounter == 1)
+                {
+                    state = DecodeState.Executing;
 
-                    );
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.LatchDataBus
+                        );
+                }
             }
+
+            return new CpuMicroCode();
         }
 
         private CpuMicroCode AbsoluteCycle(SignalEdge signalEdge)
@@ -229,45 +248,31 @@ namespace CS6502.Core
 
         private CpuMicroCode IndirectCycle(SignalEdge signalEdge)
         {
-            if (signalEdge == SignalEdge.FallingEdge)
-            {
-                return
-                    new CpuMicroCode(
-
-                    );
-            }
-            else
-            {
-                return
-                    new CpuMicroCode(
-
-                    );
-            }
+            throw new NotImplementedException();
         }
 
         private CpuMicroCode RelativeCycle(SignalEdge signalEdge)
         {
-            if (signalEdge == SignalEdge.FallingEdge)
-            {
-                return
-                    new CpuMicroCode(
-
-                    );
-            }
-            else
-            {
-                return
-                    new CpuMicroCode(
-
-                    );
-            }
+            throw new NotImplementedException();
         }
 
         private CpuMicroCode ExecutingCycle(SignalEdge signalEdge)
         {
-            state = DecodeState.ReadingOpcode;
+            CpuMicroCode instructionCode =
+                currentInstruction.Execute(
+                    signalEdge,
+                    instructionCycleCounter
+                );
 
-            return ReadingOpcodeCycle(signalEdge);
+            if (currentInstruction.IsInstructionComplete)
+            {
+                state = DecodeState.ReadingOpcode;
+                instructionCode =
+                    instructionCode +
+                    ReadingOpcodeCycle(signalEdge);
+            }
+
+            return instructionCode;
         }
 
         private IInstruction currentInstruction;
