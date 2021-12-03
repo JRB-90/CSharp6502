@@ -31,6 +31,7 @@
         DecrementA,
         DecrementX,
         DecrementY,
+        TransferXToSP,
 
         // ALU
         TransferHoldToA,

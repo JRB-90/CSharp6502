@@ -8,13 +8,11 @@
         public InstructionBase(
             string name,
             byte opcode,
-            AddressingMode addressingMode,
-            OperationType operationType)
+            AddressingMode addressingMode)
         {
             Name = name;
             Opcode = opcode;
             AddressingMode = addressingMode;
-            OperationType = operationType;
             IsInstructionComplete = false;
         }
 
@@ -23,8 +21,6 @@
         public byte Opcode { get; }
 
         public AddressingMode AddressingMode { get; }
-
-        public OperationType OperationType { get; }
 
         public bool IsInstructionComplete { get; protected set; }
 

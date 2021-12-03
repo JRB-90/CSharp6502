@@ -145,8 +145,7 @@ namespace CS6502.Core
             base(
                 "LDA",
                 opcode,
-                addressingMode,
-                OperationType.Read)
+                addressingMode)
         {
         }
     }

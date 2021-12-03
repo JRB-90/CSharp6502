@@ -11,8 +11,6 @@
 
         AddressingMode AddressingMode { get; }
 
-        OperationType OperationType { get; }
-
         bool IsInstructionComplete { get; }
 
         CpuMicroCode Execute(SignalEdge signalEdge, int instructionCycle);

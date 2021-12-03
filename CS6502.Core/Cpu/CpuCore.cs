@@ -179,6 +179,9 @@ namespace CS6502.Core
                     alu.B = y;
                     alu.ExecuteInstruction(instruction);
                     break;
+                case MicroCodeInstruction.TransferXToSP:
+                    sp = x;
+                    break;
                 #endregion
 
                 #region ALU

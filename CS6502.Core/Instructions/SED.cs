@@ -9,8 +9,7 @@ namespace CS6502.Core
             base(
                 "SED",
                 0xF8,
-                AddressingMode.Implied,
-                OperationType.Internal)
+                AddressingMode.Implied)
         {
         }
 

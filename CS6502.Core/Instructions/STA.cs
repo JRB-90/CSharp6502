@@ -119,8 +119,7 @@ namespace CS6502.Core
             base(
                 "STA",
                 opcode,
-                addressingMode,
-                OperationType.Write)
+                addressingMode)
         {
         }
     }

@@ -9,8 +9,7 @@ namespace CS6502.Core
             base(
                 "INX",
                 0xE8,
-                AddressingMode.Implied,
-                OperationType.Internal)
+                AddressingMode.Implied)
         {
         }
 

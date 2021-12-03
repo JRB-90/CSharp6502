@@ -9,8 +9,7 @@ namespace CS6502.Core
             base(
                 "INY",
                 0xC8,
-                AddressingMode.Implied,
-                OperationType.Internal)
+                AddressingMode.Implied)
         {
         }
 

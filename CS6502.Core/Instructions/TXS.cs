@@ -2,13 +2,13 @@
 
 namespace CS6502.Core
 {
-    internal class DEY : InstructionBase
+    internal class TXS : InstructionBase
     {
-        public DEY()
+        public TXS()
           :
             base(
-                "DEY",
-                0x88,
+                "TXS",
+                0x9A,
                 AddressingMode.Implied)
         {
         }
@@ -19,7 +19,7 @@ namespace CS6502.Core
 
             return
                 new CpuMicroCode(
-                    MicroCodeInstruction.DecrementY
+                    MicroCodeInstruction.TransferXToSP
                 );
         }
     }

@@ -61,8 +61,7 @@ namespace CS6502.Core
             base(
                 "JMP", 
                 opcode, 
-                addressingMode,
-                OperationType.Internal)
+                addressingMode)
         {
         }
     }

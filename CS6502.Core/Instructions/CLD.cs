@@ -9,8 +9,7 @@ namespace CS6502.Core
             base(
                 "CLD",
                 0xD8,
-                AddressingMode.Implied,
-                OperationType.Internal)
+                AddressingMode.Implied)
         {
         }
 

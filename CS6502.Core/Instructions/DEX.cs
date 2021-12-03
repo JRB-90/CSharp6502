@@ -9,8 +9,7 @@ namespace CS6502.Core
             base(
                 "DEX",
                 0xCA,
-                AddressingMode.Implied,
-                OperationType.Internal)
+                AddressingMode.Implied)
         {
         }
 

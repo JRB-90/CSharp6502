@@ -123,8 +123,7 @@ namespace CS6502.Core
             base(
                 "LDX",
                 opcode,
-                addressingMode,
-                OperationType.Read)
+                addressingMode)
         {
         }
     }
