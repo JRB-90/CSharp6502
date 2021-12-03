@@ -16,7 +16,8 @@ namespace CS6502.Core
 
             pcls = 0x00;
             pchs = 0x80;
-            p = new StatusRegister();
+            dil = 0x80;
+            p = new StatusRegister(0x16);
             decodeLogic = new DecodeLogic();
         }
 
@@ -105,7 +106,29 @@ namespace CS6502.Core
                     break;
                 #endregion
 
-                // Status
+                #region Status
+                case MicroCodeInstruction.ClearCarry:
+                    p.CarryFlag = false;
+                    break;
+                case MicroCodeInstruction.SetCarry:
+                    p.CarryFlag = true;
+                    break;
+                case MicroCodeInstruction.ClearIRQ:
+                    p.IrqFlag = false;
+                    break;
+                case MicroCodeInstruction.SetIRQ:
+                    p.IrqFlag = true;
+                    break;
+                case MicroCodeInstruction.ClearDecimal:
+                    p.DecimalFlag = false;
+                    break;
+                case MicroCodeInstruction.SetDecimal:
+                    p.DecimalFlag = true;
+                    break;
+                case MicroCodeInstruction.ClearOverflow:
+                    p.OverflowFlag = false;
+                    break;
+                #endregion
 
                 #region IR
                 case MicroCodeInstruction.LatchIRToData:
@@ -116,12 +139,15 @@ namespace CS6502.Core
                 #region Registers
                 case MicroCodeInstruction.LatchDILIntoA:
                     a = dil;
+                    p.SetFlagsFromData(a);
                     break;
                 case MicroCodeInstruction.LatchDILIntoX:
                     x = dil;
+                    p.SetFlagsFromData(x);
                     break;
                 case MicroCodeInstruction.LatchDILIntoY:
                     y = dil;
+                    p.SetFlagsFromData(y);
                     break;
                 case MicroCodeInstruction.IncrementA:
                     if (a == byte.MaxValue)
@@ -129,6 +155,7 @@ namespace CS6502.Core
                         p.CarryFlag = true;
                     }
                     a++;
+                    p.SetFlagsFromData(a);
                     break;
                 case MicroCodeInstruction.IncrementX:
                     if (x == byte.MaxValue)
@@ -136,6 +163,7 @@ namespace CS6502.Core
                         p.CarryFlag = true;
                     }
                     x++;
+                    p.SetFlagsFromData(x);
                     break;
                 case MicroCodeInstruction.IncrementY:
                     if (y == byte.MaxValue)
@@ -143,6 +171,31 @@ namespace CS6502.Core
                         p.CarryFlag = true;
                     }
                     y++;
+                    p.SetFlagsFromData(y);
+                    break;
+                case MicroCodeInstruction.DecrementA:
+                    if (a == 0)
+                    {
+                        p.CarryFlag = true;
+                    }
+                    a--;
+                    p.SetFlagsFromData(a);
+                    break;
+                case MicroCodeInstruction.DecrementX:
+                    if (x == 0)
+                    {
+                        p.CarryFlag = true;
+                    }
+                    x--;
+                    p.SetFlagsFromData(x);
+                    break;
+                case MicroCodeInstruction.DecrementY:
+                    if (y == 0)
+                    {
+                        p.CarryFlag = true;
+                    }
+                    y--;
+                    p.SetFlagsFromData(y);
                     break;
                 #endregion
 

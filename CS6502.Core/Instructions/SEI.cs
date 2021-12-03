@@ -16,7 +16,12 @@ namespace CS6502.Core
 
         public override CpuMicroCode Execute(SignalEdge signalEdge, int instructionCycle)
         {
-            throw new NotImplementedException();
+            IsInstructionComplete = true;
+
+            return
+                new CpuMicroCode(
+                    MicroCodeInstruction.SetIRQ
+                );
         }
     }
 }

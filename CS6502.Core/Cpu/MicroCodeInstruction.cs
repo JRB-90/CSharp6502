@@ -10,6 +10,13 @@
         SetToWrite,
 
         // Status
+        ClearCarry,
+        SetCarry,
+        ClearIRQ,
+        SetIRQ,
+        ClearDecimal,
+        SetDecimal,
+        ClearOverflow,
 
         // IR
         LatchIRToData,
@@ -21,6 +28,9 @@
         IncrementA,
         IncrementX,
         IncrementY,
+        DecrementA,
+        DecrementX,
+        DecrementY,
 
         // ALU
 
