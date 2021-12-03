@@ -28,6 +28,9 @@
         IncrementA,
         IncrementX,
         IncrementY,
+        DecrementA,
+        DecrementX,
+        DecrementY,
 
         // ALU
 

@@ -173,6 +173,30 @@ namespace CS6502.Core
                     y++;
                     p.SetFlagsFromData(y);
                     break;
+                case MicroCodeInstruction.DecrementA:
+                    if (a == 0)
+                    {
+                        p.CarryFlag = true;
+                    }
+                    a--;
+                    p.SetFlagsFromData(a);
+                    break;
+                case MicroCodeInstruction.DecrementX:
+                    if (x == 0)
+                    {
+                        p.CarryFlag = true;
+                    }
+                    x--;
+                    p.SetFlagsFromData(x);
+                    break;
+                case MicroCodeInstruction.DecrementY:
+                    if (y == 0)
+                    {
+                        p.CarryFlag = true;
+                    }
+                    y--;
+                    p.SetFlagsFromData(y);
+                    break;
                 #endregion
 
                 #region PC
