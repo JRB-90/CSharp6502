@@ -57,21 +57,19 @@ namespace CS6502.Benchmark
             }
         }
 
-        public void Run(string path, int cyclesToIgnore = 0)
+        public void Run(string path, int startingOffset = 0)
         {
             BasicCpuSystem system = new BasicCpuSystem(path);
 
-            for (int i = 0; i < cycleStates.Count; i++)
+            for (int i = startingOffset; i < cycleStates.Count; i++)
             {
                 system.Cycle();
 
-                if (i < cyclesToIgnore)
-                {
-                    continue;
-                }
-
                 ComparisonResult result =
-                    cycleStates[i].Compare(system.GetCurrentCycleState());
+                    cycleStates[i].Compare(
+                        system.GetCurrentCycleState(), 
+                        startingOffset
+                    );
 
                 if (!result.IsCompleteMatch)
                 {
