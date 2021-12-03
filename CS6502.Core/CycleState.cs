@@ -78,9 +78,9 @@ namespace CS6502.Core
             Data = byte.Parse(tokens[10].Trim().Remove(0, 2), NumberStyles.HexNumber);
         }
 
-        public ComparisonResult Compare(CycleState cycleState)
+        public ComparisonResult Compare(CycleState cycleState, int offset = 0)
         {
-            if (CycleID != cycleState.CycleID)
+            if (CycleID != cycleState.CycleID + offset)
             {
                 throw new ArgumentException(
                     $"Cannot compare cycles, ID's do not macth {CycleID}<->{cycleState.CycleID}"

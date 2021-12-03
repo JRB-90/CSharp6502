@@ -13,8 +13,7 @@ namespace CS6502.Benchmark
             Program p = new Program();
             p.LoadBenchmarkFromFile();
             //p.LoadBenchmarkFromP6502(100);
-            p.RunBenchark(1);
-
+            p.RunBenchark(16);
             System.Console.ReadLine();
         }
 
@@ -34,7 +33,6 @@ namespace CS6502.Benchmark
             catch (Exception ex)
             {
                 Console.WriteLine($"Failed to load benchmarking file: {ex.Message}");
-                Environment.Exit(1);
             }
         }
 
@@ -49,21 +47,19 @@ namespace CS6502.Benchmark
             catch (Exception ex)
             {
                 Console.WriteLine($"Failed to load benchmarking file: {ex.Message}");
-                Environment.Exit(1);
             }
         }
 
-        public void RunBenchark(int cyclesToIgnore)
+        public void RunBenchark(int startingOffset)
         {
             try
             {
-                benchmark.Run(CPU_PROG, cyclesToIgnore);
+                benchmark.Run(CPU_PROG, startingOffset);
                 Console.WriteLine("Test complete");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Failed run session: {ex.Message}");
-                Environment.Exit(1);
             }
         }
 

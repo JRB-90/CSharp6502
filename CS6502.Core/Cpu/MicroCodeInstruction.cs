@@ -33,6 +33,9 @@
         DecrementY,
 
         // ALU
+        TransferHoldToA,
+        TransferHoldToX,
+        TransferHoldToY,
 
         // PC
         TransferDILToPCLS,

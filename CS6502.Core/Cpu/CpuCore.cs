@@ -12,13 +12,14 @@ namespace CS6502.Core
     {
         public CpuCore()
         {
-            // TODO - Set initial states
-
             pcls = 0x00;
             pchs = 0x80;
             dil = 0x80;
+            x = 0xC0;
+            sp = 0xBD;
             p = new StatusRegister(0x16);
             decodeLogic = new DecodeLogic();
+            alu = new ALU();
         }
 
         public RWState RW { get; private set; }
@@ -81,8 +82,13 @@ namespace CS6502.Core
                 decodeLogic.LatchIR(dil);
                 latchIREnable = false;
             }
+
+            CpuMicroCode aluMicroCode = alu.Cycle(signalEdge);
+            p.OverflowFlag = alu.OverflowFlag;
+            p.CarryFlag = alu.CarryFlag;
+
             CpuMicroCode cpuMicroCode = decodeLogic.Cycle(signalEdge);
-            ExecuteCycleMicroCode(cpuMicroCode);
+            ExecuteCycleMicroCode(aluMicroCode + cpuMicroCode);
         }
 
         private void ExecuteCycleMicroCode(CpuMicroCode cpuMicroCode)
@@ -150,51 +156,42 @@ namespace CS6502.Core
                     p.SetFlagsFromData(y);
                     break;
                 case MicroCodeInstruction.IncrementA:
-                    if (a == byte.MaxValue)
-                    {
-                        p.CarryFlag = true;
-                    }
-                    a++;
-                    p.SetFlagsFromData(a);
+                    alu.B = a;
+                    alu.ExecuteInstruction(instruction);
                     break;
                 case MicroCodeInstruction.IncrementX:
-                    if (x == byte.MaxValue)
-                    {
-                        p.CarryFlag = true;
-                    }
-                    x++;
-                    p.SetFlagsFromData(x);
+                    alu.B = x;
+                    alu.ExecuteInstruction(instruction);
                     break;
                 case MicroCodeInstruction.IncrementY:
-                    if (y == byte.MaxValue)
-                    {
-                        p.CarryFlag = true;
-                    }
-                    y++;
-                    p.SetFlagsFromData(y);
+                    alu.B = y;
+                    alu.ExecuteInstruction(instruction);
                     break;
                 case MicroCodeInstruction.DecrementA:
-                    if (a == 0)
-                    {
-                        p.CarryFlag = true;
-                    }
-                    a--;
-                    p.SetFlagsFromData(a);
+                    alu.B = a;
+                    alu.ExecuteInstruction(instruction);
                     break;
                 case MicroCodeInstruction.DecrementX:
-                    if (x == 0)
-                    {
-                        p.CarryFlag = true;
-                    }
-                    x--;
-                    p.SetFlagsFromData(x);
+                    alu.B = x;
+                    alu.ExecuteInstruction(instruction);
                     break;
                 case MicroCodeInstruction.DecrementY:
-                    if (y == 0)
-                    {
-                        p.CarryFlag = true;
-                    }
-                    y--;
+                    alu.B = y;
+                    alu.ExecuteInstruction(instruction);
+                    break;
+                #endregion
+
+                #region ALU
+                case MicroCodeInstruction.TransferHoldToA:
+                    a = alu.Hold;
+                    p.SetFlagsFromData(a);
+                    break;
+                case MicroCodeInstruction.TransferHoldToX:
+                    x = alu.Hold;
+                    p.SetFlagsFromData(x);
+                    break;
+                case MicroCodeInstruction.TransferHoldToY:
+                    y = alu.Hold;
                     p.SetFlagsFromData(y);
                     break;
                 #endregion
@@ -293,7 +290,6 @@ namespace CS6502.Core
         private byte a;
         private byte x;
         private byte y;
-        private byte ir;
         private byte sp;
         private byte pcl;
         private byte pch;
@@ -303,7 +299,6 @@ namespace CS6502.Core
         private byte abh;
         private byte dor;
         private byte dil;
-        private byte hold;
         private ALU alu;
         private StatusRegister p;
         private DecodeLogic decodeLogic;
