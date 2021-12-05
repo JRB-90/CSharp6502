@@ -104,7 +104,7 @@ namespace CS6502.Core
             }
             else if (
                 currentInstruction.AddressingMode == AddressingMode.Indirect ||
-                currentInstruction.AddressingMode == AddressingMode.IndirectX ||
+                currentInstruction.AddressingMode == AddressingMode.XIndirect ||
                 currentInstruction.AddressingMode == AddressingMode.IndirectY)
             {
                 return IndirectCycle(signalEdge);
@@ -175,25 +175,71 @@ namespace CS6502.Core
         {
             if (signalEdge == SignalEdge.FallingEdge)
             {
-                if (instructionCycleCounter == 1)
+                if (currentInstruction.AddressingMode == AddressingMode.ZeroPage)
                 {
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.IncrementPC,
-                            MicroCodeInstruction.TransferPCToAddressBus
-                        );
+                    if (instructionCycleCounter == 1)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.IncrementPC,
+                                MicroCodeInstruction.TransferPCToAddressBus
+                            );
+                    }
+                }
+                else if (currentInstruction.AddressingMode == AddressingMode.ZeroPageX ||
+                         currentInstruction.AddressingMode == AddressingMode.ZeroPageY)
+                {
+                    if (instructionCycleCounter == 1)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.IncrementPC,
+                                MicroCodeInstruction.TransferPCToAddressBus
+                            );
+                    }
+                    else if (instructionCycleCounter == 2)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.IncrementPC,
+                                MicroCodeInstruction.TransferZPDataToAB
+                            );
+                    }
                 }
             }
             else
             {
-                if (instructionCycleCounter == 1)
+                if (currentInstruction.AddressingMode == AddressingMode.ZeroPage)
                 {
-                    state = DecodeState.Executing;
+                    if (instructionCycleCounter == 1)
+                    {
+                        state = DecodeState.Executing;
 
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.LatchDataIntoDIL
-                        );
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.LatchDataIntoDIL
+                            );
+                    }
+                }
+                else if (currentInstruction.AddressingMode == AddressingMode.ZeroPageX ||
+                         currentInstruction.AddressingMode == AddressingMode.ZeroPageY)
+                {
+                    if (instructionCycleCounter == 1)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.LatchDataIntoDIL
+                            );
+                    }
+                    else if (instructionCycleCounter == 2)
+                    {
+                        state = DecodeState.Executing;
+
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.LatchDataIntoDIL
+                            );
+                    }
                 }
             }
 
@@ -204,30 +250,86 @@ namespace CS6502.Core
         {
             if (signalEdge == SignalEdge.FallingEdge)
             {
-                if (instructionCycleCounter == 1)
+                if (currentInstruction.AddressingMode == AddressingMode.Absolute)
                 {
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.IncrementPC,
-                            MicroCodeInstruction.TransferPCToAddressBus
-                        );
+                    if (instructionCycleCounter == 1)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.IncrementPC,
+                                MicroCodeInstruction.TransferPCToAddressBus
+                            );
+                    }
+                    else if (instructionCycleCounter == 2)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.LatchDataIntoDIL,
+                                MicroCodeInstruction.TransferDILToPCLS,
+                                MicroCodeInstruction.IncrementPC,
+                                MicroCodeInstruction.TransferPCToAddressBus
+                            );
+                    }
                 }
-                else if (instructionCycleCounter == 2)
+                else if (currentInstruction.AddressingMode == AddressingMode.AbsoluteX ||
+                         (currentInstruction.AddressingMode == AddressingMode.AbsoluteY))
                 {
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.LatchDataIntoDIL,
-                            MicroCodeInstruction.TransferDILToPCLS,
-                            MicroCodeInstruction.IncrementPC,
-                            MicroCodeInstruction.TransferPCToAddressBus
-                        );
+                    if (instructionCycleCounter == 1)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.IncrementPC,
+                                MicroCodeInstruction.TransferPCToAddressBus
+                            );
+                    }
+                    else if (instructionCycleCounter == 2)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.LatchDataIntoDIL,
+                                MicroCodeInstruction.TransferDILToPCLS,
+                                MicroCodeInstruction.IncrementPC,
+                                MicroCodeInstruction.TransferPCToAddressBus
+                            );
+                    }
+                    else if (instructionCycleCounter == 3)
+                    {
+                        CpuMicroCode cpuMicroCode =
+                            new CpuMicroCode(
+                                MicroCodeInstruction.TransferDILToPCHS,
+                                MicroCodeInstruction.TransferPCSToAddressBus,
+                                MicroCodeInstruction.IncrementPC
+                            );
+
+                        if (currentInstruction.AddressingMode == AddressingMode.AbsoluteX)
+                        {
+                            cpuMicroCode.Add(MicroCodeInstruction.IncrementABByX);
+                        }
+                        else if (currentInstruction.AddressingMode == AddressingMode.AbsoluteY)
+                        {
+                            cpuMicroCode.Add(MicroCodeInstruction.IncrementABByY);
+                        }
+
+                        return cpuMicroCode;
+                    }
                 }
             }
             else
             {
-                if (instructionCycleCounter == 2)
+                if (currentInstruction.AddressingMode == AddressingMode.Absolute)
                 {
-                    state = DecodeState.Executing;
+                    if (instructionCycleCounter == 2)
+                    {
+                        state = DecodeState.Executing;
+                    }
+                }
+                else if (currentInstruction.AddressingMode == AddressingMode.AbsoluteX ||
+                         currentInstruction.AddressingMode == AddressingMode.AbsoluteY)
+                {
+                    if (instructionCycleCounter == 3)
+                    {
+                        state = DecodeState.Executing;
+                    }
                 }
             }
 

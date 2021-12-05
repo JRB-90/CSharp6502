@@ -15,20 +15,16 @@ namespace CS6502.Core
                     return new STA(0x95, addressingMode);
 
                 case AddressingMode.Absolute:
-                    throw new NotImplementedException(); // TODO
-                    //return new STA(0x8D, addressingMode);
+                    return new STA(0x8D, addressingMode);
 
                 case AddressingMode.AbsoluteX:
-                    throw new NotImplementedException(); // TODO
-                    //return new STA(0x9D, addressingMode);
+                    return new STA(0x9D, addressingMode);
 
                 case AddressingMode.AbsoluteY:
-                    throw new NotImplementedException(); // TODO
-                    //return new STA(0x99, addressingMode);
+                    return new STA(0x99, addressingMode);
 
-                case AddressingMode.IndirectX:
-                    throw new NotImplementedException(); // TODO
-                    //return new STA(0x81, addressingMode);
+                case AddressingMode.XIndirect:
+                    return new STA(0x81, addressingMode);
 
                 case AddressingMode.IndirectY:
                     throw new NotImplementedException(); // TODO
@@ -52,7 +48,7 @@ namespace CS6502.Core
             {
                 return Absolute(signalEdge, instructionCycle);
             }
-            else if (AddressingMode == AddressingMode.IndirectX ||
+            else if (AddressingMode == AddressingMode.XIndirect ||
                      AddressingMode == AddressingMode.IndirectY)
             {
                 return Indirect(signalEdge, instructionCycle);
@@ -65,19 +61,35 @@ namespace CS6502.Core
 
         private CpuMicroCode ZeroPage(SignalEdge signalEdge, int instructionCycle)
         {
+            int startingCycle = 2;
+            if (AddressingMode == AddressingMode.ZeroPageX)
+            {
+                startingCycle = 3;
+            }
+
             if (signalEdge == SignalEdge.FallingEdge)
             {
-                if (instructionCycle == 2)
+                if (instructionCycle == startingCycle)
                 {
-                    return
-                       new CpuMicroCode(
+                    CpuMicroCode cpuMicroCode =
+                        new CpuMicroCode(
                            MicroCodeInstruction.TransferZPDataToAB,
                            MicroCodeInstruction.LatchDILIntoDOR,
-                           MicroCodeInstruction.SetToWrite,
-                           MicroCodeInstruction.IncrementPC
+                           MicroCodeInstruction.SetToWrite
                        );
+
+                    if (AddressingMode == AddressingMode.ZeroPage)
+                    {
+                        cpuMicroCode.Add(MicroCodeInstruction.IncrementPC);
+                    }
+                    else if (AddressingMode == AddressingMode.ZeroPageX)
+                    {
+                        cpuMicroCode.Add(MicroCodeInstruction.IncrementABByX);
+                    }
+
+                    return cpuMicroCode;
                 }
-                if (instructionCycle == 3)
+                if (instructionCycle == startingCycle + 1)
                 {
                     IsInstructionComplete = true;
 
@@ -89,7 +101,7 @@ namespace CS6502.Core
             }
             else
             {
-                if (instructionCycle == 2)
+                if (instructionCycle == startingCycle)
                 {
                     return
                         new CpuMicroCode(
@@ -104,7 +116,59 @@ namespace CS6502.Core
 
         private CpuMicroCode Absolute(SignalEdge signalEdge, int instructionCycle)
         {
-            throw new NotImplementedException();
+            int startingCycle = 3;
+            if (AddressingMode == AddressingMode.AbsoluteX ||
+                AddressingMode == AddressingMode.AbsoluteY)
+            {
+                startingCycle = 4;
+            }
+
+            if (signalEdge == SignalEdge.FallingEdge)
+            {
+                if (instructionCycle == startingCycle)
+                {
+                    CpuMicroCode cpuMicroCode =
+                        new CpuMicroCode(
+                            MicroCodeInstruction.SetToWrite,
+                            MicroCodeInstruction.LatchDILIntoDOR                            
+                        );
+
+                    if (AddressingMode == AddressingMode.Absolute)
+                    {
+                        cpuMicroCode.Add(MicroCodeInstruction.TransferDILToPCHS);
+                        cpuMicroCode.Add(MicroCodeInstruction.TransferPCSToAddressBus);
+                        cpuMicroCode.Add(MicroCodeInstruction.IncrementPC);
+                    }
+                    else if (AddressingMode == AddressingMode.AbsoluteX ||
+                             AddressingMode == AddressingMode.AbsoluteY)
+                    {
+
+                    }
+
+                    return cpuMicroCode;
+                }
+                else if (instructionCycle == startingCycle + 1)
+                {
+                    IsInstructionComplete = true;
+
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.TransferPCToPCS
+                        );
+                }
+            }
+            else
+            {
+                if (instructionCycle == startingCycle)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.LatchAIntoDOR
+                        );
+                }
+            }
+
+            return new CpuMicroCode();
         }
 
         private CpuMicroCode Indirect(SignalEdge signalEdge, int instructionCycle)

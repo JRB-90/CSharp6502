@@ -251,6 +251,10 @@ namespace CS6502.Core
                     abl = pcl;
                     abh = pch;
                     break;
+                case MicroCodeInstruction.TransferPCSToAddressBus:
+                    abl = pcls;
+                    abh = pchs;
+                    break;
                 case MicroCodeInstruction.TransferZPDataToAB:
                     abl = dil;
                     abh = 0x00;
@@ -260,6 +264,20 @@ namespace CS6502.Core
                     break;
                 case MicroCodeInstruction.TransferDILToABH:
                     abh = dil;
+                    break;
+                case MicroCodeInstruction.IncrementABByX:
+                    if (((int)abl + (int)x) > byte.MaxValue)
+                    {
+                        p.CarryFlag = true;
+                    }    
+                    abl = (byte)(abl + x);
+                    break;
+                case MicroCodeInstruction.IncrementABByY:
+                    if (((int)abl + (int)y) > byte.MaxValue)
+                    {
+                        p.CarryFlag = true;
+                    }
+                    abl = (byte)(abl + y);
                     break;
                 #endregion
 

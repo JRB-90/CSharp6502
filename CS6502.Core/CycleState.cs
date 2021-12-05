@@ -83,13 +83,13 @@ namespace CS6502.Core
             if (CycleID != cycleState.CycleID + offset)
             {
                 throw new ArgumentException(
-                    $"Cannot compare cycles, ID's do not macth {CycleID}<->{cycleState.CycleID}"
+                    $"Cannot compare cycles, ID's do not macth {CycleID}<->{cycleState.CycleID + offset}"
                 );
             }
 
             return
                 new ComparisonResult(
-                    CycleID,
+                    cycleState.CycleID,
                     RW == cycleState.RW,
                     A == cycleState.A,
                     X == cycleState.X,

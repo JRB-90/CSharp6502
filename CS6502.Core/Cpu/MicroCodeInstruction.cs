@@ -52,9 +52,12 @@
 
         // Address
         TransferPCToAddressBus,
+        TransferPCSToAddressBus,
         TransferZPDataToAB,
         TransferDILToABL,
         TransferDILToABH,
+        IncrementABByX,
+        IncrementABByY,
 
         // Data
         LatchDataIntoDIL,
