@@ -403,11 +403,73 @@ namespace CS6502.Core
                         }
                     }
                 }
+                else if (currentInstruction.AddressingMode == AddressingMode.Indirect)
+                {
+                    if (instructionCycleCounter == 1)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.IncrementPC,
+                                MicroCodeInstruction.TransferPCToAddressBus
+                            );
+                    }
+                    else if (instructionCycleCounter == 2)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.LatchDataIntoDIL,
+                                MicroCodeInstruction.TransferDILToPCLS,
+                                MicroCodeInstruction.IncrementPC,
+                                MicroCodeInstruction.TransferPCToAddressBus
+                            );
+                    }
+                    else if (instructionCycleCounter == 3)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.LatchDataIntoDIL,
+                                MicroCodeInstruction.TransferDILToPCHS,
+                                MicroCodeInstruction.TransferPCSToAddressBus,
+                                MicroCodeInstruction.IncrementPC
+                            );
+                    }
+                    else if (instructionCycleCounter == 4)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.LatchDataIntoDIL,
+                                MicroCodeInstruction.TransferDILToPCLS,
+
+                                // TODO - If this crosses the page boundary, it will take another cycle
+                                // Need to implement this in the future...
+                                MicroCodeInstruction.IncrementAB_NoCarry
+                            );
+                    }
+                }
             }
             else
             {
                 if (currentInstruction.AddressingMode == AddressingMode.XIndirect ||
                     currentInstruction.AddressingMode == AddressingMode.IndirectY)
+                {
+                    if (instructionCycleCounter == 3)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.LatchDataIntoDIL
+                            );
+                    }
+                    else if (instructionCycleCounter == 4)
+                    {
+                        state = DecodeState.Executing;
+
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.LatchDataIntoDIL
+                            );
+                    }
+                }
+                else if (currentInstruction.AddressingMode == AddressingMode.Indirect)
                 {
                     if (instructionCycleCounter == 3)
                     {

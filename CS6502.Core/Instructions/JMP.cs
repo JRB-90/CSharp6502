@@ -51,7 +51,13 @@ namespace CS6502.Core
 
         private CpuMicroCode ExecuteIndirect(SignalEdge signalEdge, int instructionCycle)
         {
-            throw new NotImplementedException();
+            IsInstructionComplete = true;
+
+            return
+                new CpuMicroCode(
+                    MicroCodeInstruction.LatchDataIntoDIL,
+                    MicroCodeInstruction.TransferDILToPCHS
+                );
         }
 
         private JMP(
