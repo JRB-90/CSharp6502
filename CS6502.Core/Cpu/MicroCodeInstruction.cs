@@ -31,6 +31,7 @@
         DecrementA,
         DecrementX,
         DecrementY,
+        TransferXToSP,
 
         // ALU
         TransferHoldToA,
@@ -51,9 +52,14 @@
 
         // Address
         TransferPCToAddressBus,
+        TransferPCSToAddressBus,
         TransferZPDataToAB,
         TransferDILToABL,
         TransferDILToABH,
+        IncrementAB_NoCarry,
+        IncrementABByX,
+        IncrementABByY,
+        IncrementABByY_WithCarry,
 
         // Data
         LatchDataIntoDIL,

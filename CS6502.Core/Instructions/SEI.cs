@@ -9,8 +9,7 @@ namespace CS6502.Core
             base(
                 "SEI",
                 0x78,
-                AddressingMode.Implied,
-                OperationType.Internal)
+                AddressingMode.Implied)
         {
         }
 

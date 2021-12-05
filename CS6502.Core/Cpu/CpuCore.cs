@@ -179,6 +179,9 @@ namespace CS6502.Core
                     alu.B = y;
                     alu.ExecuteInstruction(instruction);
                     break;
+                case MicroCodeInstruction.TransferXToSP:
+                    sp = x;
+                    break;
                 #endregion
 
                 #region ALU
@@ -248,6 +251,10 @@ namespace CS6502.Core
                     abl = pcl;
                     abh = pch;
                     break;
+                case MicroCodeInstruction.TransferPCSToAddressBus:
+                    abl = pcls;
+                    abh = pchs;
+                    break;
                 case MicroCodeInstruction.TransferZPDataToAB:
                     abl = dil;
                     abh = 0x00;
@@ -257,6 +264,31 @@ namespace CS6502.Core
                     break;
                 case MicroCodeInstruction.TransferDILToABH:
                     abh = dil;
+                    break;
+                case MicroCodeInstruction.IncrementAB_NoCarry:
+                    abl++;
+                    break;
+                case MicroCodeInstruction.IncrementABByX:
+                    if (((int)abl + (int)x) > byte.MaxValue)
+                    {
+                        p.CarryFlag = true;
+                    }    
+                    abl = (byte)(abl + x);
+                    break;
+                case MicroCodeInstruction.IncrementABByY:
+                    if (((int)abl + (int)y) > byte.MaxValue)
+                    {
+                        p.CarryFlag = true;
+                    }
+                    abl = (byte)(abl + y);
+                    break;
+                case MicroCodeInstruction.IncrementABByY_WithCarry:
+                    if (((int)abl + (int)y) > byte.MaxValue)
+                    {
+                        p.CarryFlag = true;
+                        abh++;
+                    }
+                    abl = (byte)(abl + y);
                     break;
                 #endregion
 

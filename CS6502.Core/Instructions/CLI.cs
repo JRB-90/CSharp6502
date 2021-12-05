@@ -9,8 +9,7 @@ namespace CS6502.Core
             base(
                 "CLI",
                 0x58,
-                AddressingMode.Implied,
-                OperationType.Internal)
+                AddressingMode.Implied)
         {
         }
 

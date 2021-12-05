@@ -11,7 +11,7 @@
         ZeroPageY,
         Relative,
         Indirect,
-        IndirectX,
+        XIndirect,
         IndirectY,
         Implied,
         Absolute,

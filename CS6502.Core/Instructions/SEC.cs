@@ -9,8 +9,7 @@ namespace CS6502.Core
             base(
                 "SEC",
                 0x38,
-                AddressingMode.Implied,
-                OperationType.Internal)
+                AddressingMode.Implied)
         {
         }
 

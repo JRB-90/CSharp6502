@@ -7,8 +7,7 @@
             base(
                 "BRK",
                 0x00,
-                AddressingMode.Implied,
-                OperationType.Internal)
+                AddressingMode.Implied)
         {
         }
     }
