@@ -282,6 +282,14 @@ namespace CS6502.Core
                     }
                     abl = (byte)(abl + y);
                     break;
+                case MicroCodeInstruction.IncrementABByY_WithCarry:
+                    if (((int)abl + (int)y) > byte.MaxValue)
+                    {
+                        p.CarryFlag = true;
+                        abh++;
+                    }
+                    abl = (byte)(abl + y);
+                    break;
                 #endregion
 
                 #region Data

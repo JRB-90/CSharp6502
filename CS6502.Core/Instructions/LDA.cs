@@ -30,8 +30,7 @@ namespace CS6502.Core
                     return new LDA(0xA1, addressingMode);
 
                 case AddressingMode.IndirectY:
-                    throw new NotImplementedException(); // TODO
-                    //return new LDA(0xB1, addressingMode);
+                    return new LDA(0xB1, addressingMode);
 
                 default:
                     throw new ArgumentException($"LDA does not support {addressingMode.ToString()} addressing mode");
@@ -187,32 +186,53 @@ namespace CS6502.Core
         private CpuMicroCode Indirect(SignalEdge signalEdge, int instructionCycle)
         {
             int startingCycle = 4;
-            if (AddressingMode == AddressingMode.XIndirect)
+            if (AddressingMode == AddressingMode.XIndirect ||
+                AddressingMode == AddressingMode.IndirectY)
             {
                 startingCycle = 5;
             }
 
             if (signalEdge == SignalEdge.FallingEdge)
             {
-                if (instructionCycle == startingCycle)
+                if (AddressingMode == AddressingMode.XIndirect)
                 {
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.SetToRead,
-                            MicroCodeInstruction.TransferDILToPCHS,
-                            MicroCodeInstruction.TransferPCSToAddressBus
-                       );
-                }
-                else if (instructionCycle == startingCycle + 1)
-                {
-                    IsInstructionComplete = true;
+                    if (instructionCycle == startingCycle)
+                    {
+                        if (AddressingMode == AddressingMode.XIndirect)
+                        {
+                            return
+                                new CpuMicroCode(
+                                    MicroCodeInstruction.SetToRead,
+                                    MicroCodeInstruction.TransferDILToPCHS,
+                                    MicroCodeInstruction.TransferPCSToAddressBus
+                                );
+                        }
+                    }
+                    else if (instructionCycle == startingCycle + 1)
+                    {
+                        IsInstructionComplete = true;
 
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.LatchDataIntoDIL,
-                            MicroCodeInstruction.LatchDILIntoA,
-                            MicroCodeInstruction.TransferPCToPCS
-                        );
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.LatchDataIntoDIL,
+                                MicroCodeInstruction.LatchDILIntoA,
+                                MicroCodeInstruction.TransferPCToPCS
+                            );
+                    }
+                }
+                else if (AddressingMode == AddressingMode.IndirectY)
+                {
+                    if (instructionCycle == startingCycle)
+                    {
+                        IsInstructionComplete = true;
+
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.LatchDataIntoDIL,
+                                MicroCodeInstruction.LatchDILIntoA,
+                                MicroCodeInstruction.TransferPCToPCS
+                            );
+                    }
                 }
             }
             else

@@ -59,6 +59,7 @@
         IncrementAB_NoCarry,
         IncrementABByX,
         IncrementABByY,
+        IncrementABByY_WithCarry,
 
         // Data
         LatchDataIntoDIL,

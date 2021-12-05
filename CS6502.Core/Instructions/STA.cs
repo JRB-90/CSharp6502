@@ -27,8 +27,7 @@ namespace CS6502.Core
                     return new STA(0x81, addressingMode);
 
                 case AddressingMode.IndirectY:
-                    throw new NotImplementedException(); // TODO
-                    //return new STA(0x91, addressingMode);
+                    return new STA(0x91, addressingMode);
 
                 default:
                     throw new ArgumentException($"STA does not support {addressingMode.ToString()} addressing mode");
@@ -174,7 +173,8 @@ namespace CS6502.Core
         private CpuMicroCode Indirect(SignalEdge signalEdge, int instructionCycle)
         {
             int startingCycle = 4;
-            if (AddressingMode == AddressingMode.XIndirect)
+            if (AddressingMode == AddressingMode.XIndirect ||
+                AddressingMode == AddressingMode.IndirectY)
             {
                 startingCycle = 5;
             }
@@ -183,13 +183,24 @@ namespace CS6502.Core
             {
                 if (instructionCycle == startingCycle)
                 {
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.TransferDILToPCHS,
-                            MicroCodeInstruction.TransferPCSToAddressBus,
-                            MicroCodeInstruction.LatchDILIntoDOR,
-                            MicroCodeInstruction.SetToWrite
-                       );
+                    if (AddressingMode == AddressingMode.XIndirect)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.TransferDILToPCHS,
+                                MicroCodeInstruction.TransferPCSToAddressBus,
+                                MicroCodeInstruction.LatchDILIntoDOR,
+                                MicroCodeInstruction.SetToWrite
+                            );
+                    }
+                    else if (AddressingMode == AddressingMode.IndirectY)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.LatchDILIntoDOR,
+                                MicroCodeInstruction.SetToWrite
+                            );
+                    }
                 }
                 else if (instructionCycle == startingCycle + 1)
                 {

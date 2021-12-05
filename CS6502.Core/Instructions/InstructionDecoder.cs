@@ -35,6 +35,8 @@ namespace CS6502.Core
                     return LDA.CreateLDA(AddressingMode.AbsoluteY);
                 case 0x8D:
                     return STA.CreateSTA(AddressingMode.Absolute);
+                case 0x91:
+                    return STA.CreateSTA(AddressingMode.IndirectY);
                 case 0x95:
                     return STA.CreateSTA(AddressingMode.ZeroPageX);
                 case 0x99:
@@ -55,6 +57,8 @@ namespace CS6502.Core
                     return LDA.CreateLDA(AddressingMode.Immediate);
                 case 0xAD:
                     return LDA.CreateLDA(AddressingMode.Absolute);
+                case 0xB1:
+                    return LDA.CreateLDA(AddressingMode.IndirectY);
                 case 0xB5:
                     return LDA.CreateLDA(AddressingMode.ZeroPageX);
                 case 0xB8:
