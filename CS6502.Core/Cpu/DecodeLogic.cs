@@ -338,7 +338,70 @@ namespace CS6502.Core
 
         private CpuMicroCode IndirectCycle(SignalEdge signalEdge)
         {
-            throw new NotImplementedException();
+            if (signalEdge == SignalEdge.FallingEdge)
+            {
+                if (currentInstruction.AddressingMode == AddressingMode.XIndirect)
+                {
+                    if (instructionCycleCounter == 1)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.IncrementPC,
+                                MicroCodeInstruction.TransferPCToAddressBus
+                            );
+                    }
+                    else if (instructionCycleCounter == 2)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.LatchDataIntoDIL,
+                                MicroCodeInstruction.TransferZPDataToAB,
+                                MicroCodeInstruction.IncrementPC
+                            );
+                    }
+                    else if (instructionCycleCounter == 3)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.LatchDataIntoDIL,
+                                MicroCodeInstruction.IncrementABByX
+                            );
+                    }
+                    else if (instructionCycleCounter == 4)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.LatchDataIntoDIL,
+                                MicroCodeInstruction.TransferDILToPCLS,
+                                MicroCodeInstruction.IncrementAB_NoCarry
+                            );
+                    }
+                }
+            }
+            else
+            {
+                if (currentInstruction.AddressingMode == AddressingMode.XIndirect)
+                {
+                    if (instructionCycleCounter == 3)
+                    {
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.LatchDataIntoDIL
+                            );
+                    }
+                    else if (instructionCycleCounter == 4)
+                    {
+                        state = DecodeState.Executing;
+
+                        return
+                            new CpuMicroCode(
+                                MicroCodeInstruction.LatchDataIntoDIL
+                            );
+                    }
+                }
+            }
+
+            return new CpuMicroCode();
         }
 
         private CpuMicroCode RelativeCycle(SignalEdge signalEdge)

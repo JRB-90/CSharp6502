@@ -265,6 +265,9 @@ namespace CS6502.Core
                 case MicroCodeInstruction.TransferDILToABH:
                     abh = dil;
                     break;
+                case MicroCodeInstruction.IncrementAB_NoCarry:
+                    abl++;
+                    break;
                 case MicroCodeInstruction.IncrementABByX:
                     if (((int)abl + (int)x) > byte.MaxValue)
                     {

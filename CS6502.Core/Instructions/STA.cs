@@ -173,7 +173,46 @@ namespace CS6502.Core
 
         private CpuMicroCode Indirect(SignalEdge signalEdge, int instructionCycle)
         {
-            throw new NotImplementedException();
+            int startingCycle = 4;
+            if (AddressingMode == AddressingMode.XIndirect)
+            {
+                startingCycle = 5;
+            }
+
+            if (signalEdge == SignalEdge.FallingEdge)
+            {
+                if (instructionCycle == startingCycle)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.TransferDILToPCHS,
+                            MicroCodeInstruction.TransferPCSToAddressBus,
+                            MicroCodeInstruction.LatchDILIntoDOR,
+                            MicroCodeInstruction.SetToWrite
+                       );
+                }
+                else if (instructionCycle == startingCycle + 1)
+                {
+                    IsInstructionComplete = true;
+
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.TransferPCToPCS
+                        );
+                }
+            }
+            else
+            {
+                if (instructionCycle == startingCycle)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.LatchAIntoDOR
+                        );
+                }
+            }
+
+            return new CpuMicroCode();
         }
 
         private STA(

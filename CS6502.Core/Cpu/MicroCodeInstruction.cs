@@ -56,6 +56,7 @@
         TransferZPDataToAB,
         TransferDILToABL,
         TransferDILToABH,
+        IncrementAB_NoCarry,
         IncrementABByX,
         IncrementABByY,
 
