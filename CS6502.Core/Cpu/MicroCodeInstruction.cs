@@ -32,6 +32,11 @@
         DecrementX,
         DecrementY,
         TransferXToSP,
+        TransferAToX,
+        TransferAToY,
+        TransferSPToX,
+        TransferXToA,
+        TransferYToA,
 
         // ALU
         TransferHoldToA,

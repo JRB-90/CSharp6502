@@ -2,78 +2,47 @@
 
 namespace CS6502.Core
 {
-    internal class LDX : InstructionBase
+    internal class STY : InstructionBase
     {
-        public static LDX CreateLDX(AddressingMode addressingMode)
+        public static STY CreateSTY(AddressingMode addressingMode)
         {
             switch (addressingMode)
             {
-                case AddressingMode.Immediate:
-                    return new LDX(0xA2, addressingMode);
-
                 case AddressingMode.ZeroPage:
-                    return new LDX(0xA6, addressingMode);
+                    return new STY(0x84, addressingMode);
 
-                case AddressingMode.ZeroPageY:
-                    return new LDX(0xB6, addressingMode);
+                case AddressingMode.ZeroPageX:
+                    return new STY(0x94, addressingMode);
 
                 case AddressingMode.Absolute:
-                    return new LDX(0xAE, addressingMode);
-
-                case AddressingMode.AbsoluteY:
-                    return new LDX(0xBE, addressingMode);
+                    return new STY(0x8C, addressingMode);
 
                 default:
-                    throw new ArgumentException($"LDX does not support {addressingMode.ToString()} addressing mode");
+                    throw new ArgumentException($"STX does not support {addressingMode.ToString()} addressing mode");
             }
         }
 
         public override CpuMicroCode Execute(SignalEdge signalEdge, int instructionCycle)
         {
-            if (AddressingMode == AddressingMode.Immediate)
-            {
-                return Immediate(signalEdge, instructionCycle);
-            }
-            else if (AddressingMode == AddressingMode.ZeroPage ||
-                     AddressingMode == AddressingMode.ZeroPageY)
+            if (AddressingMode == AddressingMode.ZeroPage ||
+                AddressingMode == AddressingMode.ZeroPageX)
             {
                 return ZeroPage(signalEdge, instructionCycle);
             }
-            else if (AddressingMode == AddressingMode.Absolute ||
-                     AddressingMode == AddressingMode.AbsoluteY)
+            else if (AddressingMode == AddressingMode.Absolute)
             {
                 return Absolute(signalEdge, instructionCycle);
             }
             else
             {
-                throw new ArgumentException($"LDA does not support {AddressingMode.ToString()} addressing mode");
+                throw new ArgumentException($"STY does not support {AddressingMode.ToString()} addressing mode");
             }
-        }
-
-        private CpuMicroCode Immediate(SignalEdge signalEdge, int instructionCycle)
-        {
-            if (signalEdge == SignalEdge.FallingEdge)
-            {
-                IsInstructionComplete = true;
-
-                if (instructionCycle == 2)
-                {
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.LatchDILIntoX,
-                            MicroCodeInstruction.IncrementPC,
-                            MicroCodeInstruction.TransferPCToPCS
-                        );
-                }
-            }
-
-            return new CpuMicroCode();
         }
 
         private CpuMicroCode ZeroPage(SignalEdge signalEdge, int instructionCycle)
         {
             int startingCycle = 2;
-            if (AddressingMode == AddressingMode.ZeroPageY)
+            if (AddressingMode == AddressingMode.ZeroPageX)
             {
                 startingCycle = 3;
             }
@@ -84,8 +53,9 @@ namespace CS6502.Core
                 {
                     CpuMicroCode cpuMicroCode =
                         new CpuMicroCode(
-                           MicroCodeInstruction.LatchDataIntoDIL,
-                           MicroCodeInstruction.SetToRead
+                           
+                           MicroCodeInstruction.LatchDILIntoDOR,
+                           MicroCodeInstruction.SetToWrite
                        );
 
                     if (AddressingMode == AddressingMode.ZeroPage)
@@ -93,9 +63,9 @@ namespace CS6502.Core
                         cpuMicroCode.Add(MicroCodeInstruction.TransferZPDataToAB);
                         cpuMicroCode.Add(MicroCodeInstruction.IncrementPC);
                     }
-                    else if (AddressingMode == AddressingMode.ZeroPageY)
+                    else if (AddressingMode == AddressingMode.ZeroPageX)
                     {
-                        cpuMicroCode.Add(MicroCodeInstruction.IncrementABByY);
+                        cpuMicroCode.Add(MicroCodeInstruction.IncrementABByX);
                     }
 
                     return cpuMicroCode;
@@ -106,7 +76,7 @@ namespace CS6502.Core
 
                     return
                         new CpuMicroCode(
-                            MicroCodeInstruction.LatchDILIntoX
+                            MicroCodeInstruction.TransferPCToPCS
                         );
                 }
             }
@@ -116,6 +86,7 @@ namespace CS6502.Core
                 {
                     return
                         new CpuMicroCode(
+                            MicroCodeInstruction.LatchYIntoDOR,
                             MicroCodeInstruction.TransferPCToPCS
                         );
                 }
@@ -132,7 +103,8 @@ namespace CS6502.Core
                 {
                     return
                         new CpuMicroCode(
-                            MicroCodeInstruction.SetToRead,
+                            MicroCodeInstruction.SetToWrite,
+                            MicroCodeInstruction.LatchDILIntoDOR,
                             MicroCodeInstruction.TransferDILToPCHS,
                             MicroCodeInstruction.TransferPCSToAddressBus,
                             MicroCodeInstruction.IncrementPC
@@ -144,8 +116,6 @@ namespace CS6502.Core
 
                     return
                         new CpuMicroCode(
-                            MicroCodeInstruction.LatchDataIntoDIL,
-                            MicroCodeInstruction.LatchDILIntoX,
                             MicroCodeInstruction.TransferPCToPCS
                         );
                 }
@@ -156,7 +126,7 @@ namespace CS6502.Core
                 {
                     return
                         new CpuMicroCode(
-                            MicroCodeInstruction.LatchDataIntoDIL
+                            MicroCodeInstruction.LatchYIntoDOR
                         );
                 }
             }
@@ -164,12 +134,12 @@ namespace CS6502.Core
             return new CpuMicroCode();
         }
 
-        private LDX(
+        private STY(
             byte opcode,
             AddressingMode addressingMode)
           :
             base(
-                "LDX",
+                "STY",
                 opcode,
                 addressingMode)
         {

@@ -27,18 +27,34 @@ namespace CS6502.Core
                     return new SEI();
                 case 0x81:
                     return STA.CreateSTA(AddressingMode.XIndirect);
+                case 0x84:
+                    return STY.CreateSTY(AddressingMode.ZeroPage);
                 case 0x85:
                     return STA.CreateSTA(AddressingMode.ZeroPage);
+                case 0x86:
+                    return STX.CreateSTX(AddressingMode.ZeroPage);
                 case 0x88:
                     return new DEY();
+                case 0x8A:
+                    return new TXA();
+                case 0x8C:
+                    return STY.CreateSTY(AddressingMode.Absolute);
+                case 0x8E:
+                    return STX.CreateSTX(AddressingMode.Absolute);
                 case 0xB9:
                     return LDA.CreateLDA(AddressingMode.AbsoluteY);
                 case 0x8D:
                     return STA.CreateSTA(AddressingMode.Absolute);
                 case 0x91:
                     return STA.CreateSTA(AddressingMode.IndirectY);
+                case 0x94:
+                    return STY.CreateSTY(AddressingMode.ZeroPageX);
                 case 0x95:
                     return STA.CreateSTA(AddressingMode.ZeroPageX);
+                case 0x96:
+                    return STX.CreateSTX(AddressingMode.ZeroPageY);
+                case 0x98:
+                    return new TYA();
                 case 0x99:
                     return STA.CreateSTA(AddressingMode.AbsoluteY);
                 case 0x9A:
@@ -51,20 +67,42 @@ namespace CS6502.Core
                     return LDA.CreateLDA(AddressingMode.XIndirect);
                 case 0xA2:
                     return LDX.CreateLDX(AddressingMode.Immediate);
+                case 0xA4:
+                    return LDY.CreateLDY(AddressingMode.ZeroPage);
                 case 0xA5:
                     return LDA.CreateLDA(AddressingMode.ZeroPage);
+                case 0xA6:
+                    return LDX.CreateLDX(AddressingMode.ZeroPage);
+                case 0xA8:
+                    return new TAY();
                 case 0xA9:
                     return LDA.CreateLDA(AddressingMode.Immediate);
+                case 0xAA:
+                    return new TAX();
+                case 0xAC:
+                    return LDY.CreateLDY(AddressingMode.Absolute);
                 case 0xAD:
                     return LDA.CreateLDA(AddressingMode.Absolute);
+                case 0xAE:
+                    return LDX.CreateLDX(AddressingMode.Absolute);
                 case 0xB1:
                     return LDA.CreateLDA(AddressingMode.IndirectY);
+                case 0xB4:
+                    return LDY.CreateLDY(AddressingMode.ZeroPageX);
                 case 0xB5:
                     return LDA.CreateLDA(AddressingMode.ZeroPageX);
+                case 0xB6:
+                    return LDX.CreateLDX(AddressingMode.ZeroPageY);
                 case 0xB8:
                     return new CLV();
+                case 0xBA:
+                    return new TSX();
+                case 0xBC:
+                    return LDY.CreateLDY(AddressingMode.AbsoluteX);
                 case 0xBD:
                     return LDA.CreateLDA(AddressingMode.AbsoluteX);
+                case 0xBE:
+                    return LDX.CreateLDX(AddressingMode.AbsoluteY);
                 case 0xC8:
                     return new INY();
                 case 0xCA:

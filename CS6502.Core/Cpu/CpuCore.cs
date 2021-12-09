@@ -182,6 +182,26 @@ namespace CS6502.Core
                 case MicroCodeInstruction.TransferXToSP:
                     sp = x;
                     break;
+                case MicroCodeInstruction.TransferSPToX:
+                    x = sp;
+                    p.SetFlagsFromData(x);
+                    break;
+                case MicroCodeInstruction.TransferAToX:
+                    x = a;
+                    p.SetFlagsFromData(x);
+                    break;
+                case MicroCodeInstruction.TransferXToA:
+                    a = x;
+                    p.SetFlagsFromData(a);
+                    break;
+                case MicroCodeInstruction.TransferAToY:
+                    y = a;
+                    p.SetFlagsFromData(y);
+                    break;
+                case MicroCodeInstruction.TransferYToA:
+                    a = y;
+                    p.SetFlagsFromData(a);
+                    break;
                 #endregion
 
                 #region ALU

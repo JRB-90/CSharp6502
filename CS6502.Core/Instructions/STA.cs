@@ -138,11 +138,6 @@ namespace CS6502.Core
                         cpuMicroCode.Add(MicroCodeInstruction.TransferPCSToAddressBus);
                         cpuMicroCode.Add(MicroCodeInstruction.IncrementPC);
                     }
-                    else if (AddressingMode == AddressingMode.AbsoluteX ||
-                             AddressingMode == AddressingMode.AbsoluteY)
-                    {
-
-                    }
 
                     return cpuMicroCode;
                 }
