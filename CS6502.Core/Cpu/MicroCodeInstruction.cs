@@ -8,6 +8,8 @@
         // CPU State
         SetToRead,
         SetToWrite,
+        DecrementSP,
+        IncrementSP,
 
         // Status
         ClearCarry,
@@ -17,6 +19,7 @@
         ClearDecimal,
         SetDecimal,
         ClearOverflow,
+        TransferDataIntoP,
 
         // IR
         LatchIRToData,
@@ -65,6 +68,7 @@
         IncrementABByX,
         IncrementABByY,
         IncrementABByY_WithCarry,
+        TransferSPToAB,
 
         // Data
         LatchDataIntoDIL,
@@ -72,5 +76,6 @@
         LatchAIntoDOR,
         LatchXIntoDOR,
         LatchYIntoDOR,
+        LatchPIntoDOR
     }
 }

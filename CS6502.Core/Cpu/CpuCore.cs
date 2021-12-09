@@ -110,6 +110,12 @@ namespace CS6502.Core
                 case MicroCodeInstruction.SetToWrite:
                     RW = RWState.Write;
                     break;
+                case MicroCodeInstruction.DecrementSP:
+                    sp--;
+                    break;
+                case MicroCodeInstruction.IncrementSP:
+                    sp++;
+                    break;
                 #endregion
 
                 #region Status
@@ -133,6 +139,9 @@ namespace CS6502.Core
                     break;
                 case MicroCodeInstruction.ClearOverflow:
                     p.OverflowFlag = false;
+                    break;
+                case MicroCodeInstruction.TransferDataIntoP:
+                    p.Value = (byte)(dil & 0b11011111);
                     break;
                 #endregion
 
@@ -310,6 +319,10 @@ namespace CS6502.Core
                     }
                     abl = (byte)(abl + y);
                     break;
+                case MicroCodeInstruction.TransferSPToAB:
+                    abh = 0x01;
+                    abl = sp;
+                    break;
                 #endregion
 
                 #region Data
@@ -327,6 +340,9 @@ namespace CS6502.Core
                     break;
                 case MicroCodeInstruction.LatchYIntoDOR:
                     dor = y;
+                    break;
+                case MicroCodeInstruction.LatchPIntoDOR:
+                    dor = (byte)(p.Value | 0b00100000);
                     break;
                 #endregion
 

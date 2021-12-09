@@ -13,14 +13,22 @@ namespace CS6502.Core
             {
                 case 0x00:
                     return new BRK();
+                case 0x08:
+                    return new PHP();
                 case 0x18:
                     return new CLC();
+                case 0x28:
+                    return new PLP();
                 case 0x38:
                     return new SEC();
+                case 0x48:
+                    return new PHA();
                 case 0x4C:
                     return JMP.CreateJMP(AddressingMode.Absolute);
                 case 0x58:
                     return new CLI();
+                case 0x68:
+                    return new PLA();
                 case 0x6C:
                     return JMP.CreateJMP(AddressingMode.Indirect);
                 case 0x78:
