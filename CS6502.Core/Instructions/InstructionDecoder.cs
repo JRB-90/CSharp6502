@@ -17,6 +17,8 @@ namespace CS6502.Core
                     return new PHP();
                 case 0x18:
                     return new CLC();
+                case 0x20:
+                    return new JSR();
                 case 0x28:
                     return new PLP();
                 case 0x38:
@@ -27,6 +29,8 @@ namespace CS6502.Core
                     return JMP.CreateJMP(AddressingMode.Absolute);
                 case 0x58:
                     return new CLI();
+                case 0x60:
+                    return new RTS();
                 case 0x68:
                     return new PLA();
                 case 0x6C:
