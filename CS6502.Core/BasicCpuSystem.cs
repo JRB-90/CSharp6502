@@ -1,4 +1,6 @@
-﻿namespace CS6502.Core
+﻿using System;
+
+namespace CS6502.Core
 {
     /// <summary>
     /// Class to handle setup, wiring and interaction with a basic 6502 system.
@@ -10,6 +12,11 @@
     /// </summary>
     public class BasicCpuSystem
     {
+        const uint RAM_START    = 0x0000;
+        const uint RAM_END      = 0x7FFF;
+        const uint ROM_START    = 0x8000;
+        const uint ROM_END      = 0xFFFF;
+
         public BasicCpuSystem(string path)
         {
             cpu = new WD65C02();
@@ -30,8 +37,8 @@
 
             decoder = 
                 new AddressDecoder(
-                    new AddressSpace(0x8000, 0xFFFF),
-                    new AddressSpace(0x0000, 0x7FFF)
+                    new AddressSpace(ROM_START, ROM_END),
+                    new AddressSpace(RAM_START, RAM_END)
                 );
 
             clock = new ClockGenerator(ClockMode.StepHalfCycle);
@@ -41,8 +48,6 @@
             nmi_n = new Pin(TriState.True);
 
             ConnectBusesAndWires();
-
-            System.Console.WriteLine(CycleState.GetHeaderString('\t'));
         }
 
         public void Cycle(bool printState = false)
@@ -61,6 +66,32 @@
         public CycleState GetCurrentCycleState()
         {
             return cpu.GetCurrentCycleState(halfCycleCount - 1);
+        }
+
+        public byte[] GetCurrentMemoryState(AddressSpace addressSpace)
+        {
+            int length = (int)addressSpace.EndAddress - (int)addressSpace.StartAddress + 1;
+            byte[] memory = new byte[length];
+
+            for (int i = 0; i < memory.Length; i++)
+            {
+                memory[i] = GetGloballyAddressedByte((ushort)(addressSpace.StartAddress + i));
+            }
+
+            return memory;
+        }
+
+        private byte GetGloballyAddressedByte(ushort address)
+        {
+            if (address >= RAM_START &&
+                address <= RAM_END)
+            {
+                return ram.Data[address - RAM_START];
+            }
+            else
+            {
+                return rom.Data[address - ROM_START];
+            }
         }
 
         private void ConnectBusesAndWires()
