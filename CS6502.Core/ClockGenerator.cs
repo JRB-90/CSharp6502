@@ -77,7 +77,14 @@ namespace CS6502.Core
 
         public Wire CLK { get; }
 
-        public Wire SYNC_N { get; set; }
+        public Wire SYNC_N
+        {
+            get => sync_n;
+            set
+            {
+                sync_n = value;
+            }
+        }
 
         public Wire RDY_N { get; }
 
@@ -102,6 +109,9 @@ namespace CS6502.Core
                     clk.State = clk.State == TriState.False ? TriState.True : TriState.False;
                     break;
                 case ClockMode.StepInstruction:
+                    rdy_n.State = TriState.True;
+                    clk.State = clk.State == TriState.False ? TriState.True : TriState.False;
+
                     for (int i = 0; i < 100; i++)
                     {
                         if (SYNC_N.State == false)
@@ -176,5 +186,6 @@ namespace CS6502.Core
         private ClockMode mode;
         private Pin clk;
         private Pin rdy_n;
+        private Wire sync_n;
     }
 }

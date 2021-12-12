@@ -10,6 +10,8 @@ namespace CS6502.Console
             BasicCpuSystem system =
                 new BasicCpuSystem("C:\\Development\\Sim6502\\asm\\asmtest\\build\\main.bin");
 
+            System.Console.WriteLine(CycleState.GetHeaderString('\t'));
+
             for (int i = 0; i < 100; i++)
             {
                 system.Cycle(true);
