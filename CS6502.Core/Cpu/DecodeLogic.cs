@@ -28,6 +28,8 @@ namespace CS6502.Core
 
         public CpuMicroCode Cycle(SignalEdge signalEdge)
         {
+            Sync = EnableState.Disabled;
+
             CpuMicroCode microCode = new CpuMicroCode();
 
             switch (state)
@@ -68,6 +70,7 @@ namespace CS6502.Core
             }
             else
             {
+                Sync = EnableState.Enabled;
                 state = DecodeState.Addressing;
 
                 return 
