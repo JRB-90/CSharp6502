@@ -110,6 +110,15 @@ namespace CS6502.Core
                 case MicroCodeInstruction.SetToWrite:
                     RW = RWState.Write;
                     break;
+                case MicroCodeInstruction.DecrementSP:
+                    sp--;
+                    break;
+                case MicroCodeInstruction.IncrementSP:
+                    sp++;
+                    break;
+                case MicroCodeInstruction.TransferSPIntoPCHS:
+                    pchs = sp;
+                    break;
                 #endregion
 
                 #region Status
@@ -133,6 +142,9 @@ namespace CS6502.Core
                     break;
                 case MicroCodeInstruction.ClearOverflow:
                     p.OverflowFlag = false;
+                    break;
+                case MicroCodeInstruction.TransferDataIntoP:
+                    p.Value = (byte)(dil & 0b11011111);
                     break;
                 #endregion
 
@@ -182,6 +194,26 @@ namespace CS6502.Core
                 case MicroCodeInstruction.TransferXToSP:
                     sp = x;
                     break;
+                case MicroCodeInstruction.TransferSPToX:
+                    x = sp;
+                    p.SetFlagsFromData(x);
+                    break;
+                case MicroCodeInstruction.TransferAToX:
+                    x = a;
+                    p.SetFlagsFromData(x);
+                    break;
+                case MicroCodeInstruction.TransferXToA:
+                    a = x;
+                    p.SetFlagsFromData(a);
+                    break;
+                case MicroCodeInstruction.TransferAToY:
+                    y = a;
+                    p.SetFlagsFromData(y);
+                    break;
+                case MicroCodeInstruction.TransferYToA:
+                    a = y;
+                    p.SetFlagsFromData(a);
+                    break;
                 #endregion
 
                 #region ALU
@@ -222,6 +254,9 @@ namespace CS6502.Core
                 case MicroCodeInstruction.TransferPCHSToPCH:
                     pch = pchs;
                     break;
+                case MicroCodeInstruction.TransferPCHSToSP:
+                    sp = pchs;
+                    break;
                 case MicroCodeInstruction.TransferPCSToPC_NoIncrement:
                     pcl = pcls;
                     pch = pchs;
@@ -244,6 +279,18 @@ namespace CS6502.Core
                     }
                     pcl = (byte)(pcl + 1);
                     break;
+                case MicroCodeInstruction.IncrementPCLS:
+                    pcls++;
+                    break;
+                case MicroCodeInstruction.IncrementPCHS:
+                    pchs++;
+                    break;
+                case MicroCodeInstruction.DecrementPCLS:
+                    pcls--;
+                    break;
+                case MicroCodeInstruction.DecrementPCHS:
+                    pchs--;
+                    break;
                 #endregion
 
                 #region Address
@@ -254,6 +301,9 @@ namespace CS6502.Core
                 case MicroCodeInstruction.TransferPCSToAddressBus:
                     abl = pcls;
                     abh = pchs;
+                    break;
+                case MicroCodeInstruction.TransferPCHSToABL:
+                    abl = pchs;
                     break;
                 case MicroCodeInstruction.TransferZPDataToAB:
                     abl = dil;
@@ -290,6 +340,13 @@ namespace CS6502.Core
                     }
                     abl = (byte)(abl + y);
                     break;
+                case MicroCodeInstruction.TransferSPToAB:
+                    abh = 0x01;
+                    abl = sp;
+                    break;
+                case MicroCodeInstruction.TransferABLToSP:
+                    sp = abl;
+                    break;
                 #endregion
 
                 #region Data
@@ -307,6 +364,18 @@ namespace CS6502.Core
                     break;
                 case MicroCodeInstruction.LatchYIntoDOR:
                     dor = y;
+                    break;
+                case MicroCodeInstruction.LatchPIntoDOR:
+                    dor = (byte)(p.Value | 0b00100000);
+                    break;
+                case MicroCodeInstruction.LatchPCLIntoDOR:
+                    dor = pcl;
+                    break;
+                case MicroCodeInstruction.LatchPCHIntoDOR:
+                    dor = pch;
+                    break;
+                case MicroCodeInstruction.LatchDILIntoSP:
+                    sp = dil;
                     break;
                 #endregion
 

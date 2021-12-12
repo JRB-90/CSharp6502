@@ -8,6 +8,9 @@
         // CPU State
         SetToRead,
         SetToWrite,
+        DecrementSP,
+        IncrementSP,
+        TransferSPIntoPCHS,
 
         // Status
         ClearCarry,
@@ -17,6 +20,7 @@
         ClearDecimal,
         SetDecimal,
         ClearOverflow,
+        TransferDataIntoP,
 
         // IR
         LatchIRToData,
@@ -32,6 +36,11 @@
         DecrementX,
         DecrementY,
         TransferXToSP,
+        TransferAToX,
+        TransferAToY,
+        TransferSPToX,
+        TransferXToA,
+        TransferYToA,
 
         // ALU
         TransferHoldToA,
@@ -46,13 +55,19 @@
         TransferPCToPCS,
         TransferPCLSToPCL,
         TransferPCHSToPCH,
+        TransferPCHSToSP,
         TransferPCSToPC_NoIncrement,
         TransferPCSToPC_WithCarryIncrement,
         IncrementPC,
+        IncrementPCLS,
+        IncrementPCHS,
+        DecrementPCLS,
+        DecrementPCHS,
 
         // Address
         TransferPCToAddressBus,
         TransferPCSToAddressBus,
+        TransferPCHSToABL,
         TransferZPDataToAB,
         TransferDILToABL,
         TransferDILToABH,
@@ -60,6 +75,8 @@
         IncrementABByX,
         IncrementABByY,
         IncrementABByY_WithCarry,
+        TransferSPToAB,
+        TransferABLToSP,
 
         // Data
         LatchDataIntoDIL,
@@ -67,5 +84,9 @@
         LatchAIntoDOR,
         LatchXIntoDOR,
         LatchYIntoDOR,
+        LatchPIntoDOR,
+        LatchPCLIntoDOR,
+        LatchPCHIntoDOR,
+        LatchDILIntoSP
     }
 }
