@@ -17,6 +17,8 @@ namespace CS6502.Core
         const uint ROM_START    = 0x8000;
         const uint ROM_END      = 0xFFFF;
 
+        public ClockGenerator ClockGenerator => clock;
+
         public BasicCpuSystem(string path)
         {
             cpu = new WD65C02();
