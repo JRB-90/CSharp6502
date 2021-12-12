@@ -10,6 +10,7 @@
         SetToWrite,
         DecrementSP,
         IncrementSP,
+        TransferSPIntoPCHS,
 
         // Status
         ClearCarry,
@@ -54,13 +55,19 @@
         TransferPCToPCS,
         TransferPCLSToPCL,
         TransferPCHSToPCH,
+        TransferPCHSToSP,
         TransferPCSToPC_NoIncrement,
         TransferPCSToPC_WithCarryIncrement,
         IncrementPC,
+        IncrementPCLS,
+        IncrementPCHS,
+        DecrementPCLS,
+        DecrementPCHS,
 
         // Address
         TransferPCToAddressBus,
         TransferPCSToAddressBus,
+        TransferPCHSToABL,
         TransferZPDataToAB,
         TransferDILToABL,
         TransferDILToABH,
@@ -69,6 +76,7 @@
         IncrementABByY,
         IncrementABByY_WithCarry,
         TransferSPToAB,
+        TransferABLToSP,
 
         // Data
         LatchDataIntoDIL,
@@ -76,6 +84,9 @@
         LatchAIntoDOR,
         LatchXIntoDOR,
         LatchYIntoDOR,
-        LatchPIntoDOR
+        LatchPIntoDOR,
+        LatchPCLIntoDOR,
+        LatchPCHIntoDOR,
+        LatchDILIntoSP
     }
 }

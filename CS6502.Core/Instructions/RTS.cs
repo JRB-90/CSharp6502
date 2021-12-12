@@ -19,19 +19,46 @@ namespace CS6502.Core
             {
                 if (instructionCycle == 2)
                 {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.TransferSPToAB,
+                            MicroCodeInstruction.IncrementPC
+                        );
+                }
+                if (instructionCycle == 3)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.IncrementAB_NoCarry
+                        );
+                }
+                if (instructionCycle == 4)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.TransferDILToPCLS,
+                            MicroCodeInstruction.IncrementAB_NoCarry,
+                            MicroCodeInstruction.TransferABLToSP
+                        );
+                }
+                if (instructionCycle == 5)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.TransferDILToPCHS,
+                            MicroCodeInstruction.IncrementAB_NoCarry,
+                            MicroCodeInstruction.TransferPCSToPC_NoIncrement,
+                            MicroCodeInstruction.TransferPCToAddressBus
+                        );
+                }
+                if (instructionCycle == 6)
+                {
                     IsInstructionComplete = true;
 
                     return
                         new CpuMicroCode(
-                        );
-                }
-            }
-            else
-            {
-                if (instructionCycle == 2)
-                {
-                    return
-                        new CpuMicroCode(
+                            MicroCodeInstruction.IncrementPC,
+                            MicroCodeInstruction.TransferPCToPCS
                         );
                 }
             }
