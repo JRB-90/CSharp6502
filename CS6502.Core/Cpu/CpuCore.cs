@@ -194,6 +194,12 @@ namespace CS6502.Core
                 #endregion
 
                 #region ALU
+                case MicroCodeInstruction.UpdateFlagsOnHold:
+                    p.SetFlagsFromData(alu.Hold);
+                    break;
+                case MicroCodeInstruction.TransferHoldToDOR:
+                    dor = alu.Hold;
+                    break;
                 case MicroCodeInstruction.TransferHoldToA:
                     a = alu.Hold;
                     p.SetFlagsFromData(a);

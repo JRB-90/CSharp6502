@@ -71,12 +71,12 @@ namespace CS6502.Core
                             return new CpuMicroCode(MicroCodeInstruction.TransferHoldToY);
 
                         case MicroCodeInstruction.INC:
-                            // TODO
-                            break;
+                            Hold = (byte)(B + 1);
+                            return new CpuMicroCode(MicroCodeInstruction.UpdateFlagsOnHold);
 
                         case MicroCodeInstruction.DEC:
-                            // TODO
-                            break;
+                            Hold = (byte)(B - 1);
+                            return new CpuMicroCode(MicroCodeInstruction.UpdateFlagsOnHold);
 
                         case MicroCodeInstruction.ADC:
                             int addRes = A + B + (CarryFlag ? 1 : 0);

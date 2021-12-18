@@ -131,34 +131,50 @@ namespace CS6502.Core
                     return LDA.CreateLDA(AddressingMode.AbsoluteX);
                 case 0xBE:
                     return LDX.CreateLDX(AddressingMode.AbsoluteY);
+                case 0xC6:
+                    return DEC.CreateDEC(AddressingMode.ZeroPage);
                 case 0xC8:
                     return new INY();
                 case 0xCA:
                     return new DEX();
+                case 0xCE:
+                    return DEC.CreateDEC(AddressingMode.Absolute);
+                case 0xD6:
+                    return DEC.CreateDEC(AddressingMode.ZeroPageX);
                 case 0xD8:
                     return new CLD();
+                case 0xDE:
+                    return DEC.CreateDEC(AddressingMode.AbsoluteX);
                 case 0xE1:
                     return SBC.CreateSBC(AddressingMode.XIndirect);
                 case 0xE5:
                     return SBC.CreateSBC(AddressingMode.ZeroPage);
-                case 0xEA:
-                    return new NOP();
+                case 0xE6:
+                    return INC.CreateINC(AddressingMode.ZeroPage);
                 case 0xE8:
                     return new INX();
                 case 0xE9:
                     return SBC.CreateSBC(AddressingMode.Immediate);
+                case 0xEA:
+                    return new NOP();
                 case 0xED:
                     return SBC.CreateSBC(AddressingMode.Absolute);
+                case 0xEE:
+                    return INC.CreateINC(AddressingMode.Absolute);
                 case 0xF1:
                     return SBC.CreateSBC(AddressingMode.IndirectY);
                 case 0xF5:
                     return SBC.CreateSBC(AddressingMode.ZeroPageX);
+                case 0xF6:
+                    return INC.CreateINC(AddressingMode.ZeroPageX);
                 case 0xF8:
                     return new SED();
                 case 0xF9:
                     return SBC.CreateSBC(AddressingMode.AbsoluteY);
                 case 0xFD:
                     return SBC.CreateSBC(AddressingMode.AbsoluteX);
+                case 0xFE:
+                    return INC.CreateINC(AddressingMode.AbsoluteX);
                 default:
                     throw new ArgumentException($"Opcode {opcode.ToHexString()} not supported yet");
             }

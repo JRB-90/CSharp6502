@@ -37,6 +37,8 @@
         TransferYToA,
 
         // ALU
+        UpdateFlagsOnHold,
+        TransferHoldToDOR,
         TransferHoldToA,
         TransferHoldToX,
         TransferHoldToY,
