@@ -31,12 +31,28 @@ namespace CS6502.Core
                     return new CLI();
                 case 0x60:
                     return new RTS();
+                case 0x61:
+                    return ADC.CreateADC(AddressingMode.XIndirect);
+                case 0x65:
+                    return ADC.CreateADC(AddressingMode.ZeroPage);
                 case 0x68:
                     return new PLA();
+                case 0x69:
+                    return ADC.CreateADC(AddressingMode.Immediate);
                 case 0x6C:
                     return JMP.CreateJMP(AddressingMode.Indirect);
+                case 0x6D:
+                    return ADC.CreateADC(AddressingMode.Absolute);
+                case 0x71:
+                    return ADC.CreateADC(AddressingMode.IndirectY);
+                case 0x75:
+                    return ADC.CreateADC(AddressingMode.ZeroPageX);
                 case 0x78:
                     return new SEI();
+                case 0x79:
+                    return ADC.CreateADC(AddressingMode.AbsoluteY);
+                case 0x7D:
+                    return ADC.CreateADC(AddressingMode.AbsoluteX);
                 case 0x81:
                     return STA.CreateSTA(AddressingMode.XIndirect);
                 case 0x84:
@@ -121,12 +137,28 @@ namespace CS6502.Core
                     return new DEX();
                 case 0xD8:
                     return new CLD();
+                case 0xE1:
+                    return SBC.CreateSBC(AddressingMode.XIndirect);
+                case 0xE5:
+                    return SBC.CreateSBC(AddressingMode.ZeroPage);
                 case 0xEA:
                     return new NOP();
                 case 0xE8:
                     return new INX();
+                case 0xE9:
+                    return SBC.CreateSBC(AddressingMode.Immediate);
+                case 0xED:
+                    return SBC.CreateSBC(AddressingMode.Absolute);
+                case 0xF1:
+                    return SBC.CreateSBC(AddressingMode.IndirectY);
+                case 0xF5:
+                    return SBC.CreateSBC(AddressingMode.ZeroPageX);
                 case 0xF8:
                     return new SED();
+                case 0xF9:
+                    return SBC.CreateSBC(AddressingMode.AbsoluteY);
+                case 0xFD:
+                    return SBC.CreateSBC(AddressingMode.AbsoluteX);
                 default:
                     throw new ArgumentException($"Opcode {opcode.ToHexString()} not supported yet");
             }

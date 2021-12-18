@@ -18,13 +18,13 @@ namespace CS6502.Core
 
         public byte B { get; set; }
 
-        public byte A { get; private set; }
+        public byte A { get; set; }
 
         public byte Hold { get; private set; }
 
-        public bool OverflowFlag { get; private set; }
+        public bool OverflowFlag { get; set; }
 
-        public bool CarryFlag { get; private set; }
+        public bool CarryFlag { get; set; }
 
         public void ExecuteInstruction(MicroCodeInstruction instruction)
         {
@@ -69,6 +69,40 @@ namespace CS6502.Core
                             A = 1;
                             Hold = (byte)(B - A);
                             return new CpuMicroCode(MicroCodeInstruction.TransferHoldToY);
+
+                        case MicroCodeInstruction.INC:
+                            // TODO
+                            break;
+
+                        case MicroCodeInstruction.DEC:
+                            // TODO
+                            break;
+
+                        case MicroCodeInstruction.ADC:
+                            int addRes = A + B + (CarryFlag ? 1 : 0);
+                            if (addRes > byte.MaxValue)
+                            {
+                                CarryFlag = true;
+                            }
+                            else
+                            {
+                                CarryFlag = false;
+                            }
+                            Hold = (byte)addRes;
+                            return new CpuMicroCode(MicroCodeInstruction.TransferHoldToA);
+
+                        case MicroCodeInstruction.SBC:
+                            int subRes = A - B - (CarryFlag ? 0 : 1);
+                            if (subRes >= 0)
+                            {
+                                CarryFlag = true;
+                            }
+                            else
+                            {
+                                CarryFlag = false;
+                            }
+                            Hold = (byte)subRes;
+                            return new CpuMicroCode(MicroCodeInstruction.TransferHoldToA);
 
                         default:
                             throw new InvalidOperationException($"Instruction [{instruction.ToString()}] not a supported ALU instruction");
