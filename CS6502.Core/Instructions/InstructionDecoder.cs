@@ -47,6 +47,8 @@ namespace CS6502.Core
                     return new JSR();
                 case 0x21:
                     return AND.CreateAND(AddressingMode.XIndirect);
+                case 0x24:
+                    return BIT.CreateBIT(AddressingMode.ZeroPage);
                 case 0x25:
                     return AND.CreateAND(AddressingMode.ZeroPage);
                 case 0x26:
@@ -57,6 +59,8 @@ namespace CS6502.Core
                     return AND.CreateAND(AddressingMode.Immediate);
                 case 0x2A:
                     return ROL.CreateROL(AddressingMode.Immediate);
+                case 0x2C:
+                    return BIT.CreateBIT(AddressingMode.Absolute);
                 case 0x2D:
                     return AND.CreateAND(AddressingMode.Absolute);
                 case 0x2E:

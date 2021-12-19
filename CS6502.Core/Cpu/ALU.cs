@@ -207,6 +207,17 @@ namespace CS6502.Core
                             Hold = shiftedL_A;
                             return new CpuMicroCode(MicroCodeInstruction.TransferHoldToA);
 
+                        case MicroCodeInstruction.BIT:
+                            bool zero = Convert.ToBoolean(A & B);
+                            if (zero)
+                            {
+                                return new CpuMicroCode(MicroCodeInstruction.ClearZero);
+                            }
+                            else
+                            {
+                                return new CpuMicroCode(MicroCodeInstruction.SetZero);
+                            }
+
                         default:
                             throw new InvalidOperationException($"Instruction [{instruction.ToString()}] not a supported ALU instruction");
                     }

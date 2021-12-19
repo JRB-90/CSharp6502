@@ -144,6 +144,12 @@ namespace CS6502.Core
                     p.OverflowFlag = false;
                     alu.OverflowFlag = false;
                     break;
+                case MicroCodeInstruction.ClearZero:
+                    p.ZeroFlag = false;
+                    break;
+                case MicroCodeInstruction.SetZero:
+                    p.ZeroFlag = true;
+                    break;
                 case MicroCodeInstruction.TransferDataIntoP:
                     p.Value = (byte)(dil & 0b11011111);
                     break;
@@ -319,6 +325,15 @@ namespace CS6502.Core
                     break;
                 case MicroCodeInstruction.ROR_A:
                     alu.B = a;
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.BIT:
+                    p.NegativeFlag = Convert.ToBoolean(dil & 0b10000000);
+                    p.OverflowFlag = Convert.ToBoolean(dil & 0b01000000);
+                    p.ZeroFlag = (dil == 0);
+                    alu.OverflowFlag = p.OverflowFlag;
+                    alu.A = a;
+                    alu.B = dil;
                     alu.ExecuteInstruction(instruction, p);
                     break;
                 #endregion
