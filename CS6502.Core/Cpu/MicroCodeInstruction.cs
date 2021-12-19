@@ -20,6 +20,8 @@
         ClearDecimal,
         SetDecimal,
         ClearOverflow,
+        ClearZero,
+        SetZero,
         TransferDataIntoP,
         ShiftLowABitIntoCarry,
         ShiftHighABitIntoCarry,
@@ -67,6 +69,7 @@
         ROL_A,
         ROR,
         ROR_A,
+        BIT,
 
         // PC
         TransferDILToPCLS,

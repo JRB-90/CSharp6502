@@ -94,6 +94,18 @@ namespace CS6502.Core
                             Hold = (byte)addRes;
                             return new CpuMicroCode(MicroCodeInstruction.TransferHoldToA);
 
+                        case MicroCodeInstruction.AND:
+                            Hold = (byte)(B & A);
+                            return new CpuMicroCode(MicroCodeInstruction.TransferHoldToA);
+
+                        case MicroCodeInstruction.ORA:
+                            Hold = (byte)(B | A);
+                            return new CpuMicroCode(MicroCodeInstruction.TransferHoldToA);
+
+                        case MicroCodeInstruction.EOR:
+                            Hold = (byte)(B ^ A);
+                            return new CpuMicroCode(MicroCodeInstruction.TransferHoldToA);
+
                         case MicroCodeInstruction.SBC:
                             int subRes = A - B - (CarryFlag ? 0 : 1);
                             if (subRes >= 0)
@@ -194,6 +206,17 @@ namespace CS6502.Core
                             CarryFlag = (B & 0b10000000) > 0 ? true : false;
                             Hold = shiftedL_A;
                             return new CpuMicroCode(MicroCodeInstruction.TransferHoldToA);
+
+                        case MicroCodeInstruction.BIT:
+                            bool zero = Convert.ToBoolean(A & B);
+                            if (zero)
+                            {
+                                return new CpuMicroCode(MicroCodeInstruction.ClearZero);
+                            }
+                            else
+                            {
+                                return new CpuMicroCode(MicroCodeInstruction.SetZero);
+                            }
 
                         default:
                             throw new InvalidOperationException($"Instruction [{instruction.ToString()}] not a supported ALU instruction");

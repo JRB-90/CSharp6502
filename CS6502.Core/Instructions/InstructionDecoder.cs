@@ -13,50 +13,102 @@ namespace CS6502.Core
             {
                 case 0x00:
                     return new BRK();
+                case 0x01:
+                    return ORA.CreateORA(AddressingMode.XIndirect);
+                case 0x05:
+                    return ORA.CreateORA(AddressingMode.ZeroPage);
                 case 0x06:
                     return ASL.CreateASL(AddressingMode.ZeroPage);
                 case 0x08:
                     return new PHP();
+                case 0x09:
+                    return ORA.CreateORA(AddressingMode.Immediate);
                 case 0x0A:
                     return ASL.CreateASL(AddressingMode.Immediate);
+                case 0x0D:
+                    return ORA.CreateORA(AddressingMode.Absolute);
                 case 0x0E:
                     return ASL.CreateASL(AddressingMode.Absolute);
+                case 0x11:
+                    return ORA.CreateORA(AddressingMode.IndirectY);
+                case 0x15:
+                    return ORA.CreateORA(AddressingMode.ZeroPageX);
                 case 0x16:
                     return ASL.CreateASL(AddressingMode.ZeroPageX);
                 case 0x18:
                     return new CLC();
+                case 0x19:
+                    return ORA.CreateORA(AddressingMode.AbsoluteY);
+                case 0x1D:
+                    return ORA.CreateORA(AddressingMode.AbsoluteX);
                 case 0x1E:
                     return ASL.CreateASL(AddressingMode.AbsoluteX);
                 case 0x20:
                     return new JSR();
+                case 0x21:
+                    return AND.CreateAND(AddressingMode.XIndirect);
+                case 0x24:
+                    return BIT.CreateBIT(AddressingMode.ZeroPage);
+                case 0x25:
+                    return AND.CreateAND(AddressingMode.ZeroPage);
                 case 0x26:
                     return ROL.CreateROL(AddressingMode.ZeroPage);
                 case 0x28:
                     return new PLP();
+                case 0x29:
+                    return AND.CreateAND(AddressingMode.Immediate);
                 case 0x2A:
                     return ROL.CreateROL(AddressingMode.Immediate);
+                case 0x2C:
+                    return BIT.CreateBIT(AddressingMode.Absolute);
+                case 0x2D:
+                    return AND.CreateAND(AddressingMode.Absolute);
                 case 0x2E:
                     return ROL.CreateROL(AddressingMode.Absolute);
+                case 0x31:
+                    return AND.CreateAND(AddressingMode.IndirectY);
+                case 0x35:
+                    return AND.CreateAND(AddressingMode.ZeroPageX);
                 case 0x36:
                     return ROL.CreateROL(AddressingMode.ZeroPageX);
                 case 0x38:
                     return new SEC();
+                case 0x39:
+                    return AND.CreateAND(AddressingMode.AbsoluteY);
+                case 0x3D:
+                    return AND.CreateAND(AddressingMode.AbsoluteX);
                 case 0x3E:
                     return ROL.CreateROL(AddressingMode.AbsoluteX);
+                case 0x41:
+                    return EOR.CreateEOR(AddressingMode.XIndirect);
+                case 0x45:
+                    return EOR.CreateEOR(AddressingMode.ZeroPage);
                 case 0x46:
                     return LSR.CreateLSR(AddressingMode.ZeroPage);
                 case 0x48:
                     return new PHA();
+                case 0x49:
+                    return EOR.CreateEOR(AddressingMode.Immediate);
                 case 0x4A:
                     return LSR.CreateLSR(AddressingMode.Immediate);
                 case 0x4C:
                     return JMP.CreateJMP(AddressingMode.Absolute);
+                case 0x4D:
+                    return EOR.CreateEOR(AddressingMode.Absolute);
                 case 0x4E:
                     return LSR.CreateLSR(AddressingMode.Absolute);
+                case 0x51:
+                    return EOR.CreateEOR(AddressingMode.IndirectY);
+                case 0x55:
+                    return EOR.CreateEOR(AddressingMode.ZeroPageX);
                 case 0x56:
                     return LSR.CreateLSR(AddressingMode.ZeroPageX);
                 case 0x58:
                     return new CLI();
+                case 0x59:
+                    return EOR.CreateEOR(AddressingMode.AbsoluteY);
+                case 0x5D:
+                    return EOR.CreateEOR(AddressingMode.AbsoluteX);
                 case 0x5E:
                     return LSR.CreateLSR(AddressingMode.AbsoluteX);
                 case 0x60:
