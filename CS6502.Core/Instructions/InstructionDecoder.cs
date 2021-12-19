@@ -13,22 +13,42 @@ namespace CS6502.Core
             {
                 case 0x00:
                     return new BRK();
+                case 0x06:
+                    return ASL.CreateASL(AddressingMode.ZeroPage);
                 case 0x08:
                     return new PHP();
+                case 0x0A:
+                    return ASL.CreateASL(AddressingMode.Immediate);
+                case 0x0E:
+                    return ASL.CreateASL(AddressingMode.Absolute);
+                case 0x16:
+                    return ASL.CreateASL(AddressingMode.ZeroPageX);
                 case 0x18:
                     return new CLC();
+                case 0x1E:
+                    return ASL.CreateASL(AddressingMode.AbsoluteX);
                 case 0x20:
                     return new JSR();
                 case 0x28:
                     return new PLP();
                 case 0x38:
                     return new SEC();
+                case 0x46:
+                    return LSR.CreateLSR(AddressingMode.ZeroPage);
                 case 0x48:
                     return new PHA();
+                case 0x4A:
+                    return LSR.CreateLSR(AddressingMode.Immediate);
                 case 0x4C:
                     return JMP.CreateJMP(AddressingMode.Absolute);
+                case 0x4E:
+                    return LSR.CreateLSR(AddressingMode.Absolute);
+                case 0x56:
+                    return LSR.CreateLSR(AddressingMode.ZeroPageX);
                 case 0x58:
                     return new CLI();
+                case 0x5E:
+                    return LSR.CreateLSR(AddressingMode.AbsoluteX);
                 case 0x60:
                     return new RTS();
                 case 0x61:

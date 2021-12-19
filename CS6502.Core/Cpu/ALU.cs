@@ -104,6 +104,72 @@ namespace CS6502.Core
                             Hold = (byte)subRes;
                             return new CpuMicroCode(MicroCodeInstruction.TransferHoldToA);
 
+                        case MicroCodeInstruction.ASL:
+                            if (Convert.ToBoolean(B & 0b10000000))
+                            {
+                                CarryFlag = true;
+                            }
+                            else
+                            {
+                                CarryFlag = false;
+                            }
+                            Hold = (byte)(B << 1);
+                            return new CpuMicroCode(MicroCodeInstruction.UpdateFlagsOnHold);
+
+                        case MicroCodeInstruction.ASL_A:
+                            if (Convert.ToBoolean(B & 0b10000000))
+                            {
+                                CarryFlag = true;
+                            }
+                            else
+                            {
+                                CarryFlag = false;
+                            }
+                            Hold = (byte)(B << 1);
+                            return new CpuMicroCode(MicroCodeInstruction.TransferHoldToA);
+
+                        case MicroCodeInstruction.LSR:
+                            if (Convert.ToBoolean(B & 0b00000001))
+                            {
+                                CarryFlag = true;
+                            }
+                            else
+                            {
+                                CarryFlag = false;
+                            }
+                            Hold = (byte)(B >> 1);
+                            return new CpuMicroCode(MicroCodeInstruction.UpdateFlagsOnHold);
+
+                        case MicroCodeInstruction.LSR_A:
+                            if (Convert.ToBoolean(B & 0b00000001))
+                            {
+                                CarryFlag = true;
+                            }
+                            else
+                            {
+                                CarryFlag = false;
+                            }
+                            Hold = (byte)(B >> 1);
+                            return new CpuMicroCode(MicroCodeInstruction.TransferHoldToA);
+
+                        case MicroCodeInstruction.ROR:
+                            byte shiftedR = (byte)(B >> 1);
+                            if (Convert.ToBoolean(shiftedR & 0b00000001))
+                            {
+                                shiftedR |= 0b10000000;
+                            }
+                            Hold = shiftedR;
+                            break;
+
+                        case MicroCodeInstruction.ROL:
+                            byte shiftedL = (byte)(B << 1);
+                            if (Convert.ToBoolean(shiftedL & 0b10000000))
+                            {
+                                shiftedL |= 0b00000001;
+                            }
+                            Hold = shiftedL;
+                            break;
+
                         default:
                             throw new InvalidOperationException($"Instruction [{instruction.ToString()}] not a supported ALU instruction");
                     }

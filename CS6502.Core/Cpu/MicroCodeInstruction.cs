@@ -21,6 +21,10 @@
         SetDecimal,
         ClearOverflow,
         TransferDataIntoP,
+        ShiftLowABitIntoCarry,
+        ShiftHighABitIntoCarry,
+        ShiftLowDILBitIntoCarry,
+        ShiftHighDILBitIntoCarry,
 
         // IR
         LatchIRToData,

@@ -147,6 +147,22 @@ namespace CS6502.Core
                 case MicroCodeInstruction.TransferDataIntoP:
                     p.Value = (byte)(dil & 0b11011111);
                     break;
+                case MicroCodeInstruction.ShiftLowABitIntoCarry:
+                    p.CarryFlag = Convert.ToBoolean(a & 0b00000001);
+                    alu.CarryFlag = p.CarryFlag;
+                    break;
+                case MicroCodeInstruction.ShiftHighABitIntoCarry:
+                    p.CarryFlag = Convert.ToBoolean(a & 0b10000000);
+                    alu.CarryFlag = p.CarryFlag;
+                    break;
+                case MicroCodeInstruction.ShiftLowDILBitIntoCarry:
+                    p.CarryFlag = Convert.ToBoolean(dil & 0b00000001);
+                    alu.CarryFlag = p.CarryFlag;
+                    break;
+                case MicroCodeInstruction.ShiftHighDILBitIntoCarry:
+                    p.CarryFlag = Convert.ToBoolean(dil & 0b10000000);
+                    alu.CarryFlag = p.CarryFlag;
+                    break;
                 #endregion
 
                 #region IR
