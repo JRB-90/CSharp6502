@@ -84,9 +84,8 @@ namespace CS6502.Core
             }
 
             CpuMicroCode aluMicroCode = alu.Cycle(signalEdge);
-            p.OverflowFlag = alu.OverflowFlag;
             p.CarryFlag = alu.CarryFlag;
-
+            p.OverflowFlag = alu.OverflowFlag;
             CpuMicroCode cpuMicroCode = decodeLogic.Cycle(signalEdge);
             ExecuteCycleMicroCode(aluMicroCode + cpuMicroCode);
         }
@@ -124,6 +123,7 @@ namespace CS6502.Core
                 #region Status
                 case MicroCodeInstruction.ClearCarry:
                     p.CarryFlag = false;
+                    alu.CarryFlag = false;
                     break;
                 case MicroCodeInstruction.SetCarry:
                     p.CarryFlag = true;
@@ -142,9 +142,26 @@ namespace CS6502.Core
                     break;
                 case MicroCodeInstruction.ClearOverflow:
                     p.OverflowFlag = false;
+                    alu.OverflowFlag = false;
                     break;
                 case MicroCodeInstruction.TransferDataIntoP:
                     p.Value = (byte)(dil & 0b11011111);
+                    break;
+                case MicroCodeInstruction.ShiftLowABitIntoCarry:
+                    p.CarryFlag = Convert.ToBoolean(a & 0b00000001);
+                    alu.CarryFlag = p.CarryFlag;
+                    break;
+                case MicroCodeInstruction.ShiftHighABitIntoCarry:
+                    p.CarryFlag = Convert.ToBoolean(a & 0b10000000);
+                    alu.CarryFlag = p.CarryFlag;
+                    break;
+                case MicroCodeInstruction.ShiftLowDILBitIntoCarry:
+                    p.CarryFlag = Convert.ToBoolean(dil & 0b00000001);
+                    alu.CarryFlag = p.CarryFlag;
+                    break;
+                case MicroCodeInstruction.ShiftHighDILBitIntoCarry:
+                    p.CarryFlag = Convert.ToBoolean(dil & 0b10000000);
+                    alu.CarryFlag = p.CarryFlag;
                     break;
                 #endregion
 
@@ -166,30 +183,6 @@ namespace CS6502.Core
                 case MicroCodeInstruction.LatchDILIntoY:
                     y = dil;
                     p.SetFlagsFromData(y);
-                    break;
-                case MicroCodeInstruction.IncrementA:
-                    alu.B = a;
-                    alu.ExecuteInstruction(instruction);
-                    break;
-                case MicroCodeInstruction.IncrementX:
-                    alu.B = x;
-                    alu.ExecuteInstruction(instruction);
-                    break;
-                case MicroCodeInstruction.IncrementY:
-                    alu.B = y;
-                    alu.ExecuteInstruction(instruction);
-                    break;
-                case MicroCodeInstruction.DecrementA:
-                    alu.B = a;
-                    alu.ExecuteInstruction(instruction);
-                    break;
-                case MicroCodeInstruction.DecrementX:
-                    alu.B = x;
-                    alu.ExecuteInstruction(instruction);
-                    break;
-                case MicroCodeInstruction.DecrementY:
-                    alu.B = y;
-                    alu.ExecuteInstruction(instruction);
                     break;
                 case MicroCodeInstruction.TransferXToSP:
                     sp = x;
@@ -217,6 +210,12 @@ namespace CS6502.Core
                 #endregion
 
                 #region ALU
+                case MicroCodeInstruction.UpdateFlagsOnHold:
+                    p.SetFlagsFromData(alu.Hold);
+                    break;
+                case MicroCodeInstruction.TransferHoldToDOR:
+                    dor = alu.Hold;
+                    break;
                 case MicroCodeInstruction.TransferHoldToA:
                     a = alu.Hold;
                     p.SetFlagsFromData(a);
@@ -228,6 +227,86 @@ namespace CS6502.Core
                 case MicroCodeInstruction.TransferHoldToY:
                     y = alu.Hold;
                     p.SetFlagsFromData(y);
+                    break;
+                case MicroCodeInstruction.IncrementA:
+                    alu.B = a;
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.IncrementX:
+                    alu.B = x;
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.IncrementY:
+                    alu.B = y;
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.DecrementA:
+                    alu.B = a;
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.DecrementX:
+                    alu.B = x;
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.DecrementY:
+                    alu.B = y;
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+
+                case MicroCodeInstruction.INC:
+                    alu.B = dil;
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.DEC:
+                    alu.B = dil;
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.ADC:
+                    alu.A = a;
+                    alu.B = dil;
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.SBC:
+                    alu.A = a;
+                    alu.B = dil;
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.AND:
+                    alu.A = a;
+                    alu.B = dil;
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.ASL:
+                    alu.B = dil;
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.ASL_A:
+                    alu.B = a;
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.LSR:
+                    alu.B = dil;
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.LSR_A:
+                    alu.B = a;
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.ROL:
+                    alu.B = dil;
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.ROL_A:
+                    alu.B = a;
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.ROR:
+                    alu.B = dil;
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.ROR_A:
+                    alu.B = a;
+                    alu.ExecuteInstruction(instruction, p);
                     break;
                 #endregion
 
