@@ -13,7 +13,8 @@ namespace CS6502.Core
     {
         public ALU()
         {
-            instructionQueue = new Queue<MicroCodeInstruction>();
+            instructionQueue = new Queue<(MicroCodeInstruction, StatusRegister)>();
+            currentStatus = new StatusRegister();
         }
 
         public byte B { get; set; }
@@ -26,9 +27,9 @@ namespace CS6502.Core
 
         public bool CarryFlag { get; set; }
 
-        public void ExecuteInstruction(MicroCodeInstruction instruction)
+        public void ExecuteInstruction(MicroCodeInstruction instruction, StatusRegister status)
         {
-            instructionQueue.Enqueue(instruction);
+            instructionQueue.Enqueue((instruction, new StatusRegister(status.Value)));
         }
 
         public CpuMicroCode Cycle(SignalEdge signalEdge)
@@ -37,8 +38,10 @@ namespace CS6502.Core
             {
                 if (instructionQueue.Count > 0)
                 {
-                    MicroCodeInstruction instruction = instructionQueue.Dequeue();
-                    switch (instruction)
+                    (MicroCodeInstruction, StatusRegister) instruction = instructionQueue.Dequeue();
+                    currentStatus = instruction.Item2;
+
+                    switch (instruction.Item1)
                     {
                         case MicroCodeInstruction.IncrementA:
                             A = 1;
@@ -154,21 +157,43 @@ namespace CS6502.Core
 
                         case MicroCodeInstruction.ROR:
                             byte shiftedR = (byte)(B >> 1);
-                            if (Convert.ToBoolean(shiftedR & 0b00000001))
+                            if (currentStatus.CarryFlag)
                             {
                                 shiftedR |= 0b10000000;
                             }
+                            CarryFlag = (B & 0b00000001) > 0 ? true : false;
                             Hold = shiftedR;
-                            break;
+                            return new CpuMicroCode(MicroCodeInstruction.UpdateFlagsOnHold);
+
+                        case MicroCodeInstruction.ROR_A:
+                            byte shiftedR_A = (byte)(B >> 1);
+                            if (currentStatus.CarryFlag)
+                            {
+                                shiftedR_A |= 0b10000000;
+                            }
+                            CarryFlag = (B & 0b00000001) > 0 ? true : false;
+                            Hold = shiftedR_A;
+                            return new CpuMicroCode(MicroCodeInstruction.TransferHoldToA);
 
                         case MicroCodeInstruction.ROL:
                             byte shiftedL = (byte)(B << 1);
-                            if (Convert.ToBoolean(shiftedL & 0b10000000))
+                            if (currentStatus.CarryFlag)
                             {
                                 shiftedL |= 0b00000001;
                             }
+                            CarryFlag = (B & 0b10000000) > 0 ? true : false;
                             Hold = shiftedL;
-                            break;
+                            return new CpuMicroCode(MicroCodeInstruction.UpdateFlagsOnHold);
+
+                        case MicroCodeInstruction.ROL_A:
+                            byte shiftedL_A = (byte)(B << 1);
+                            if (currentStatus.CarryFlag)
+                            {
+                                shiftedL_A |= 0b00000001;
+                            }
+                            CarryFlag = (B & 0b10000000) > 0 ? true : false;
+                            Hold = shiftedL_A;
+                            return new CpuMicroCode(MicroCodeInstruction.TransferHoldToA);
 
                         default:
                             throw new InvalidOperationException($"Instruction [{instruction.ToString()}] not a supported ALU instruction");
@@ -222,6 +247,7 @@ namespace CS6502.Core
             }
         }
 
-        private Queue<MicroCodeInstruction> instructionQueue;
+        private Queue<(MicroCodeInstruction, StatusRegister)> instructionQueue;
+        private StatusRegister currentStatus;
     }
 }

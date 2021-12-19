@@ -29,10 +29,20 @@ namespace CS6502.Core
                     return ASL.CreateASL(AddressingMode.AbsoluteX);
                 case 0x20:
                     return new JSR();
+                case 0x26:
+                    return ROL.CreateROL(AddressingMode.ZeroPage);
                 case 0x28:
                     return new PLP();
+                case 0x2A:
+                    return ROL.CreateROL(AddressingMode.Immediate);
+                case 0x2E:
+                    return ROL.CreateROL(AddressingMode.Absolute);
+                case 0x36:
+                    return ROL.CreateROL(AddressingMode.ZeroPageX);
                 case 0x38:
                     return new SEC();
+                case 0x3E:
+                    return ROL.CreateROL(AddressingMode.AbsoluteX);
                 case 0x46:
                     return LSR.CreateLSR(AddressingMode.ZeroPage);
                 case 0x48:
@@ -55,24 +65,34 @@ namespace CS6502.Core
                     return ADC.CreateADC(AddressingMode.XIndirect);
                 case 0x65:
                     return ADC.CreateADC(AddressingMode.ZeroPage);
+                case 0x66:
+                    return ROR.CreateROR(AddressingMode.ZeroPage);
                 case 0x68:
                     return new PLA();
                 case 0x69:
                     return ADC.CreateADC(AddressingMode.Immediate);
+                case 0x6A:
+                    return ROR.CreateROR(AddressingMode.Immediate);
                 case 0x6C:
                     return JMP.CreateJMP(AddressingMode.Indirect);
                 case 0x6D:
                     return ADC.CreateADC(AddressingMode.Absolute);
+                case 0x6E:
+                    return ROR.CreateROR(AddressingMode.Absolute);
                 case 0x71:
                     return ADC.CreateADC(AddressingMode.IndirectY);
                 case 0x75:
                     return ADC.CreateADC(AddressingMode.ZeroPageX);
+                case 0x76:
+                    return ROR.CreateROR(AddressingMode.ZeroPageX);
                 case 0x78:
                     return new SEI();
                 case 0x79:
                     return ADC.CreateADC(AddressingMode.AbsoluteY);
                 case 0x7D:
                     return ADC.CreateADC(AddressingMode.AbsoluteX);
+                case 0x7E:
+                    return ROR.CreateROR(AddressingMode.AbsoluteX);
                 case 0x81:
                     return STA.CreateSTA(AddressingMode.XIndirect);
                 case 0x84:
