@@ -94,6 +94,18 @@ namespace CS6502.Core
                             Hold = (byte)addRes;
                             return new CpuMicroCode(MicroCodeInstruction.TransferHoldToA);
 
+                        case MicroCodeInstruction.AND:
+                            Hold = (byte)(B & A);
+                            return new CpuMicroCode(MicroCodeInstruction.TransferHoldToA);
+
+                        case MicroCodeInstruction.ORA:
+                            Hold = (byte)(B | A);
+                            return new CpuMicroCode(MicroCodeInstruction.TransferHoldToA);
+
+                        case MicroCodeInstruction.EOR:
+                            Hold = (byte)(B ^ A);
+                            return new CpuMicroCode(MicroCodeInstruction.TransferHoldToA);
+
                         case MicroCodeInstruction.SBC:
                             int subRes = A - B - (CarryFlag ? 0 : 1);
                             if (subRes >= 0)

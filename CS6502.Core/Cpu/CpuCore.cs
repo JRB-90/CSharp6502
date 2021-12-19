@@ -274,6 +274,19 @@ namespace CS6502.Core
                 case MicroCodeInstruction.AND:
                     alu.A = a;
                     alu.B = dil;
+                    p.SetFlagsFromData(dil);
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.ORA:
+                    alu.A = a;
+                    alu.B = dil;
+                    p.SetFlagsFromData(dil);
+                    alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.EOR:
+                    alu.A = a;
+                    alu.B = dil;
+                    p.SetFlagsFromData(dil);
                     alu.ExecuteInstruction(instruction, p);
                     break;
                 case MicroCodeInstruction.ASL:
