@@ -150,6 +150,12 @@ namespace CS6502.Core
                 case MicroCodeInstruction.SetZero:
                     p.ZeroFlag = true;
                     break;
+                case MicroCodeInstruction.ClearNegative:
+                    p.NegativeFlag = false;
+                    break;
+                case MicroCodeInstruction.SetNegative:
+                    p.NegativeFlag = true;
+                    break;
                 case MicroCodeInstruction.TransferDataIntoP:
                     p.Value = (byte)(dil & 0b11011111);
                     break;
@@ -335,6 +341,21 @@ namespace CS6502.Core
                     alu.A = a;
                     alu.B = dil;
                     alu.ExecuteInstruction(instruction, p);
+                    break;
+                case MicroCodeInstruction.CMP_A:
+                    alu.A = a;
+                    alu.B = dil;
+                    alu.ExecuteInstruction(MicroCodeInstruction.CMP, p);
+                    break;
+                case MicroCodeInstruction.CMP_X:
+                    alu.A = x;
+                    alu.B = dil;
+                    alu.ExecuteInstruction(MicroCodeInstruction.CMP, p);
+                    break;
+                case MicroCodeInstruction.CMP_Y:
+                    alu.A = y;
+                    alu.B = dil;
+                    alu.ExecuteInstruction(MicroCodeInstruction.CMP, p);
                     break;
                 #endregion
 

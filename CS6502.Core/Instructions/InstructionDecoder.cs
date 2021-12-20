@@ -223,22 +223,48 @@ namespace CS6502.Core
                     return LDA.CreateLDA(AddressingMode.AbsoluteX);
                 case 0xBE:
                     return LDX.CreateLDX(AddressingMode.AbsoluteY);
+                case 0xC0:
+                    return CPY.CreateCPY(AddressingMode.Immediate);
+                case 0xC1:
+                    return CMP.CreateCMP(AddressingMode.XIndirect);
+                case 0xC4:
+                    return CPY.CreateCPY(AddressingMode.ZeroPage);
+                case 0xC5:
+                    return CMP.CreateCMP(AddressingMode.ZeroPage);
                 case 0xC6:
                     return DEC.CreateDEC(AddressingMode.ZeroPage);
                 case 0xC8:
                     return new INY();
+                case 0xC9:
+                    return CMP.CreateCMP(AddressingMode.Immediate);
                 case 0xCA:
                     return new DEX();
+                case 0xCC:
+                    return CPY.CreateCPY(AddressingMode.Absolute);
+                case 0xCD:
+                    return CMP.CreateCMP(AddressingMode.Absolute);
                 case 0xCE:
                     return DEC.CreateDEC(AddressingMode.Absolute);
+                case 0xD1:
+                    return CMP.CreateCMP(AddressingMode.IndirectY);
+                case 0xD5:
+                    return CMP.CreateCMP(AddressingMode.ZeroPageX);
                 case 0xD6:
                     return DEC.CreateDEC(AddressingMode.ZeroPageX);
                 case 0xD8:
                     return new CLD();
+                case 0xD9:
+                    return CMP.CreateCMP(AddressingMode.AbsoluteY);
+                case 0xDD:
+                    return CMP.CreateCMP(AddressingMode.AbsoluteX);
                 case 0xDE:
                     return DEC.CreateDEC(AddressingMode.AbsoluteX);
+                case 0xE0:
+                    return CPX.CreateCPX(AddressingMode.Immediate);
                 case 0xE1:
                     return SBC.CreateSBC(AddressingMode.XIndirect);
+                case 0xE4:
+                    return CPX.CreateCPX(AddressingMode.ZeroPage);
                 case 0xE5:
                     return SBC.CreateSBC(AddressingMode.ZeroPage);
                 case 0xE6:
@@ -249,6 +275,8 @@ namespace CS6502.Core
                     return SBC.CreateSBC(AddressingMode.Immediate);
                 case 0xEA:
                     return new NOP();
+                case 0xEC:
+                    return CPX.CreateCPX(AddressingMode.Absolute);
                 case 0xED:
                     return SBC.CreateSBC(AddressingMode.Absolute);
                 case 0xEE:

@@ -22,6 +22,8 @@
         ClearOverflow,
         ClearZero,
         SetZero,
+        ClearNegative,
+        SetNegative,
         TransferDataIntoP,
         ShiftLowABitIntoCarry,
         ShiftHighABitIntoCarry,
@@ -70,6 +72,12 @@
         ROR,
         ROR_A,
         BIT,
+
+        // Compare
+        CMP,
+        CMP_A,
+        CMP_X,
+        CMP_Y,
 
         // PC
         TransferDILToPCLS,
