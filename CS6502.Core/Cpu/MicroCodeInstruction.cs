@@ -109,6 +109,8 @@
         IncrementABByY_WithCarry,
         TransferSPToAB,
         TransferABLToSP,
+        LatchBranchShift,
+        Branch,
 
         // Data
         LatchDataIntoDIL,

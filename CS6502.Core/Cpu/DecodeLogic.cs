@@ -26,7 +26,9 @@ namespace CS6502.Core
             currentInstruction = InstructionDecoder.DecodeOpcode(value);
         }
 
-        public CpuMicroCode Cycle(SignalEdge signalEdge)
+        public CpuMicroCode Cycle(
+            SignalEdge signalEdge,
+            StatusRegister status)
         {
             Sync = EnableState.Disabled;
 
@@ -41,7 +43,7 @@ namespace CS6502.Core
                     microCode = AddressingCycle(signalEdge);
                     break;
                 case DecodeState.Executing:
-                    microCode = ExecutingCycle(signalEdge);
+                    microCode = ExecutingCycle(signalEdge, status);
                     break;
                 default:
                     throw new InvalidOperationException($"Decoding state [{state}] not supported");
@@ -55,7 +57,8 @@ namespace CS6502.Core
             return microCode;
         }
 
-        private CpuMicroCode ReadingOpcodeCycle(SignalEdge signalEdge)
+        private CpuMicroCode ReadingOpcodeCycle(
+            SignalEdge signalEdge)
         {
             if (signalEdge == SignalEdge.FallingEdge)
             {
@@ -498,15 +501,42 @@ namespace CS6502.Core
 
         private CpuMicroCode RelativeCycle(SignalEdge signalEdge)
         {
-            throw new NotImplementedException();
+            if (signalEdge == SignalEdge.FallingEdge)
+            {
+                if (instructionCycleCounter == 1)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.IncrementPC,
+                            MicroCodeInstruction.TransferPCToAddressBus
+                        );
+                }
+            }
+            else
+            {
+                if (instructionCycleCounter == 1)
+                {
+                    state = DecodeState.Executing;
+
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.LatchDataIntoDIL
+                        );
+                }
+            }
+
+            return new CpuMicroCode();
         }
 
-        private CpuMicroCode ExecutingCycle(SignalEdge signalEdge)
+        private CpuMicroCode ExecutingCycle(
+            SignalEdge signalEdge,
+            StatusRegister status)
         {
             CpuMicroCode instructionCode =
                 currentInstruction.Execute(
                     signalEdge,
-                    instructionCycleCounter
+                    instructionCycleCounter,
+                    status
                 );
 
             if (currentInstruction.IsInstructionComplete)

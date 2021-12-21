@@ -12,6 +12,7 @@ namespace CS6502.Core
     {
         public CpuCore()
         {
+            branchShift = 0x00;
             pcls = 0x00;
             pchs = 0x80;
             dil = 0x80;
@@ -86,7 +87,7 @@ namespace CS6502.Core
             CpuMicroCode aluMicroCode = alu.Cycle(signalEdge);
             p.CarryFlag = alu.CarryFlag;
             p.OverflowFlag = alu.OverflowFlag;
-            CpuMicroCode cpuMicroCode = decodeLogic.Cycle(signalEdge);
+            CpuMicroCode cpuMicroCode = decodeLogic.Cycle(signalEdge, p);
             ExecuteCycleMicroCode(aluMicroCode + cpuMicroCode);
         }
 
@@ -127,6 +128,7 @@ namespace CS6502.Core
                     break;
                 case MicroCodeInstruction.SetCarry:
                     p.CarryFlag = true;
+                    alu.CarryFlag = true;
                     break;
                 case MicroCodeInstruction.ClearIRQ:
                     p.IrqFlag = false;
@@ -475,6 +477,14 @@ namespace CS6502.Core
                 case MicroCodeInstruction.TransferABLToSP:
                     sp = abl;
                     break;
+                case MicroCodeInstruction.LatchBranchShift:
+                    branchShift = (sbyte)dil;
+                    break;
+                case MicroCodeInstruction.Branch:
+                    ushort newPC = (ushort)((int)PC + branchShift);
+                    pcl = (byte)(newPC & 0x00FF);
+                    pch = (byte)(newPC >> 8);
+                    break;
                 #endregion
 
                 #region Data
@@ -515,6 +525,7 @@ namespace CS6502.Core
         private ushort PC => (ushort)(pch << 8 | pcl);
         private byte Data => RW == RWState.Read ? dil : dor;
 
+        private sbyte branchShift;
         private bool latchIREnable;
         private byte a;
         private byte x;

@@ -37,7 +37,10 @@ namespace CS6502.Core
             }
         }
 
-        public override CpuMicroCode Execute(SignalEdge signalEdge, int instructionCycle)
+        public override CpuMicroCode Execute(
+            SignalEdge signalEdge,
+            int instructionCycle,
+            StatusRegister status)
         {
             if (AddressingMode == AddressingMode.Immediate)
             {
