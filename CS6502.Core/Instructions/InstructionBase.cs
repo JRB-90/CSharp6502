@@ -24,7 +24,10 @@
 
         public bool IsInstructionComplete { get; protected set; }
 
-        public virtual CpuMicroCode Execute(SignalEdge signalEdge, int instructionCycle)
+        public virtual CpuMicroCode Execute(
+            SignalEdge signalEdge, 
+            int instructionCycle,
+            StatusRegister status)
         {
             IsInstructionComplete = true;
 

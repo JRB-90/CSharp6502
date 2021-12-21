@@ -2,38 +2,38 @@
 
 namespace CS6502.Core
 {
-    internal class EOR : InstructionBase
+    internal class CMP : InstructionBase
     {
-        public static EOR CreateEOR(AddressingMode addressingMode)
+        public static CMP CreateCMP(AddressingMode addressingMode)
         {
             switch (addressingMode)
             {
                 case AddressingMode.Immediate:
-                    return new EOR(0x49, addressingMode);
+                    return new CMP(0xC9, addressingMode);
 
                 case AddressingMode.ZeroPage:
-                    return new EOR(0x45, addressingMode);
+                    return new CMP(0xC5, addressingMode);
 
                 case AddressingMode.ZeroPageX:
-                    return new EOR(0x55, addressingMode);
+                    return new CMP(0xD5, addressingMode);
 
                 case AddressingMode.Absolute:
-                    return new EOR(0x4D, addressingMode);
+                    return new CMP(0xCD, addressingMode);
 
                 case AddressingMode.AbsoluteX:
-                    return new EOR(0x5D, addressingMode);
+                    return new CMP(0xDD, addressingMode);
 
                 case AddressingMode.AbsoluteY:
-                    return new EOR(0x59, addressingMode);
+                    return new CMP(0xD9, addressingMode);
 
                 case AddressingMode.XIndirect:
-                    return new EOR(0x41, addressingMode);
+                    return new CMP(0xC1, addressingMode);
 
                 case AddressingMode.IndirectY:
-                    return new EOR(0x51, addressingMode);
+                    return new CMP(0xD1, addressingMode);
 
                 default:
-                    throw new ArgumentException($"EOR does not support {addressingMode.ToString()} addressing mode");
+                    throw new ArgumentException($"CMP does not support {addressingMode.ToString()} addressing mode");
             }
         }
 
@@ -64,7 +64,7 @@ namespace CS6502.Core
             }
             else
             {
-                throw new ArgumentException($"EOR does not support {AddressingMode.ToString()} addressing mode");
+                throw new ArgumentException($"CMP does not support {AddressingMode.ToString()} addressing mode");
             }
         }
 
@@ -78,7 +78,7 @@ namespace CS6502.Core
                 {
                     return
                         new CpuMicroCode(
-                            MicroCodeInstruction.EOR,
+                            MicroCodeInstruction.CMP_A,
                             MicroCodeInstruction.IncrementPC,
                             MicroCodeInstruction.TransferPCToPCS
                         );
@@ -126,7 +126,7 @@ namespace CS6502.Core
 
                     return
                         new CpuMicroCode(
-                            MicroCodeInstruction.EOR,
+                            MicroCodeInstruction.CMP_A,
                             MicroCodeInstruction.TransferPCToPCS
                         );
                 }
@@ -165,7 +165,7 @@ namespace CS6502.Core
 
                     return
                         new CpuMicroCode(
-                            MicroCodeInstruction.EOR,
+                            MicroCodeInstruction.CMP_A,
                             MicroCodeInstruction.TransferPCToPCS
                         );
                 }
@@ -215,7 +215,7 @@ namespace CS6502.Core
 
                         return
                             new CpuMicroCode(
-                                MicroCodeInstruction.EOR,
+                                MicroCodeInstruction.CMP_A,
                                 MicroCodeInstruction.TransferPCToPCS
                             );
                     }
@@ -228,7 +228,7 @@ namespace CS6502.Core
 
                         return
                             new CpuMicroCode(
-                                MicroCodeInstruction.EOR,
+                                MicroCodeInstruction.CMP_A,
                                 MicroCodeInstruction.TransferPCToPCS
                             );
                     }
@@ -248,12 +248,12 @@ namespace CS6502.Core
             return new CpuMicroCode();
         }
 
-        private EOR(
+        private CMP(
             byte opcode,
             AddressingMode addressingMode)
           :
             base(
-                "EOR",
+                "CMP",
                 opcode,
                 addressingMode)
         {

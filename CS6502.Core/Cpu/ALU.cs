@@ -218,6 +218,34 @@ namespace CS6502.Core
                                 return new CpuMicroCode(MicroCodeInstruction.SetZero);
                             }
 
+                        case MicroCodeInstruction.CMP:
+                            CpuMicroCode cpuMicroCodeCMPA = new CpuMicroCode();
+                            if (A >= B)
+                            {
+                                CarryFlag = true;
+                            }
+                            else
+                            {
+                                CarryFlag = false;
+                            }
+                            if (Convert.ToBoolean((A - B) & 0b10000000))
+                            {
+                                cpuMicroCodeCMPA.Add(MicroCodeInstruction.SetNegative);
+                            }
+                            else
+                            {
+                                cpuMicroCodeCMPA.Add(MicroCodeInstruction.ClearNegative);
+                            }
+                            if (A == B)
+                            {
+                                cpuMicroCodeCMPA.Add(MicroCodeInstruction.SetZero);
+                            }
+                            else
+                            {
+                                cpuMicroCodeCMPA.Add(MicroCodeInstruction.ClearZero);
+                            }
+                            return cpuMicroCodeCMPA;
+
                         default:
                             throw new InvalidOperationException($"Instruction [{instruction.ToString()}] not a supported ALU instruction");
                     }

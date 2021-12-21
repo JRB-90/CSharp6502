@@ -22,6 +22,8 @@
         ClearOverflow,
         ClearZero,
         SetZero,
+        ClearNegative,
+        SetNegative,
         TransferDataIntoP,
         ShiftLowABitIntoCarry,
         ShiftHighABitIntoCarry,
@@ -71,6 +73,12 @@
         ROR_A,
         BIT,
 
+        // Compare
+        CMP,
+        CMP_A,
+        CMP_X,
+        CMP_Y,
+
         // PC
         TransferDILToPCLS,
         TransferDILToPCHS,
@@ -101,6 +109,8 @@
         IncrementABByY_WithCarry,
         TransferSPToAB,
         TransferABLToSP,
+        LatchBranchShift,
+        Branch,
 
         // Data
         LatchDataIntoDIL,

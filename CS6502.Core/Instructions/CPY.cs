@@ -2,23 +2,23 @@
 
 namespace CS6502.Core
 {
-    internal class STY : InstructionBase
+    internal class CPY : InstructionBase
     {
-        public static STY CreateSTY(AddressingMode addressingMode)
+        public static CPY CreateCPY(AddressingMode addressingMode)
         {
             switch (addressingMode)
             {
-                case AddressingMode.ZeroPage:
-                    return new STY(0x84, addressingMode);
+                case AddressingMode.Immediate:
+                    return new CPY(0xC0, addressingMode);
 
-                case AddressingMode.ZeroPageX:
-                    return new STY(0x94, addressingMode);
+                case AddressingMode.ZeroPage:
+                    return new CPY(0xC4, addressingMode);
 
                 case AddressingMode.Absolute:
-                    return new STY(0x8C, addressingMode);
+                    return new CPY(0xCC, addressingMode);
 
                 default:
-                    throw new ArgumentException($"STX does not support {addressingMode.ToString()} addressing mode");
+                    throw new ArgumentException($"CPY does not support {addressingMode.ToString()} addressing mode");
             }
         }
 
@@ -27,8 +27,11 @@ namespace CS6502.Core
             int instructionCycle,
             StatusRegister status)
         {
-            if (AddressingMode == AddressingMode.ZeroPage ||
-                AddressingMode == AddressingMode.ZeroPageX)
+            if (AddressingMode == AddressingMode.Immediate)
+            {
+                return Immediate(signalEdge, instructionCycle);
+            }
+            else if (AddressingMode == AddressingMode.ZeroPage)
             {
                 return ZeroPage(signalEdge, instructionCycle);
             }
@@ -38,8 +41,28 @@ namespace CS6502.Core
             }
             else
             {
-                throw new ArgumentException($"STY does not support {AddressingMode.ToString()} addressing mode");
+                throw new ArgumentException($"CPY does not support {AddressingMode.ToString()} addressing mode");
             }
+        }
+
+        private CpuMicroCode Immediate(SignalEdge signalEdge, int instructionCycle)
+        {
+            if (signalEdge == SignalEdge.FallingEdge)
+            {
+                IsInstructionComplete = true;
+
+                if (instructionCycle == 2)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.CMP_Y,
+                            MicroCodeInstruction.IncrementPC,
+                            MicroCodeInstruction.TransferPCToPCS
+                        );
+                }
+            }
+
+            return new CpuMicroCode();
         }
 
         private CpuMicroCode ZeroPage(SignalEdge signalEdge, int instructionCycle)
@@ -54,24 +77,13 @@ namespace CS6502.Core
             {
                 if (instructionCycle == startingCycle)
                 {
-                    CpuMicroCode cpuMicroCode =
+                    return
                         new CpuMicroCode(
-                           
-                           MicroCodeInstruction.LatchDILIntoDOR,
-                           MicroCodeInstruction.SetToWrite
-                       );
-
-                    if (AddressingMode == AddressingMode.ZeroPage)
-                    {
-                        cpuMicroCode.Add(MicroCodeInstruction.TransferZPDataToAB);
-                        cpuMicroCode.Add(MicroCodeInstruction.IncrementPC);
-                    }
-                    else if (AddressingMode == AddressingMode.ZeroPageX)
-                    {
-                        cpuMicroCode.Add(MicroCodeInstruction.IncrementABByX);
-                    }
-
-                    return cpuMicroCode;
+                            MicroCodeInstruction.TransferZPDataToAB,
+                            MicroCodeInstruction.LatchDataIntoDIL,
+                            MicroCodeInstruction.SetToRead,
+                            MicroCodeInstruction.IncrementPC
+                        );
                 }
                 if (instructionCycle == startingCycle + 1)
                 {
@@ -79,6 +91,7 @@ namespace CS6502.Core
 
                     return
                         new CpuMicroCode(
+                            MicroCodeInstruction.CMP_Y,
                             MicroCodeInstruction.TransferPCToPCS
                         );
                 }
@@ -89,7 +102,6 @@ namespace CS6502.Core
                 {
                     return
                         new CpuMicroCode(
-                            MicroCodeInstruction.LatchYIntoDOR,
                             MicroCodeInstruction.TransferPCToPCS
                         );
                 }
@@ -106,8 +118,7 @@ namespace CS6502.Core
                 {
                     return
                         new CpuMicroCode(
-                            MicroCodeInstruction.SetToWrite,
-                            MicroCodeInstruction.LatchDILIntoDOR,
+                            MicroCodeInstruction.SetToRead,
                             MicroCodeInstruction.TransferDILToPCHS,
                             MicroCodeInstruction.TransferPCSToAddressBus,
                             MicroCodeInstruction.IncrementPC
@@ -119,6 +130,7 @@ namespace CS6502.Core
 
                     return
                         new CpuMicroCode(
+                            MicroCodeInstruction.CMP_Y,
                             MicroCodeInstruction.TransferPCToPCS
                         );
                 }
@@ -129,7 +141,7 @@ namespace CS6502.Core
                 {
                     return
                         new CpuMicroCode(
-                            MicroCodeInstruction.LatchYIntoDOR
+                            MicroCodeInstruction.LatchDataIntoDIL
                         );
                 }
             }
@@ -137,12 +149,12 @@ namespace CS6502.Core
             return new CpuMicroCode();
         }
 
-        private STY(
+        private CPY(
             byte opcode,
             AddressingMode addressingMode)
           :
             base(
-                "STY",
+                "CPY",
                 opcode,
                 addressingMode)
         {
