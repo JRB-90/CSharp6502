@@ -83,6 +83,8 @@ namespace CS6502.Core
                     return AND.CreateAND(AddressingMode.AbsoluteX);
                 case 0x3E:
                     return ROL.CreateROL(AddressingMode.AbsoluteX);
+                case 0x40:
+                    return new RTI();
                 case 0x41:
                     return EOR.CreateEOR(AddressingMode.XIndirect);
                 case 0x45:
