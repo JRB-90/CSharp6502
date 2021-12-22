@@ -11,6 +11,7 @@
         DecrementSP,
         IncrementSP,
         TransferSPIntoPCHS,
+        BRK,
 
         // Status
         ClearCarry,
@@ -97,6 +98,7 @@
         DecrementPCHS,
 
         // Address
+        TransferIrqVecToAB,
         TransferPCToAddressBus,
         TransferPCSToAddressBus,
         TransferPCHSToABL,
@@ -104,6 +106,7 @@
         TransferDILToABL,
         TransferDILToABH,
         IncrementAB_NoCarry,
+        DecrementAB_NoCarry,
         IncrementABByX,
         IncrementABByY,
         IncrementABByY_WithCarry,
@@ -121,6 +124,7 @@
         LatchPIntoDOR,
         LatchPCLIntoDOR,
         LatchPCHIntoDOR,
-        LatchDILIntoSP
+        LatchDILIntoSP,
+        LatchStatusIntoDOR
     }
 }

@@ -24,10 +24,15 @@ namespace CS6502.Core
         {
             Name = name;
 
+            core = new CpuCore();
+
             IRQ_N = new Wire(WirePull.PullUp);
             NMI_N = new Wire(WirePull.PullUp);
             RES_N = new Wire(WirePull.PullUp);
             RDY_N = new Wire(WirePull.PullUp);
+
+            core.InteruptControl.NMI = NMI_N;
+            core.InteruptControl.IRQ = IRQ_N;
 
             RW_N = new Wire(WirePull.PullUp);
             rw_n = new Pin();
@@ -56,8 +61,6 @@ namespace CS6502.Core
             dataPins = dataBus.CreateAndConnectPinArray();
             DataBus = dataBus;
 
-            core = new CpuCore(); // TODO - Hook up wires into core..
-
             // TODO - Set CPU to startup state
         }
 
@@ -73,6 +76,7 @@ namespace CS6502.Core
             set
             {
                 irq_n = value;
+                core.InteruptControl.IRQ = irq_n;
                 irq_n.StateChanged += Irq_n_StateChanged;
             }
         }
@@ -83,6 +87,7 @@ namespace CS6502.Core
             set
             {
                 nmi_n = value;
+                core.InteruptControl.NMI = nmi_n;
                 nmi_n.StateChanged += Nmi_n_StateChanged;
             }
         }

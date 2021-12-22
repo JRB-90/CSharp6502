@@ -10,5 +10,18 @@
                 AddressingMode.Implied)
         {
         }
+
+        public override CpuMicroCode Execute(
+            SignalEdge signalEdge, 
+            int instructionCycle,
+            StatusRegister status)
+        {
+            IsInstructionComplete = true;
+
+            return
+                new CpuMicroCode(
+                    MicroCodeInstruction.BRK
+                );
+        }
     }
 }

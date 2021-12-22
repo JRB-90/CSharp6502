@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace CS6502.Core
 {
@@ -28,7 +29,8 @@ namespace CS6502.Core
 
         public CpuMicroCode Cycle(
             SignalEdge signalEdge,
-            StatusRegister status)
+            StatusRegister status,
+            InteruptControl interuptControl)
         {
             Sync = EnableState.Disabled;
 
@@ -37,13 +39,16 @@ namespace CS6502.Core
             switch (state)
             {
                 case DecodeState.ReadingOpcode:
-                    microCode = ReadingOpcodeCycle(signalEdge);
+                    microCode = ReadingOpcodeCycle(signalEdge, interuptControl);
                     break;
                 case DecodeState.Addressing:
                     microCode = AddressingCycle(signalEdge);
                     break;
                 case DecodeState.Executing:
-                    microCode = ExecutingCycle(signalEdge, status);
+                    microCode = ExecutingCycle(signalEdge, status, interuptControl);
+                    break;
+                case DecodeState.Interupt:
+                    microCode = InteruptCycle(signalEdge, interuptControl);
                     break;
                 default:
                     throw new InvalidOperationException($"Decoding state [{state}] not supported");
@@ -58,8 +63,17 @@ namespace CS6502.Core
         }
 
         private CpuMicroCode ReadingOpcodeCycle(
-            SignalEdge signalEdge)
+            SignalEdge signalEdge,
+            InteruptControl interuptControl)
         {
+            if (interuptControl.IrqActive ||
+                interuptControl.NmiActive)
+            {
+                state = DecodeState.Interupt;
+
+                return InteruptCycle(signalEdge, interuptControl);
+            }
+
             if (signalEdge == SignalEdge.FallingEdge)
             {
                 instructionCycleCounter = 0;
@@ -530,7 +544,8 @@ namespace CS6502.Core
 
         private CpuMicroCode ExecutingCycle(
             SignalEdge signalEdge,
-            StatusRegister status)
+            StatusRegister status,
+            InteruptControl interuptControl)
         {
             CpuMicroCode instructionCode =
                 currentInstruction.Execute(
@@ -539,15 +554,114 @@ namespace CS6502.Core
                     status
                 );
 
+            // Special case for software triggered interupts
+            if (instructionCode.MicroCode.Contains(MicroCodeInstruction.BRK))
+            {
+                interuptControl.SignalBRK();
+            }
+
             if (currentInstruction.IsInstructionComplete)
             {
                 state = DecodeState.ReadingOpcode;
                 instructionCode =
                     instructionCode +
-                    ReadingOpcodeCycle(signalEdge);
+                    ReadingOpcodeCycle(signalEdge, interuptControl);
             }
 
             return instructionCode;
+        }
+
+        private CpuMicroCode InteruptCycle(
+            SignalEdge signalEdge,
+            InteruptControl interuptControl)
+        {
+            interuptControl.ClearBrk();
+
+            if (signalEdge == SignalEdge.FallingEdge)
+            {
+                if (instructionCycleCounter == 2)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.IncrementPC,
+                            MicroCodeInstruction.TransferSPToAB,
+                            MicroCodeInstruction.LatchDILIntoDOR,
+                            MicroCodeInstruction.SetToWrite
+                        );
+                }
+                else if (instructionCycleCounter == 3)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.DecrementAB_NoCarry,
+                            MicroCodeInstruction.LatchDILIntoDOR
+                        );
+                }
+                else if (instructionCycleCounter == 4)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.DecrementAB_NoCarry,
+                            MicroCodeInstruction.LatchDILIntoDOR
+                        );
+                }
+                else if (instructionCycleCounter == 5)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.SetToRead,
+                            MicroCodeInstruction.DecrementSP,
+                            MicroCodeInstruction.DecrementSP,
+                            MicroCodeInstruction.DecrementSP,
+                            MicroCodeInstruction.TransferIrqVecToAB
+                        );
+                }
+                else if (instructionCycleCounter == 6)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.TransferDILToPCLS,
+                            MicroCodeInstruction.IncrementAB_NoCarry
+                        );
+                }
+                else if (instructionCycleCounter == 7)
+                {
+                    state = DecodeState.ReadingOpcode;
+
+                    CpuMicroCode cpuMicroCode = new CpuMicroCode();
+                    cpuMicroCode.Add(MicroCodeInstruction.TransferDILToPCHS);
+
+                    return
+                        cpuMicroCode +
+                        ReadingOpcodeCycle(signalEdge, interuptControl);
+                }
+            }
+            else
+            {
+                if (instructionCycleCounter == 2)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.LatchPCHIntoDOR
+                        );
+                }
+                else if (instructionCycleCounter == 3)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.LatchPCLIntoDOR
+                        );
+                }
+                else if (instructionCycleCounter == 4)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.LatchPIntoDOR
+                        );
+                }
+            }
+
+            return new CpuMicroCode();
         }
 
         private IInstruction currentInstruction;

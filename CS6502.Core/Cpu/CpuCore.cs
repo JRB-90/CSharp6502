@@ -19,9 +19,12 @@ namespace CS6502.Core
             x = 0xC0;
             sp = 0xBD;
             p = new StatusRegister(0x16);
-            decodeLogic = new DecodeLogic();
             alu = new ALU();
+            decodeLogic = new DecodeLogic();
+            interuptControl = new InteruptControl();
         }
+
+        public InteruptControl InteruptControl => interuptControl;
 
         public RWState RW { get; private set; }
 
@@ -84,10 +87,18 @@ namespace CS6502.Core
                 latchIREnable = false;
             }
 
+            interuptControl.Cycle();
             CpuMicroCode aluMicroCode = alu.Cycle(signalEdge);
             p.CarryFlag = alu.CarryFlag;
             p.OverflowFlag = alu.OverflowFlag;
-            CpuMicroCode cpuMicroCode = decodeLogic.Cycle(signalEdge, p);
+
+            CpuMicroCode cpuMicroCode = 
+                decodeLogic.Cycle(
+                    signalEdge, 
+                    p, 
+                    interuptControl
+                );
+
             ExecuteCycleMicroCode(aluMicroCode + cpuMicroCode);
         }
 
@@ -118,6 +129,8 @@ namespace CS6502.Core
                     break;
                 case MicroCodeInstruction.TransferSPIntoPCHS:
                     pchs = sp;
+                    break;
+                case MicroCodeInstruction.BRK:
                     break;
                 #endregion
 
@@ -424,6 +437,10 @@ namespace CS6502.Core
                 #endregion
 
                 #region Address
+                case MicroCodeInstruction.TransferIrqVecToAB:
+                    abl = 0xFE;
+                    abh = 0xFF;
+                    break;
                 case MicroCodeInstruction.TransferPCToAddressBus:
                     abl = pcl;
                     abh = pch;
@@ -447,6 +464,9 @@ namespace CS6502.Core
                     break;
                 case MicroCodeInstruction.IncrementAB_NoCarry:
                     abl++;
+                    break;
+                case MicroCodeInstruction.DecrementAB_NoCarry:
+                    abl--;
                     break;
                 case MicroCodeInstruction.IncrementABByX:
                     if (((int)abl + (int)x) > byte.MaxValue)
@@ -515,6 +535,9 @@ namespace CS6502.Core
                 case MicroCodeInstruction.LatchDILIntoSP:
                     sp = dil;
                     break;
+                case MicroCodeInstruction.LatchStatusIntoDOR:
+                    dor = (byte)(p.Value | 0b00100000);
+                    break;
                 #endregion
 
                 default:
@@ -542,5 +565,6 @@ namespace CS6502.Core
         private ALU alu;
         private StatusRegister p;
         private DecodeLogic decodeLogic;
+        private InteruptControl interuptControl;
     }
 }

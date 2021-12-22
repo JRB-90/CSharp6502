@@ -4,6 +4,7 @@
     {
         ReadingOpcode,
         Addressing,
-        Executing
+        Executing,
+        Interupt
     }
 }
