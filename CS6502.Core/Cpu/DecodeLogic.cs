@@ -575,8 +575,6 @@ namespace CS6502.Core
             SignalEdge signalEdge,
             InteruptControl interuptControl)
         {
-            interuptControl.ClearBrk();
-
             if (signalEdge == SignalEdge.FallingEdge)
             {
                 if (instructionCycleCounter == 2)
@@ -607,14 +605,24 @@ namespace CS6502.Core
                 }
                 else if (instructionCycleCounter == 5)
                 {
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.SetToRead,
-                            MicroCodeInstruction.DecrementSP,
-                            MicroCodeInstruction.DecrementSP,
-                            MicroCodeInstruction.DecrementSP,
-                            MicroCodeInstruction.TransferIrqVecToAB
-                        );
+                    CpuMicroCode cpuMicroCode = new CpuMicroCode();
+                    cpuMicroCode.Add(MicroCodeInstruction.SetToRead);
+                    cpuMicroCode.Add(MicroCodeInstruction.DecrementSP);
+                    cpuMicroCode.Add(MicroCodeInstruction.DecrementSP);
+                    cpuMicroCode.Add(MicroCodeInstruction.DecrementSP);
+
+                    if (interuptControl.NmiActive)
+                    {
+                        cpuMicroCode.Add(MicroCodeInstruction.TransferNmiVecToAB);
+                        interuptControl.ClearNmi();
+                    }
+                    else
+                    {
+                        cpuMicroCode.Add(MicroCodeInstruction.TransferIrqVecToAB);
+                        interuptControl.ClearBrk();
+                    }
+
+                    return cpuMicroCode;
                 }
                 else if (instructionCycleCounter == 6)
                 {

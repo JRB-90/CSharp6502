@@ -441,6 +441,10 @@ namespace CS6502.Core
                     abl = 0xFE;
                     abh = 0xFF;
                     break;
+                case MicroCodeInstruction.TransferNmiVecToAB:
+                    abl = 0xFC;
+                    abh = 0xFF;
+                    break;
                 case MicroCodeInstruction.TransferPCToAddressBus:
                     abl = pcl;
                     abh = pch;

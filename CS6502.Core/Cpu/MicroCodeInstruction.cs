@@ -99,6 +99,7 @@
 
         // Address
         TransferIrqVecToAB,
+        TransferNmiVecToAB,
         TransferPCToAddressBus,
         TransferPCSToAddressBus,
         TransferPCHSToABL,
