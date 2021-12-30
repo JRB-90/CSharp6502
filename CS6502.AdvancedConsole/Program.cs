@@ -9,7 +9,7 @@ namespace CS6502.Console
         static void Main(string[] args)
         {
             BasicCpuSystem system =
-                new BasicCpuSystem("C:\\Development\\Sim6502\\asm\\asmtest\\build\\main.bin");
+                new BasicCpuSystem("C:\\Development\\Sim6502\\asm\\asmtest\\build\\loadStoreTests.bin");
 
             uint memStart = 0x0000;
             uint memEnd = 0x001F;

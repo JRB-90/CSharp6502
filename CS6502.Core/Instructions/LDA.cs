@@ -102,13 +102,13 @@ namespace CS6502.Core
                 {
                     CpuMicroCode cpuMicroCode =
                         new CpuMicroCode(
-                           MicroCodeInstruction.TransferZPDataToAB,
                            MicroCodeInstruction.LatchDataIntoDIL,
                            MicroCodeInstruction.SetToRead
                        );
 
                     if (AddressingMode == AddressingMode.ZeroPage)
                     {
+                        cpuMicroCode.Add(MicroCodeInstruction.TransferZPDataToAB);
                         cpuMicroCode.Add(MicroCodeInstruction.IncrementPC);
                     }
                     else if (AddressingMode == AddressingMode.ZeroPageX)

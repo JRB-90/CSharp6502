@@ -5,15 +5,15 @@ namespace CS6502.Benchmark
 {
     class Program
     {
-        const string CPU_PROG = "C:\\Development\\Sim6502\\asm\\asmtest\\build\\main.bin";
-        const string BENCH_PATH = "C:\\Development\\Sim6502\\asm\\asmtest\\build\\cpu.csv";
+        const string CPU_PROG = "C:\\Development\\Sim6502\\asm\\asmtest\\build\\loadStoreTests.bin";
+        const string BENCH_PATH = "C:\\Development\\Sim6502\\asm\\asmtest\\build\\loadStoreTests.csv";
 
         static void Main(string[] args)
         {
             Program p = new Program();
             p.LoadBenchmarkFromFile();
             //p.LoadBenchmarkFromP6502(100);
-            p.RunBenchark(16);
+            p.RunBenchark(0);
             System.Console.ReadLine();
         }
 
