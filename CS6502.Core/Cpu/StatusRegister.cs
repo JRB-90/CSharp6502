@@ -19,6 +19,7 @@ namespace CS6502.Core
         const byte B    = 0b00010000;
         const byte B_N  = 0b11101111;
         const byte NA   = 0b00100000;
+        const byte NA_N = 0b11011111;
         const byte V    = 0b01000000;
         const byte V_N  = 0b10111111;
         const byte N    = 0b10000000;
@@ -38,6 +39,23 @@ namespace CS6502.Core
         {
             get => value;
             set => this.value = value;
+        }
+
+        public bool NAFlag
+        {
+            get => naFlag;
+            set
+            {
+                naFlag = value;
+                if (naFlag == true)
+                {
+                    this.value |= NA;
+                }
+                else
+                {
+                    this.value &= NA_N;
+                }
+            }
         }
 
         public bool CarryFlag
@@ -173,5 +191,6 @@ namespace CS6502.Core
         }
 
         private byte value;
+        private bool naFlag;
     }
 }

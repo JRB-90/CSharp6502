@@ -171,8 +171,16 @@ namespace CS6502.Core
                 case MicroCodeInstruction.SetNegative:
                     p.NegativeFlag = true;
                     break;
+                case MicroCodeInstruction.ClearNAFlag:
+                    p.NAFlag = false;
+                    break;
+                case MicroCodeInstruction.SetNAFlag:
+                    p.NAFlag = true;
+                    break;
                 case MicroCodeInstruction.TransferDataIntoP:
                     p.Value = (byte)(dil & 0b11011111);
+                    alu.CarryFlag = p.CarryFlag;
+                    alu.OverflowFlag = p.OverflowFlag;
                     break;
                 case MicroCodeInstruction.ShiftLowABitIntoCarry:
                     p.CarryFlag = Convert.ToBoolean(a & 0b00000001);

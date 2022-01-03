@@ -25,6 +25,8 @@
         SetZero,
         ClearNegative,
         SetNegative,
+        ClearNAFlag,
+        SetNAFlag,
         TransferDataIntoP,
         ShiftLowABitIntoCarry,
         ShiftHighABitIntoCarry,
