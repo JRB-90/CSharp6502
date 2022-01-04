@@ -31,7 +31,8 @@ namespace CS6502.Core
         public override CpuMicroCode Execute(
             SignalEdge signalEdge,
             int instructionCycle,
-            StatusRegister status)
+            StatusRegister status,
+            bool wasPageBoundaryCrossed)
         {
             if (AddressingMode == AddressingMode.Immediate)
             {
@@ -45,7 +46,7 @@ namespace CS6502.Core
             else if (AddressingMode == AddressingMode.Absolute ||
                      AddressingMode == AddressingMode.AbsoluteY)
             {
-                return Absolute(signalEdge, instructionCycle);
+                return Absolute(signalEdge, instructionCycle, wasPageBoundaryCrossed);
             }
             else
             {
@@ -98,7 +99,7 @@ namespace CS6502.Core
                     }
                     else if (AddressingMode == AddressingMode.ZeroPageY)
                     {
-                        cpuMicroCode.Add(MicroCodeInstruction.IncrementABByY);
+                        cpuMicroCode.Add(MicroCodeInstruction.IncrementABByY_NoCarry);
                     }
 
                     return cpuMicroCode;
@@ -127,21 +128,52 @@ namespace CS6502.Core
             return new CpuMicroCode();
         }
 
-        private CpuMicroCode Absolute(SignalEdge signalEdge, int instructionCycle)
+        private CpuMicroCode Absolute(
+            SignalEdge signalEdge, 
+            int instructionCycle,
+            bool wasPageBoundaryCrossed)
         {
+            int startingCycle = 3;
+            if (AddressingMode == AddressingMode.AbsoluteY)
+            {
+                startingCycle = 4;
+            }
+
             if (signalEdge == SignalEdge.FallingEdge)
             {
-                if (instructionCycle == 3)
+                if (instructionCycle == startingCycle)
                 {
-                    return
+                    CpuMicroCode cpuMicroCode =
                         new CpuMicroCode(
-                            MicroCodeInstruction.SetToRead,
-                            MicroCodeInstruction.TransferDILToPCHS,
-                            MicroCodeInstruction.TransferPCSToAddressBus,
-                            MicroCodeInstruction.IncrementPC
+                            MicroCodeInstruction.SetToRead
                         );
+
+                    if (AddressingMode == AddressingMode.Absolute)
+                    {
+                        cpuMicroCode.Add(MicroCodeInstruction.TransferDILToPCHS);
+                        cpuMicroCode.Add(MicroCodeInstruction.TransferPCSToAddressBus);
+                        cpuMicroCode.Add(MicroCodeInstruction.IncrementPC);
+                    }
+
+                    if (AddressingMode == AddressingMode.AbsoluteY)
+                    {
+                        if (wasPageBoundaryCrossed)
+                        {
+                            cpuMicroCode.Add(MicroCodeInstruction.IncrementABH);
+                            cpuMicroCode.Add(MicroCodeInstruction.ClearPageBoundaryCrossed);
+                        }
+                        else
+                        {
+                            IsInstructionComplete = true;
+                            cpuMicroCode.Add(MicroCodeInstruction.LatchDataIntoDIL);
+                            cpuMicroCode.Add(MicroCodeInstruction.LatchDILIntoX);
+                            cpuMicroCode.Add(MicroCodeInstruction.TransferPCToPCS);
+                        }
+                    }
+
+                    return cpuMicroCode;
                 }
-                else if (instructionCycle == 4)
+                else if (instructionCycle == startingCycle + 1)
                 {
                     IsInstructionComplete = true;
 
@@ -155,7 +187,7 @@ namespace CS6502.Core
             }
             else
             {
-                if (instructionCycle == 3)
+                if (instructionCycle == startingCycle)
                 {
                     return
                         new CpuMicroCode(

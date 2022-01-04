@@ -96,7 +96,8 @@ namespace CS6502.Core
                 decodeLogic.Cycle(
                     signalEdge, 
                     p, 
-                    interuptControl
+                    interuptControl,
+                    wasPageBoundaryCrossed
                 );
 
             ExecuteCycleMicroCode(aluMicroCode + cpuMicroCode);
@@ -480,27 +481,31 @@ namespace CS6502.Core
                 case MicroCodeInstruction.DecrementAB_NoCarry:
                     abl--;
                     break;
-                case MicroCodeInstruction.IncrementABByX:
-                    if (((int)abl + (int)x) > byte.MaxValue)
-                    {
-                        p.CarryFlag = true;
-                    }    
+                case MicroCodeInstruction.IncrementABByX_NoCarry:
                     abl = (byte)(abl + x);
                     break;
-                case MicroCodeInstruction.IncrementABByY:
-                    if (((int)abl + (int)y) > byte.MaxValue)
+                case MicroCodeInstruction.IncrementABByY_NoCarry:
+                    abl = (byte)(abl + y);
+                    break;
+                case MicroCodeInstruction.IncrementABByX_WithPBCheck:
+                    if ((abl + x) > byte.MaxValue)
                     {
-                        p.CarryFlag = true;
+                        wasPageBoundaryCrossed = true;
+                    }
+                    abl = (byte)(abl + x);
+                    break;
+                case MicroCodeInstruction.IncrementABByY_WithPBCheck:
+                    if ((abl + y) > byte.MaxValue)
+                    {
+                        wasPageBoundaryCrossed = true;
                     }
                     abl = (byte)(abl + y);
                     break;
-                case MicroCodeInstruction.IncrementABByY_WithCarry:
-                    if (((int)abl + (int)y) > byte.MaxValue)
-                    {
-                        p.CarryFlag = true;
-                        abh++;
-                    }
-                    abl = (byte)(abl + y);
+                case MicroCodeInstruction.ClearPageBoundaryCrossed:
+                    wasPageBoundaryCrossed = false;
+                    break;
+                case MicroCodeInstruction.IncrementABH:
+                    abh++;
                     break;
                 case MicroCodeInstruction.TransferSPToAB:
                     abh = 0x01;
@@ -561,6 +566,7 @@ namespace CS6502.Core
         private byte Data => RW == RWState.Read ? dil : dor;
 
         private sbyte branchShift;
+        private bool wasPageBoundaryCrossed;
         private bool latchIREnable;
         private byte a;
         private byte x;

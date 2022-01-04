@@ -30,7 +30,8 @@ namespace CS6502.Core
         public CpuMicroCode Cycle(
             SignalEdge signalEdge,
             StatusRegister status,
-            InteruptControl interuptControl)
+            InteruptControl interuptControl,
+            bool wasPageBoundaryCrossed)
         {
             Sync = EnableState.Disabled;
 
@@ -45,7 +46,7 @@ namespace CS6502.Core
                     microCode = AddressingCycle(signalEdge);
                     break;
                 case DecodeState.Executing:
-                    microCode = ExecutingCycle(signalEdge, status, interuptControl);
+                    microCode = ExecutingCycle(signalEdge, status, interuptControl, wasPageBoundaryCrossed);
                     break;
                 case DecodeState.Interupt:
                     microCode = InteruptCycle(signalEdge, interuptControl);
@@ -323,11 +324,11 @@ namespace CS6502.Core
 
                         if (currentInstruction.AddressingMode == AddressingMode.AbsoluteX)
                         {
-                            cpuMicroCode.Add(MicroCodeInstruction.IncrementABByX);
+                            cpuMicroCode.Add(MicroCodeInstruction.IncrementABByX_WithPBCheck);
                         }
                         else if (currentInstruction.AddressingMode == AddressingMode.AbsoluteY)
                         {
-                            cpuMicroCode.Add(MicroCodeInstruction.IncrementABByY);
+                            cpuMicroCode.Add(MicroCodeInstruction.IncrementABByY_WithPBCheck);
                         }
 
                         return cpuMicroCode;
@@ -388,7 +389,7 @@ namespace CS6502.Core
                             return
                                 new CpuMicroCode(
                                     MicroCodeInstruction.LatchDataIntoDIL,
-                                    MicroCodeInstruction.IncrementABByX
+                                    MicroCodeInstruction.IncrementABByX_NoCarry
                                 );
                         }
                         else if (instructionCycleCounter == 4)
@@ -418,7 +419,7 @@ namespace CS6502.Core
                                 new CpuMicroCode(
                                     MicroCodeInstruction.TransferDILToPCHS,
                                     MicroCodeInstruction.TransferPCSToAddressBus,
-                                    MicroCodeInstruction.IncrementABByY_WithCarry
+                                    MicroCodeInstruction.IncrementABByY_NoCarry
                                 );
                         }
                     }
@@ -545,13 +546,15 @@ namespace CS6502.Core
         private CpuMicroCode ExecutingCycle(
             SignalEdge signalEdge,
             StatusRegister status,
-            InteruptControl interuptControl)
+            InteruptControl interuptControl,
+            bool wasPageBoundaryCrossed)
         {
             CpuMicroCode instructionCode =
                 currentInstruction.Execute(
                     signalEdge,
                     instructionCycleCounter,
-                    status
+                    status,
+                    wasPageBoundaryCrossed
                 );
 
             // Special case for software triggered interupts

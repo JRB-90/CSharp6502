@@ -16,7 +16,8 @@
         CpuMicroCode Execute(
             SignalEdge signalEdge, 
             int instructionCycle, 
-            StatusRegister status
+            StatusRegister status,
+            bool wasPageBoundaryCrossed
         );
     }
 }

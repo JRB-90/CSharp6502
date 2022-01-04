@@ -25,7 +25,8 @@ namespace CS6502.Core
         public override CpuMicroCode Execute(
             SignalEdge signalEdge,
             int instructionCycle,
-            StatusRegister status)
+            StatusRegister status,
+            bool wasPageBoundaryCrossed)
         {
             if (AddressingMode == AddressingMode.ZeroPage ||
                 AddressingMode == AddressingMode.ZeroPageY)
@@ -68,7 +69,7 @@ namespace CS6502.Core
                     }
                     else if (AddressingMode == AddressingMode.ZeroPageY)
                     {
-                        cpuMicroCode.Add(MicroCodeInstruction.IncrementABByY);
+                        cpuMicroCode.Add(MicroCodeInstruction.IncrementABByY_NoCarry);
                     }
 
                     return cpuMicroCode;

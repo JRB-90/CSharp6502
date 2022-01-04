@@ -37,7 +37,8 @@ namespace CS6502.Core
         public override CpuMicroCode Execute(
             SignalEdge signalEdge,
             int instructionCycle,
-            StatusRegister status)
+            StatusRegister status,
+            bool wasPageBoundaryCrossed)
         {
             if (AddressingMode == AddressingMode.ZeroPage ||
                      AddressingMode == AddressingMode.ZeroPageX)
@@ -48,12 +49,12 @@ namespace CS6502.Core
                      AddressingMode == AddressingMode.AbsoluteX ||
                      AddressingMode == AddressingMode.AbsoluteY)
             {
-                return Absolute(signalEdge, instructionCycle);
+                return Absolute(signalEdge, instructionCycle, wasPageBoundaryCrossed);
             }
             else if (AddressingMode == AddressingMode.XIndirect ||
                      AddressingMode == AddressingMode.IndirectY)
             {
-                return Indirect(signalEdge, instructionCycle);
+                return Indirect(signalEdge, instructionCycle, wasPageBoundaryCrossed);
             }
             else
             {
@@ -86,7 +87,7 @@ namespace CS6502.Core
                     }
                     else if (AddressingMode == AddressingMode.ZeroPageX)
                     {
-                        cpuMicroCode.Add(MicroCodeInstruction.IncrementABByX);
+                        cpuMicroCode.Add(MicroCodeInstruction.IncrementABByX_NoCarry);
                     }
 
                     return cpuMicroCode;
@@ -116,7 +117,10 @@ namespace CS6502.Core
             return new CpuMicroCode();
         }
 
-        private CpuMicroCode Absolute(SignalEdge signalEdge, int instructionCycle)
+        private CpuMicroCode Absolute(
+            SignalEdge signalEdge, 
+            int instructionCycle,
+            bool wasPageBoundaryCrossed)
         {
             int startingCycle = 3;
             if (AddressingMode == AddressingMode.AbsoluteX ||
@@ -124,7 +128,7 @@ namespace CS6502.Core
             {
                 startingCycle = 4;
             }
-
+            
             if (signalEdge == SignalEdge.FallingEdge)
             {
                 if (instructionCycle == startingCycle)
@@ -140,6 +144,16 @@ namespace CS6502.Core
                         cpuMicroCode.Add(MicroCodeInstruction.TransferDILToPCHS);
                         cpuMicroCode.Add(MicroCodeInstruction.TransferPCSToAddressBus);
                         cpuMicroCode.Add(MicroCodeInstruction.IncrementPC);
+                    }
+
+                    if (AddressingMode == AddressingMode.AbsoluteX ||
+                        AddressingMode == AddressingMode.AbsoluteY)
+                    {
+                        if (wasPageBoundaryCrossed)
+                        {
+                            cpuMicroCode.Add(MicroCodeInstruction.IncrementABH);
+                            cpuMicroCode.Add(MicroCodeInstruction.ClearPageBoundaryCrossed);
+                        }
                     }
 
                     return cpuMicroCode;
@@ -168,13 +182,17 @@ namespace CS6502.Core
             return new CpuMicroCode();
         }
 
-        private CpuMicroCode Indirect(SignalEdge signalEdge, int instructionCycle)
+        private CpuMicroCode Indirect(
+            SignalEdge signalEdge, 
+            int instructionCycle,
+            bool wasPageBoundaryCrossed)
         {
             int startingCycle = 4;
             if (AddressingMode == AddressingMode.XIndirect ||
                 AddressingMode == AddressingMode.IndirectY)
             {
                 startingCycle = 5;
+                this.wasPageBoundaryCrossed = wasPageBoundaryCrossed;
             }
 
             if (signalEdge == SignalEdge.FallingEdge)
@@ -234,5 +252,7 @@ namespace CS6502.Core
                 addressingMode)
         {
         }
+
+        private bool wasPageBoundaryCrossed;
     }
 }
