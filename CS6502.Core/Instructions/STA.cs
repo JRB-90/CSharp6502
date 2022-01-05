@@ -192,7 +192,6 @@ namespace CS6502.Core
                 AddressingMode == AddressingMode.IndirectY)
             {
                 startingCycle = 5;
-                this.wasPageBoundaryCrossed = wasPageBoundaryCrossed;
             }
 
             if (signalEdge == SignalEdge.FallingEdge)
@@ -211,11 +210,19 @@ namespace CS6502.Core
                     }
                     else if (AddressingMode == AddressingMode.IndirectY)
                     {
-                        return
+                        CpuMicroCode cpuMicroCode =
                             new CpuMicroCode(
-                                MicroCodeInstruction.LatchDILIntoDOR,
-                                MicroCodeInstruction.SetToWrite
+                                MicroCodeInstruction.SetToWrite,
+                                MicroCodeInstruction.LatchDILIntoDOR
                             );
+
+                        if (wasPageBoundaryCrossed)
+                        {
+                            cpuMicroCode.Add(MicroCodeInstruction.IncrementABH);
+                            cpuMicroCode.Add(MicroCodeInstruction.ClearPageBoundaryCrossed);
+                        }
+
+                        return cpuMicroCode;
                     }
                 }
                 else if (instructionCycle == startingCycle + 1)
@@ -252,7 +259,5 @@ namespace CS6502.Core
                 addressingMode)
         {
         }
-
-        private bool wasPageBoundaryCrossed;
     }
 }

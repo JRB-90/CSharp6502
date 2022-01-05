@@ -264,6 +264,29 @@ namespace CS6502.Core
                 {
                     if (instructionCycle == startingCycle)
                     {
+                        if (wasPageBoundaryCrossed)
+                        {
+                            return
+                                new CpuMicroCode(
+                                    MicroCodeInstruction.IncrementABH,
+                                    MicroCodeInstruction.ClearPageBoundaryCrossed
+                                );
+                        }
+                        else
+                        {
+
+                            IsInstructionComplete = true;
+
+                            return
+                                new CpuMicroCode(
+                                    MicroCodeInstruction.LatchDataIntoDIL,
+                                    MicroCodeInstruction.LatchDILIntoA,
+                                    MicroCodeInstruction.TransferPCToPCS
+                                );
+                        }
+                    }
+                    else if (instructionCycle == startingCycle + 1)
+                    {
                         IsInstructionComplete = true;
 
                         return

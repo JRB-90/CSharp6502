@@ -419,7 +419,7 @@ namespace CS6502.Core
                                 new CpuMicroCode(
                                     MicroCodeInstruction.TransferDILToPCHS,
                                     MicroCodeInstruction.TransferPCSToAddressBus,
-                                    MicroCodeInstruction.IncrementABByY_NoCarry
+                                    MicroCodeInstruction.IncrementABByY_WithPBCheck
                                 );
                         }
                     }

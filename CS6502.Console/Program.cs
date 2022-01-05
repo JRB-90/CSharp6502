@@ -12,7 +12,7 @@ namespace CS6502.Console
 
             System.Console.WriteLine(CycleState.GetHeaderString('\t'));
 
-            for (int i = 0; i < 500; i++)
+            for (int i = 0; i < 100; i++)
             {
                 system.Cycle(true);
             }
