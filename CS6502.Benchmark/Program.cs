@@ -10,8 +10,8 @@ namespace CS6502.Benchmark
         //const string FILE_NAME = "stackTests";
         //const string FILE_NAME = "subTests";
         //const string FILE_NAME = "compareTests";
-        //const string FILE_NAME = "branchTests";
-        const string FILE_NAME = "loadStoreTests";
+        const string FILE_NAME = "branchTests";
+        //const string FILE_NAME = "loadStoreTests";
         const string CPU_PROG = "C:\\Development\\Sim6502\\asm\\asmtest\\build\\" + FILE_NAME + ".bin";
         const string BENCH_PATH = "C:\\Development\\Sim6502\\asm\\asmtest\\build\\" + FILE_NAME + ".csv";
 

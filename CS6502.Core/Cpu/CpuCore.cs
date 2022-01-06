@@ -516,11 +516,15 @@ namespace CS6502.Core
                     break;
                 case MicroCodeInstruction.LatchBranchShift:
                     branchShift = (sbyte)dil;
+                    if (abl + branchShift + 1 > byte.MaxValue)
+                    {
+                        wasPageBoundaryCrossed = true;
+                    }
                     break;
                 case MicroCodeInstruction.Branch:
                     ushort newPC = (ushort)((int)PC + branchShift);
                     pcl = (byte)(newPC & 0x00FF);
-                    pch = (byte)(newPC >> 8);
+                    abl = pcl;
                     break;
                 #endregion
 
