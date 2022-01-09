@@ -274,7 +274,6 @@ namespace CS6502.Core
                         }
                         else
                         {
-
                             IsInstructionComplete = true;
 
                             return

@@ -8,11 +8,11 @@ namespace CS6502.Console
         static void Main(string[] args)
         {
             BasicCpuSystem system =
-                new BasicCpuSystem("C:\\Development\\Sim6502\\asm\\asmtest\\build\\branchTests.bin");
+                new BasicCpuSystem("C:\\Development\\Sim6502\\asm\\asmtest\\build\\mathTests.bin");
 
             System.Console.WriteLine(CycleState.GetHeaderString('\t'));
 
-            for (int i = 0; i < 60; i++)
+            for (int i = 0; i < 500; i++)
             {
                 system.Cycle(true);
             }

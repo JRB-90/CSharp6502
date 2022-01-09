@@ -56,12 +56,12 @@ namespace CS6502.Core
                      AddressingMode == AddressingMode.AbsoluteX ||
                      AddressingMode == AddressingMode.AbsoluteY)
             {
-                return Absolute(signalEdge, instructionCycle);
+                return Absolute(signalEdge, instructionCycle, wasPageBoundaryCrossed);
             }
             else if (AddressingMode == AddressingMode.XIndirect ||
                      AddressingMode == AddressingMode.IndirectY)
             {
-                return Indirect(signalEdge, instructionCycle);
+                return Indirect(signalEdge, instructionCycle, wasPageBoundaryCrossed);
             }
             else
             {
@@ -146,7 +146,10 @@ namespace CS6502.Core
             return new CpuMicroCode();
         }
 
-        private CpuMicroCode Absolute(SignalEdge signalEdge, int instructionCycle)
+        private CpuMicroCode Absolute(
+            SignalEdge signalEdge, 
+            int instructionCycle,
+            bool wasPageBoundaryCrossed)
         {
             if (signalEdge == SignalEdge.FallingEdge)
             {
@@ -185,7 +188,10 @@ namespace CS6502.Core
             return new CpuMicroCode();
         }
 
-        private CpuMicroCode Indirect(SignalEdge signalEdge, int instructionCycle)
+        private CpuMicroCode Indirect(
+            SignalEdge signalEdge, 
+            int instructionCycle,
+            bool wasPageBoundaryCrossed)
         {
             int startingCycle = 4;
             if (AddressingMode == AddressingMode.XIndirect ||
