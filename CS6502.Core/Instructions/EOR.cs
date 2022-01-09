@@ -151,19 +151,48 @@ namespace CS6502.Core
             int instructionCycle,
             bool wasPageBoundaryCrossed)
         {
+            int startingCycle = 3;
+            if (AddressingMode == AddressingMode.AbsoluteX ||
+                AddressingMode == AddressingMode.AbsoluteY)
+            {
+                startingCycle = 4;
+            }
+
             if (signalEdge == SignalEdge.FallingEdge)
             {
-                if (instructionCycle == 3)
+                if (instructionCycle == startingCycle)
                 {
-                    return
+                    CpuMicroCode cpuMicroCode =
                         new CpuMicroCode(
-                            MicroCodeInstruction.SetToRead,
-                            MicroCodeInstruction.TransferDILToPCHS,
-                            MicroCodeInstruction.TransferPCSToAddressBus,
-                            MicroCodeInstruction.IncrementPC
+                            MicroCodeInstruction.SetToRead
                         );
+
+                    if (AddressingMode == AddressingMode.Absolute)
+                    {
+                        cpuMicroCode.Add(MicroCodeInstruction.TransferDILToPCHS);
+                        cpuMicroCode.Add(MicroCodeInstruction.TransferPCSToAddressBus);
+                        cpuMicroCode.Add(MicroCodeInstruction.IncrementPC);
+                    }
+
+                    if (AddressingMode == AddressingMode.AbsoluteX ||
+                        AddressingMode == AddressingMode.AbsoluteY)
+                    {
+                        if (wasPageBoundaryCrossed)
+                        {
+                            cpuMicroCode.Add(MicroCodeInstruction.IncrementABH);
+                            cpuMicroCode.Add(MicroCodeInstruction.ClearPageBoundaryCrossed);
+                        }
+                        else
+                        {
+                            IsInstructionComplete = true;
+                            cpuMicroCode.Add(MicroCodeInstruction.EOR);
+                            cpuMicroCode.Add(MicroCodeInstruction.TransferPCToPCS);
+                        }
+                    }
+
+                    return cpuMicroCode;
                 }
-                else if (instructionCycle == 4)
+                else if (instructionCycle == startingCycle + 1)
                 {
                     IsInstructionComplete = true;
 
@@ -176,7 +205,7 @@ namespace CS6502.Core
             }
             else
             {
-                if (instructionCycle == 3)
+                if (instructionCycle == startingCycle)
                 {
                     return
                         new CpuMicroCode(
@@ -230,6 +259,27 @@ namespace CS6502.Core
                 else if (AddressingMode == AddressingMode.IndirectY)
                 {
                     if (instructionCycle == startingCycle)
+                    {
+                        if (wasPageBoundaryCrossed)
+                        {
+                            return
+                                new CpuMicroCode(
+                                    MicroCodeInstruction.IncrementABH,
+                                    MicroCodeInstruction.ClearPageBoundaryCrossed
+                                );
+                        }
+                        else
+                        {
+                            IsInstructionComplete = true;
+
+                            return
+                                new CpuMicroCode(
+                                    MicroCodeInstruction.EOR,
+                                    MicroCodeInstruction.TransferPCToPCS
+                                );
+                        }
+                    }
+                    else if (instructionCycle == startingCycle + 1)
                     {
                         IsInstructionComplete = true;
 
