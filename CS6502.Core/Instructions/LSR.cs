@@ -46,7 +46,7 @@ namespace CS6502.Core
             else if (AddressingMode == AddressingMode.Absolute ||
                      AddressingMode == AddressingMode.AbsoluteX)
             {
-                return Absolute(signalEdge, instructionCycle);
+                return Absolute(signalEdge, instructionCycle, wasPageBoundaryCrossed);
             }
             else
             {
@@ -119,6 +119,13 @@ namespace CS6502.Core
             }
             else
             {
+                if (instructionCycle == startingCycle)
+                {
+                    return
+                        new CpuMicroCode(
+                            MicroCodeInstruction.LatchDataIntoDIL
+                        );
+                }
                 if (instructionCycle == startingCycle + 2)
                 {
                     return
@@ -131,7 +138,10 @@ namespace CS6502.Core
             return new CpuMicroCode();
         }
 
-        private CpuMicroCode Absolute(SignalEdge signalEdge, int instructionCycle)
+        private CpuMicroCode Absolute(
+            SignalEdge signalEdge, 
+            int instructionCycle,
+            bool wasPageBoundaryCrossed)
         {
             int startingCycle = 3;
             if (AddressingMode == AddressingMode.AbsoluteX)
@@ -155,11 +165,17 @@ namespace CS6502.Core
                     }
                     else if (AddressingMode == AddressingMode.AbsoluteX)
                     {
-                        return
-                            new CpuMicroCode(
-                                MicroCodeInstruction.SetToRead,
-                                MicroCodeInstruction.LatchDILIntoDOR
-                            );
+                        CpuMicroCode cpuMicroCode = new CpuMicroCode();
+                        cpuMicroCode.Add(MicroCodeInstruction.SetToRead);
+                        cpuMicroCode.Add(MicroCodeInstruction.LatchDILIntoDOR);
+
+                        if (wasPageBoundaryCrossed)
+                        {
+                            cpuMicroCode.Add(MicroCodeInstruction.IncrementABH);
+                            cpuMicroCode.Add(MicroCodeInstruction.ClearPageBoundaryCrossed);
+                        }
+
+                        return cpuMicroCode;
                     }
                 }
                 else if (instructionCycle == startingCycle + 1)
@@ -168,7 +184,8 @@ namespace CS6502.Core
                         new CpuMicroCode(
                             MicroCodeInstruction.ShiftLowDILBitIntoCarry,
                             MicroCodeInstruction.SetToWrite,
-                            MicroCodeInstruction.LSR
+                            MicroCodeInstruction.LSR,
+                            MicroCodeInstruction.LatchDILIntoDOR
                         );
                 }
                 else if (instructionCycle == startingCycle + 3)
