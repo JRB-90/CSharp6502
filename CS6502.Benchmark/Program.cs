@@ -102,6 +102,8 @@ namespace CS6502.Benchmark
                 for (int i = 0; i < BENCH_FILES.Length; i++)
                 {
                     Console.WriteLine($"Running {BENCH_FILES[i]} test...");
+                    benchmark = new BenchmarkSession();
+                    benchmark.LoadFile(WORKING_DIR + BENCH_FILES[i] + ".csv");
                     benchmark.Run(
                         WORKING_DIR + BENCH_FILES[i] + ".bin", 
                         startingOffset
