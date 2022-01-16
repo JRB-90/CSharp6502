@@ -5,25 +5,45 @@ namespace CS6502.Benchmark
 {
     class Program
     {
-        //const string FILE_NAME = "statusTests";
-        //const string FILE_NAME = "transferTests";
-        //const string FILE_NAME = "stackTests";
-        //const string FILE_NAME = "subTests";
-        //const string FILE_NAME = "compareTests";
-        //const string FILE_NAME = "branchTests";
-        //const string FILE_NAME = "loadStoreTests";
-        //const string FILE_NAME = "mathTests";
-        //const string FILE_NAME = "bitwiseTests";
-        const string FILE_NAME = "incrementTests";
-        const string CPU_PROG = "C:\\Development\\Sim6502\\asm\\asmtest\\build\\" + FILE_NAME + ".bin";
-        const string BENCH_PATH = "C:\\Development\\Sim6502\\asm\\asmtest\\build\\" + FILE_NAME + ".csv";
+        const string STATUS_TESTS       = "statusTests";
+        const string TRANSFER_TESTS     = "transferTests";
+        const string STACK_TESTS        = "stackTests";
+        const string SUB_TESTS          = "subTests";
+        const string COMP_TESTS         = "compareTests";
+        const string BRANCH_TESTS       = "branchTests";
+        const string LOAD_STORE_TESTS   = "loadStoreTests";
+        const string MATH_TESTS         = "mathTests";
+        const string BIT_TESTS          = "bitwiseTests";
+        const string INC_TESTS          = "incrementTests";
+
+        const string CURRENT_TEST_NAME  = "incrementTests";
+        const string WORKING_DIR        = "C:\\Development\\Sim6502\\asm\\asmtest\\build\\";
+        const string CPU_PROG           = WORKING_DIR + CURRENT_TEST_NAME + ".bin";
+        const string BENCH_PATH         = WORKING_DIR + CURRENT_TEST_NAME + ".csv";
+
+        static readonly string[] BENCH_FILES = 
+        {
+            STATUS_TESTS,
+            TRANSFER_TESTS,
+            STACK_TESTS,
+            SUB_TESTS,
+            COMP_TESTS,
+            BRANCH_TESTS,
+            LOAD_STORE_TESTS,
+            MATH_TESTS,
+            BIT_TESTS,
+            INC_TESTS,
+        };
 
         static void Main(string[] args)
         {
             Program p = new Program();
-            p.LoadBenchmarkFromFile();
+            //p.LoadBenchmarkFromFile();
             //p.LoadBenchmarkFromP6502(100);
-            p.RunBenchark(0);
+            //p.RunBenchark(0);
+
+            p.RunAllBenchmarks(0);
+
             System.Console.ReadLine();
         }
 
@@ -71,6 +91,30 @@ namespace CS6502.Benchmark
             {
                 Console.WriteLine($"Failed run session: {ex.Message}");
             }
+        }
+
+        public void RunAllBenchmarks(int startingOffset)
+        {
+            Console.WriteLine("Starting benchmarking session...\n");
+
+            try
+            {
+                for (int i = 0; i < BENCH_FILES.Length; i++)
+                {
+                    Console.WriteLine($"Running {BENCH_FILES[i]} test...");
+                    benchmark.Run(
+                        WORKING_DIR + BENCH_FILES[i] + ".bin", 
+                        startingOffset
+                    );
+                    Console.WriteLine("Test complete\n");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed run session: {ex.Message}");
+            }
+
+            Console.WriteLine("Benchmarking session complete");
         }
 
         private BenchmarkSession benchmark;
