@@ -96,7 +96,8 @@ namespace CS6502.Core
                 decodeLogic.Cycle(
                     signalEdge, 
                     p, 
-                    interuptControl
+                    interuptControl,
+                    wasPageBoundaryCrossed
                 );
 
             ExecuteCycleMicroCode(aluMicroCode + cpuMicroCode);
@@ -171,8 +172,16 @@ namespace CS6502.Core
                 case MicroCodeInstruction.SetNegative:
                     p.NegativeFlag = true;
                     break;
+                case MicroCodeInstruction.ClearNAFlag:
+                    p.NAFlag = false;
+                    break;
+                case MicroCodeInstruction.SetNAFlag:
+                    p.NAFlag = true;
+                    break;
                 case MicroCodeInstruction.TransferDataIntoP:
                     p.Value = (byte)(dil & 0b11011111);
+                    alu.CarryFlag = p.CarryFlag;
+                    alu.OverflowFlag = p.OverflowFlag;
                     break;
                 case MicroCodeInstruction.ShiftLowABitIntoCarry:
                     p.CarryFlag = Convert.ToBoolean(a & 0b00000001);
@@ -472,27 +481,31 @@ namespace CS6502.Core
                 case MicroCodeInstruction.DecrementAB_NoCarry:
                     abl--;
                     break;
-                case MicroCodeInstruction.IncrementABByX:
-                    if (((int)abl + (int)x) > byte.MaxValue)
-                    {
-                        p.CarryFlag = true;
-                    }    
+                case MicroCodeInstruction.IncrementABByX_NoCarry:
                     abl = (byte)(abl + x);
                     break;
-                case MicroCodeInstruction.IncrementABByY:
-                    if (((int)abl + (int)y) > byte.MaxValue)
+                case MicroCodeInstruction.IncrementABByY_NoCarry:
+                    abl = (byte)(abl + y);
+                    break;
+                case MicroCodeInstruction.IncrementABByX_WithPBCheck:
+                    if ((abl + x) > byte.MaxValue)
                     {
-                        p.CarryFlag = true;
+                        wasPageBoundaryCrossed = true;
+                    }
+                    abl = (byte)(abl + x);
+                    break;
+                case MicroCodeInstruction.IncrementABByY_WithPBCheck:
+                    if ((abl + y) > byte.MaxValue)
+                    {
+                        wasPageBoundaryCrossed = true;
                     }
                     abl = (byte)(abl + y);
                     break;
-                case MicroCodeInstruction.IncrementABByY_WithCarry:
-                    if (((int)abl + (int)y) > byte.MaxValue)
-                    {
-                        p.CarryFlag = true;
-                        abh++;
-                    }
-                    abl = (byte)(abl + y);
+                case MicroCodeInstruction.ClearPageBoundaryCrossed:
+                    wasPageBoundaryCrossed = false;
+                    break;
+                case MicroCodeInstruction.IncrementABH:
+                    abh++;
                     break;
                 case MicroCodeInstruction.TransferSPToAB:
                     abh = 0x01;
@@ -503,11 +516,15 @@ namespace CS6502.Core
                     break;
                 case MicroCodeInstruction.LatchBranchShift:
                     branchShift = (sbyte)dil;
+                    if (abl + branchShift + 1 > byte.MaxValue)
+                    {
+                        wasPageBoundaryCrossed = true;
+                    }
                     break;
                 case MicroCodeInstruction.Branch:
                     ushort newPC = (ushort)((int)PC + branchShift);
                     pcl = (byte)(newPC & 0x00FF);
-                    pch = (byte)(newPC >> 8);
+                    abl = pcl;
                     break;
                 #endregion
 
@@ -553,6 +570,7 @@ namespace CS6502.Core
         private byte Data => RW == RWState.Read ? dil : dor;
 
         private sbyte branchShift;
+        private bool wasPageBoundaryCrossed;
         private bool latchIREnable;
         private byte a;
         private byte x;

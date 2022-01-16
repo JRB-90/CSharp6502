@@ -16,7 +16,8 @@ namespace CS6502.Core
         public override CpuMicroCode Execute(
             SignalEdge signalEdge,
             int instructionCycle,
-            StatusRegister status)
+            StatusRegister status,
+            bool wasPageBoundaryCrossed)
         {
             if (signalEdge == SignalEdge.FallingEdge)
             {
@@ -41,7 +42,8 @@ namespace CS6502.Core
                         new CpuMicroCode(
                             MicroCodeInstruction.TransferDILToPCLS,
                             MicroCodeInstruction.IncrementAB_NoCarry,
-                            MicroCodeInstruction.TransferABLToSP
+                            MicroCodeInstruction.TransferABLToSP,
+                            MicroCodeInstruction.SetNAFlag
                         );
                 }
                 if (instructionCycle == 5)
@@ -51,7 +53,8 @@ namespace CS6502.Core
                             MicroCodeInstruction.TransferDILToPCHS,
                             MicroCodeInstruction.IncrementAB_NoCarry,
                             MicroCodeInstruction.TransferPCSToPC_NoIncrement,
-                            MicroCodeInstruction.TransferPCToAddressBus
+                            MicroCodeInstruction.TransferPCToAddressBus,
+                            MicroCodeInstruction.ClearNAFlag
                         );
                 }
                 if (instructionCycle == 6)

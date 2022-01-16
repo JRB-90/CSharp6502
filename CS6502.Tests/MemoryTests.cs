@@ -105,7 +105,7 @@ namespace CS6502.Tests
             ram.Data.Should().HaveCount(256);
             for (int i = 0; i < ram.Data.Length; i++)
             {
-                ram.Data[i].Should().Be(0xFF);
+                ram.Data[i].Should().Be(0x00);
             }
         }
 
@@ -144,9 +144,9 @@ namespace CS6502.Tests
 
             cs_n.State = TriState.False;
             addressPins.SetTo(0x00);
-            ram.DataBus.ToByte().Should().Be(0xFF);
+            ram.DataBus.ToByte().Should().Be(0x00);
             addressPins.SetTo(0xFF);
-            ram.DataBus.ToByte().Should().Be(0xFF);
+            ram.DataBus.ToByte().Should().Be(0x00);
         }
 
         [TestMethod]
