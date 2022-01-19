@@ -17,86 +17,29 @@ namespace CS6502.Benchmark
         const string BIT_TESTS          = "bitwiseTests";
         const string INC_TESTS          = "incrementTests";
 
-        const string CURRENT_TEST_NAME  = "incrementTests";
-        const string WORKING_DIR        = "C:\\Development\\Sim6502\\asm\\asmtest\\build\\";
-        const string CPU_PROG           = WORKING_DIR + CURRENT_TEST_NAME + ".bin";
-        const string BENCH_PATH         = WORKING_DIR + CURRENT_TEST_NAME + ".csv";
-
         static readonly string[] BENCH_FILES = 
         {
-            STATUS_TESTS,
+            LOAD_STORE_TESTS,
             TRANSFER_TESTS,
+            STATUS_TESTS,
             STACK_TESTS,
             SUB_TESTS,
+            BIT_TESTS,
+            MATH_TESTS,
+            INC_TESTS,
             COMP_TESTS,
             BRANCH_TESTS,
-            LOAD_STORE_TESTS,
-            MATH_TESTS,
-            BIT_TESTS,
-            INC_TESTS,
         };
 
         static void Main(string[] args)
         {
             Program p = new Program();
-            //p.LoadBenchmarkFromFile();
-            //p.LoadBenchmarkFromP6502(100);
-            //p.RunBenchark(0);
-
-            //p.RunAllBenchmarks(0);
-
+            //p.RunEmbeddedBenchmark("statusTests");
             p.RunAllEmbeddedBenchmarks();
-
             System.Console.ReadLine();
         }
 
-        public Program()
-        {
-            benchmark = new BenchmarkSession();
-        }
-
-        public void LoadBenchmarkFromP6502(int cyclesToRun)
-        {
-            try
-            {
-                Console.WriteLine("Building benchmark from P6502 simulation...");
-                benchmark.LoadFile(BENCH_PATH);
-                Console.WriteLine("P6502 simulation ran successuflly, beginning test..");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to load benchmarking file: {ex.Message}");
-            }
-        }
-
-        public void LoadBenchmarkFromFile()
-        {
-            try
-            {
-                Console.WriteLine("Loading benchmark file...");
-                benchmark.LoadFile(BENCH_PATH);
-                Console.WriteLine("File loaded successuflly, beginning test..");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to load benchmarking file: {ex.Message}");
-            }
-        }
-
-        public void RunBenchark(int startingOffset)
-        {
-            try
-            {
-                benchmark.Run(CPU_PROG, startingOffset);
-                Console.WriteLine("Test complete");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed run session: {ex.Message}");
-            }
-        }
-
-        public void RunAllBenchmarks(int startingOffset)
+        public void RunAllEmbeddedBenchmarks()
         {
             Console.WriteLine("Starting benchmarking session...\n");
 
@@ -105,12 +48,7 @@ namespace CS6502.Benchmark
                 for (int i = 0; i < BENCH_FILES.Length; i++)
                 {
                     Console.WriteLine($"Running {BENCH_FILES[i]} test...");
-                    benchmark = new BenchmarkSession();
-                    benchmark.LoadFile(WORKING_DIR + BENCH_FILES[i] + ".csv");
-                    benchmark.Run(
-                        WORKING_DIR + BENCH_FILES[i] + ".bin", 
-                        startingOffset
-                    );
+                    RunEmbeddedBenchmark(BENCH_FILES[i]);
                     Console.WriteLine("Test complete\n");
                 }
             }
@@ -122,12 +60,14 @@ namespace CS6502.Benchmark
             Console.WriteLine("Benchmarking session complete");
         }
 
-        public void RunAllEmbeddedBenchmarks()
+        public void RunEmbeddedBenchmark(string name)
         {
-            var statusBin = EmbeddedFileLoader.LoadCompiledBinFile("statusTests");
-            var statusCSV = EmbeddedFileLoader.LoadBenchmarkCsvFile("statusTests");
-        }
+            var testCSV = EmbeddedFileLoader.LoadBenchmarkCsvFile(name);
+            var testBin = EmbeddedFileLoader.LoadCompiledBinFile(name);
 
-        private BenchmarkSession benchmark;
+            BenchmarkSession benchmark = new BenchmarkSession();
+            benchmark.LoadFileFromString(testCSV);
+            benchmark.Run(testBin);
+        }
     }
 }

@@ -37,11 +37,11 @@
         }
 
         public MemoryBase(
-            string path,
+            byte[] data,
             int addressWidth,
             int dataWidth)
         {
-            data = MemoryTools.LoadDataFromFile(path);
+            this.data = data;
             Size = data.Length;
             dataPins = Pin.CreatePinArray(dataWidth);
             dataPins.SetAllTo(TriState.HighImpedance);

@@ -8,7 +8,9 @@ namespace CS6502.Console
         static void Main(string[] args)
         {
             BasicCpuSystem system =
-                new BasicCpuSystem("C:\\Development\\Sim6502\\asm\\asmtest\\build\\incrementTests.bin");
+                new BasicCpuSystem(
+                    MemoryTools.LoadDataFromFile("C:\\Development\\Sim6502\\asm\\asmtest\\build\\incrementTests.bin")
+                );
 
             System.Console.WriteLine(CycleState.GetHeaderString('\t'));
 

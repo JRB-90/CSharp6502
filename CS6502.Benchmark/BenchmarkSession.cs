@@ -17,13 +17,28 @@ namespace CS6502.Benchmark
             cycleStates = new List<CycleState>();
         }
 
-        public void LoadFile(string path)
+        public void LoadFileFromPath(string path)
         {
             string[] lines = File.ReadAllLines(path);
 
             foreach (string line in lines)
             {
                 if (line.StartsWith("Half Cycle"))
+                {
+                    continue;
+                }
+                cycleStates.Add(new CycleState(line));
+            }
+        }
+
+        public void LoadFileFromString(string file)
+        {
+            string[] lines = file.Split("\r\n");
+
+            foreach (string line in lines)
+            {
+                if (line == "" ||
+                    line.StartsWith("Half Cycle"))
                 {
                     continue;
                 }
@@ -59,7 +74,12 @@ namespace CS6502.Benchmark
 
         public void Run(string path, int startingOffset = 0)
         {
-            BasicCpuSystem system = new BasicCpuSystem(path);
+            Run(MemoryTools.LoadDataFromFile(path));
+        }
+
+        public void Run(byte[] data, int startingOffset = 0)
+        {
+            BasicCpuSystem system = new BasicCpuSystem(data);
 
             for (int i = startingOffset; i < cycleStates.Count; i++)
             {
@@ -67,7 +87,7 @@ namespace CS6502.Benchmark
 
                 ComparisonResult result =
                     cycleStates[i].Compare(
-                        system.GetCurrentCycleState(), 
+                        system.GetCurrentCycleState(),
                         startingOffset
                     );
 

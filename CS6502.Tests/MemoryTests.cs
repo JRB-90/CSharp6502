@@ -70,7 +70,12 @@ namespace CS6502.Tests
             string path = Path.GetTempPath() + "test.bin";
             byte[] data = CreateFileWithRandomData(path);
 
-            IROM rom = new GenericROM(path, 8, 8);
+            IROM rom = 
+                new GenericROM(
+                    MemoryTools.LoadDataFromFile(path),
+                    8,
+                    8
+                );
             rom.Data.Should().HaveCount(256);
 
             for (int i = 0; i < data.Length; i++)

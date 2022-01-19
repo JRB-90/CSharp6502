@@ -19,13 +19,13 @@ namespace CS6502.Core
 
         public ClockGenerator ClockGenerator => clock;
 
-        public BasicCpuSystem(string path)
+        public BasicCpuSystem(byte[] data)
         {
             cpu = new WD65C02();
 
-            rom = 
+            rom =
                 new GenericROM(
-                    path,
+                    data,
                     16,
                     8
                 );
@@ -37,7 +37,7 @@ namespace CS6502.Core
                     8
                 );
 
-            decoder = 
+            decoder =
                 new AddressDecoder(
                     new AddressSpace(ROM_START, ROM_END),
                     new AddressSpace(RAM_START, RAM_END)
