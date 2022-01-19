@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CS6502.ASM\CS6502.ASM.csproj" />
     <ProjectReference Include="..\CS6502.Core\CS6502.Core.csproj" />
   </ItemGroup>
 

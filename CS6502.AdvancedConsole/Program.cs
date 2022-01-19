@@ -1,16 +1,19 @@
 ﻿using CS6502.Core;
 using System;
 using Alba.CsConsoleFormat;
+using CS6502.ASM;
 
 namespace CS6502.Console
 {
     class Program
     {
+        const string PROG_NAME = "incrementTests";
+
         static void Main(string[] args)
         {
             BasicCpuSystem system =
                 new BasicCpuSystem(
-                    MemoryTools.LoadDataFromFile("C:\\Development\\Sim6502\\asm\\asmtest\\build\\loadStoreTests.bin")
+                    EmbeddedFileLoader.LoadCompiledBinFile(PROG_NAME)
                 );
 
             uint memStart = 0x0000;
