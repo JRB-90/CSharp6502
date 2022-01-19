@@ -1,4 +1,5 @@
-﻿using CS6502.Core;
+﻿using CS6502.ASM;
+using CS6502.Core;
 using System;
 
 namespace CS6502.Benchmark
@@ -42,7 +43,9 @@ namespace CS6502.Benchmark
             //p.LoadBenchmarkFromP6502(100);
             //p.RunBenchark(0);
 
-            p.RunAllBenchmarks(0);
+            //p.RunAllBenchmarks(0);
+
+            p.RunAllEmbeddedBenchmarks();
 
             System.Console.ReadLine();
         }
@@ -117,6 +120,12 @@ namespace CS6502.Benchmark
             }
 
             Console.WriteLine("Benchmarking session complete");
+        }
+
+        public void RunAllEmbeddedBenchmarks()
+        {
+            var statusBin = EmbeddedFileLoader.LoadCompiledBinFile("statusTests");
+            var statusCSV = EmbeddedFileLoader.LoadBenchmarkCsvFile("statusTests");
         }
 
         private BenchmarkSession benchmark;

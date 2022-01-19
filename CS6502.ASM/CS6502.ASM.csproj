@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Compiled\bitwiseTests.bin" />
+    <None Remove="Compiled\bitwiseTests.csv" />
+    <None Remove="Compiled\branchTests.bin" />
+    <None Remove="Compiled\branchTests.csv" />
+    <None Remove="Compiled\compareTests.bin" />
+    <None Remove="Compiled\compareTests.csv" />
+    <None Remove="Compiled\incrementTests.bin" />
+    <None Remove="Compiled\incrementTests.csv" />
+    <None Remove="Compiled\loadStoreTests.bin" />
+    <None Remove="Compiled\loadStoreTests.csv" />
+    <None Remove="Compiled\mathTests.bin" />
+    <None Remove="Compiled\mathTests.csv" />
+    <None Remove="Compiled\stackTests.bin" />
+    <None Remove="Compiled\stackTests.csv" />
+    <None Remove="Compiled\statusTests.bin" />
+    <None Remove="Compiled\statusTests.csv" />
+    <None Remove="Compiled\subTests.bin" />
+    <None Remove="Compiled\subTests.csv" />
+    <None Remove="Compiled\transferTests.bin" />
+    <None Remove="Compiled\transferTests.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Compiled\bitwiseTests.bin" />
+    <EmbeddedResource Include="Compiled\bitwiseTests.csv" />
+    <EmbeddedResource Include="Compiled\branchTests.bin" />
+    <EmbeddedResource Include="Compiled\branchTests.csv" />
+    <EmbeddedResource Include="Compiled\compareTests.bin" />
+    <EmbeddedResource Include="Compiled\compareTests.csv" />
+    <EmbeddedResource Include="Compiled\incrementTests.bin" />
+    <EmbeddedResource Include="Compiled\incrementTests.csv" />
+    <EmbeddedResource Include="Compiled\loadStoreTests.bin" />
+    <EmbeddedResource Include="Compiled\loadStoreTests.csv" />
+    <EmbeddedResource Include="Compiled\mathTests.bin" />
+    <EmbeddedResource Include="Compiled\mathTests.csv" />
+    <EmbeddedResource Include="Compiled\stackTests.bin" />
+    <EmbeddedResource Include="Compiled\stackTests.csv" />
+    <EmbeddedResource Include="Compiled\statusTests.bin" />
+    <EmbeddedResource Include="Compiled\statusTests.csv" />
+    <EmbeddedResource Include="Compiled\subTests.bin" />
+    <EmbeddedResource Include="Compiled\subTests.csv" />
+    <EmbeddedResource Include="Compiled\transferTests.bin" />
+    <EmbeddedResource Include="Compiled\transferTests.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ASM\" />
+  </ItemGroup>
+
+</Project>
