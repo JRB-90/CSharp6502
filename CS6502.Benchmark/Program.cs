@@ -1,5 +1,9 @@
-﻿using CS6502.Core;
+﻿using CS6502.ASM;
+using CS6502.Core;
+using CS6502.Debug;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CS6502.Benchmark
 {
@@ -16,85 +20,51 @@ namespace CS6502.Benchmark
         const string BIT_TESTS          = "bitwiseTests";
         const string INC_TESTS          = "incrementTests";
 
-        const string CURRENT_TEST_NAME  = "incrementTests";
-        const string WORKING_DIR        = "C:\\Development\\Sim6502\\asm\\asmtest\\build\\";
-        const string CPU_PROG           = WORKING_DIR + CURRENT_TEST_NAME + ".bin";
-        const string BENCH_PATH         = WORKING_DIR + CURRENT_TEST_NAME + ".csv";
-
         static readonly string[] BENCH_FILES = 
         {
-            STATUS_TESTS,
+            LOAD_STORE_TESTS,
             TRANSFER_TESTS,
+            STATUS_TESTS,
             STACK_TESTS,
             SUB_TESTS,
+            BIT_TESTS,
+            MATH_TESTS,
+            INC_TESTS,
             COMP_TESTS,
             BRANCH_TESTS,
-            LOAD_STORE_TESTS,
-            MATH_TESTS,
-            BIT_TESTS,
-            INC_TESTS,
         };
 
         static void Main(string[] args)
         {
             Program p = new Program();
-            //p.LoadBenchmarkFromFile();
-            //p.LoadBenchmarkFromP6502(100);
-            //p.RunBenchark(0);
 
-            p.RunAllBenchmarks(0);
+            //p.RunSingleTest("statusTests");
+            p.RunAllEmbeddedBenchmarks();
 
             System.Console.ReadLine();
         }
 
-        public Program()
+        public void RunSingleTest(string name)
         {
-            benchmark = new BenchmarkSession();
-        }
+            Console.WriteLine("Starting benchmarking session...\n");
 
-        public void LoadBenchmarkFromP6502(int cyclesToRun)
-        {
-            try
-            {
-                Console.WriteLine("Building benchmark from P6502 simulation...");
-                benchmark.LoadFile(BENCH_PATH);
-                Console.WriteLine("P6502 simulation ran successuflly, beginning test..");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to load benchmarking file: {ex.Message}");
-            }
-        }
+            Console.WriteLine($"Running {name} test...");
+            BenchmarkResult result = RunEmbeddedBenchmark(name);
 
-        public void LoadBenchmarkFromFile()
-        {
-            try
+            if (!result.WasTestSuccessful)
             {
-                Console.WriteLine("Loading benchmark file...");
-                benchmark.LoadFile(BENCH_PATH);
-                Console.WriteLine("File loaded successuflly, beginning test..");
+                Console.WriteLine(CycleState.GetHeaderString('\t'));
             }
-            catch (Exception ex)
+
+            foreach (var failedCycle in result.FailedCycles)
             {
-                Console.WriteLine($"Failed to load benchmarking file: {ex.Message}");
+                Console.WriteLine(failedCycle.ToString());
             }
         }
 
-        public void RunBenchark(int startingOffset)
+        public void RunAllEmbeddedBenchmarks()
         {
-            try
-            {
-                benchmark.Run(CPU_PROG, startingOffset);
-                Console.WriteLine("Test complete");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed run session: {ex.Message}");
-            }
-        }
-
-        public void RunAllBenchmarks(int startingOffset)
-        {
+            List<BenchmarkResult> results = new List<BenchmarkResult>();
             Console.WriteLine("Starting benchmarking session...\n");
 
             try
@@ -102,13 +72,7 @@ namespace CS6502.Benchmark
                 for (int i = 0; i < BENCH_FILES.Length; i++)
                 {
                     Console.WriteLine($"Running {BENCH_FILES[i]} test...");
-                    benchmark = new BenchmarkSession();
-                    benchmark.LoadFile(WORKING_DIR + BENCH_FILES[i] + ".csv");
-                    benchmark.Run(
-                        WORKING_DIR + BENCH_FILES[i] + ".bin", 
-                        startingOffset
-                    );
-                    Console.WriteLine("Test complete\n");
+                    results.Add(RunEmbeddedBenchmark(BENCH_FILES[i]));
                 }
             }
             catch (Exception ex)
@@ -117,8 +81,42 @@ namespace CS6502.Benchmark
             }
 
             Console.WriteLine("Benchmarking session complete");
+
+            if (results.Where(r => r.WasTestSuccessful == false).Count() > 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("=== Benchmark failed ===");
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("=== Benchmark passed ===");
+            }
+            Console.ForegroundColor = ConsoleColor.Gray;
         }
 
-        private BenchmarkSession benchmark;
+        public BenchmarkResult RunEmbeddedBenchmark(string name)
+        {
+            var testCSV = EmbeddedFileLoader.LoadBenchmarkCsvFile(name);
+            var testBin = EmbeddedFileLoader.LoadCompiledBinFile(name);
+
+            BenchmarkSession benchmark = new BenchmarkSession();
+            benchmark.LoadFileFromString(testCSV);
+            BenchmarkResult result = benchmark.Run(testBin);
+
+            if (result.WasTestSuccessful)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Test successful");
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Test failed - {result.FailedCycles.Count} Cycles are mismatched");
+            }
+            Console.ForegroundColor = ConsoleColor.Gray;
+
+            return result;
+        }
     }
 }

@@ -1,11 +1,8 @@
-﻿namespace CS6502.Core
+﻿namespace CS6502.Debug
 {
-    /// <summary>
-    /// Holds the output of a comparisson between teo cycle states.
-    /// </summary>
-    public class ComparisonResult
+    public class CpuMatchState
     {
-        public ComparisonResult(
+        public CpuMatchState(
             int cycleID,
             bool rw_Matches,
             bool a_matches,
@@ -30,7 +27,7 @@
             Address_Matches = address_matches;
             Data_Matches = data_matches;
         }
-        
+
         public int CycleID { get; }
 
         public bool RW_Matches { get; }

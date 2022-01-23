@@ -1,29 +1,41 @@
 ﻿using CS6502.Core;
-using System;
-using System.Collections.Generic;
-using System.IO;
 
-namespace CS6502.Benchmark
+namespace CS6502.Debug
 {
     /// <summary>
     /// Class to load a benchmark file and orchestrate a session.
     /// Does a comparison for the CPU output and the benchmark and
     /// flags any discrepencies.
     /// </summary>
-    internal class BenchmarkSession
+    public class BenchmarkSession
     {
         public BenchmarkSession()
         {
             cycleStates = new List<CycleState>();
         }
 
-        public void LoadFile(string path)
+        public void LoadFileFromPath(string path)
         {
             string[] lines = File.ReadAllLines(path);
 
             foreach (string line in lines)
             {
                 if (line.StartsWith("Half Cycle"))
+                {
+                    continue;
+                }
+                cycleStates.Add(new CycleState(line));
+            }
+        }
+
+        public void LoadFileFromString(string file)
+        {
+            string[] lines = file.Split("\r\n");
+
+            foreach (string line in lines)
+            {
+                if (line == "" ||
+                    line.StartsWith("Half Cycle"))
                 {
                     continue;
                 }
@@ -57,27 +69,46 @@ namespace CS6502.Benchmark
             }
         }
 
-        public void Run(string path, int startingOffset = 0)
+        public BenchmarkResult Run(string path, int startingOffset = 0)
         {
-            BasicCpuSystem system = new BasicCpuSystem(path);
+            return Run(MemoryTools.LoadDataFromFile(path));
+        }
+
+        public BenchmarkResult Run(byte[] data, int startingOffset = 0)
+        {
+            BasicCpuSystem system = new BasicCpuSystem(data);
+
+            List<ComparisonResult> successfulCycles = new List<ComparisonResult>();
+            List<ComparisonResult> failedCycles = new List<ComparisonResult>();
 
             for (int i = startingOffset; i < cycleStates.Count; i++)
             {
                 system.Cycle();
 
                 ComparisonResult result =
-                    cycleStates[i].Compare(
-                        system.GetCurrentCycleState(), 
+                    ComparisonResult.CompareCycles(
+                        cycleStates[i],
+                        system.GetCurrentCycleState(),
                         startingOffset
                     );
 
                 if (!result.IsCompleteMatch)
                 {
-                    System.Console.WriteLine(result.ToString());
+                    failedCycles.Add(result);
+                }
+                else
+                {
+                    successfulCycles.Add(result);
                 }
             }
+
+            return
+                new BenchmarkResult(
+                    successfulCycles,
+                    failedCycles
+                );
         }
 
-        List<CycleState> cycleStates;
+        private List<CycleState> cycleStates;
     }
 }

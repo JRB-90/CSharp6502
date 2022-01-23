@@ -21,12 +21,12 @@
         }
 
         public GenericROM(
-            string path,
+            byte[] data,
             int addressWidth,
             int dataWidth)
           :
             base(
-                path,
+                data,
                 addressWidth,
                 dataWidth
             )

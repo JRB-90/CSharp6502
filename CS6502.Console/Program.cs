@@ -1,14 +1,19 @@
-﻿using CS6502.Core;
+﻿using CS6502.ASM;
+using CS6502.Core;
 using System;
 
 namespace CS6502.Console
 {
     class Program
     {
+        const string PROG_NAME = "incrementTests";
+
         static void Main(string[] args)
         {
             BasicCpuSystem system =
-                new BasicCpuSystem("C:\\Development\\Sim6502\\asm\\asmtest\\build\\incrementTests.bin");
+                new BasicCpuSystem(
+                    EmbeddedFileLoader.LoadCompiledBinFile(PROG_NAME)
+                );
 
             System.Console.WriteLine(CycleState.GetHeaderString('\t'));
 

@@ -78,31 +78,6 @@ namespace CS6502.Core
             Data = byte.Parse(tokens[10].Trim().Remove(0, 2), NumberStyles.HexNumber);
         }
 
-        public ComparisonResult Compare(CycleState cycleState, int offset = 0)
-        {
-            if (CycleID != cycleState.CycleID + offset)
-            {
-                throw new ArgumentException(
-                    $"Cannot compare cycles, ID's do not macth {CycleID}<->{cycleState.CycleID + offset}"
-                );
-            }
-
-            return
-                new ComparisonResult(
-                    cycleState.CycleID,
-                    RW == cycleState.RW,
-                    A == cycleState.A,
-                    X == cycleState.X,
-                    Y == cycleState.Y,
-                    IR == cycleState.IR,
-                    P == cycleState.P,
-                    SP == cycleState.SP,
-                    PC == cycleState.PC,
-                    Address == cycleState.Address,
-                    Data == cycleState.Data
-                );
-        }
-
         public string ToString(char delimiter)
         {
             return
