@@ -1,6 +1,9 @@
 ﻿using CS6502.ASM;
 using CS6502.Core;
+using CS6502.Debug;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CS6502.Benchmark
 {
@@ -34,13 +37,34 @@ namespace CS6502.Benchmark
         static void Main(string[] args)
         {
             Program p = new Program();
-            //p.RunEmbeddedBenchmark("statusTests");
-            p.RunAllEmbeddedBenchmarks();
+
+            p.RunSingleTest("statusTests");
+            //p.RunAllEmbeddedBenchmarks();
+
             System.Console.ReadLine();
+        }
+
+        public void RunSingleTest(string name)
+        {
+            Console.WriteLine("Starting benchmarking session...\n");
+
+            Console.WriteLine($"Running {name} test...");
+            BenchmarkResult result = RunEmbeddedBenchmark(name);
+
+            if (!result.WasTestSuccessful)
+            {
+                Console.WriteLine(CycleState.GetHeaderString('\t'));
+            }
+
+            foreach (var failedCycle in result.FailedCycles)
+            {
+                Console.WriteLine(failedCycle.ToString());
+            }
         }
 
         public void RunAllEmbeddedBenchmarks()
         {
+            List<BenchmarkResult> results = new List<BenchmarkResult>();
             Console.WriteLine("Starting benchmarking session...\n");
 
             try
@@ -48,8 +72,7 @@ namespace CS6502.Benchmark
                 for (int i = 0; i < BENCH_FILES.Length; i++)
                 {
                     Console.WriteLine($"Running {BENCH_FILES[i]} test...");
-                    RunEmbeddedBenchmark(BENCH_FILES[i]);
-                    Console.WriteLine("Test complete\n");
+                    results.Add(RunEmbeddedBenchmark(BENCH_FILES[i]));
                 }
             }
             catch (Exception ex)
@@ -58,16 +81,42 @@ namespace CS6502.Benchmark
             }
 
             Console.WriteLine("Benchmarking session complete");
+
+            if (results.Where(r => r.WasTestSuccessful == false).Count() > 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("=== Benchmark failed ===");
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("=== Benchmark passed ===");
+            }
+            Console.ForegroundColor = ConsoleColor.Gray;
         }
 
-        public void RunEmbeddedBenchmark(string name)
+        public BenchmarkResult RunEmbeddedBenchmark(string name)
         {
             var testCSV = EmbeddedFileLoader.LoadBenchmarkCsvFile(name);
             var testBin = EmbeddedFileLoader.LoadCompiledBinFile(name);
 
             BenchmarkSession benchmark = new BenchmarkSession();
             benchmark.LoadFileFromString(testCSV);
-            benchmark.Run(testBin);
+            BenchmarkResult result = benchmark.Run(testBin);
+
+            if (result.WasTestSuccessful)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Test successful");
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Test failed - {result.FailedCycles.Count} Cycles are mismatched");
+            }
+            Console.ForegroundColor = ConsoleColor.Gray;
+
+            return result;
         }
     }
 }

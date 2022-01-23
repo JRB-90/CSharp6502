@@ -1,8 +1,7 @@
 ﻿using CS6502.Core;
-using System;
 using System.Runtime.InteropServices;
 
-namespace CS6502.Benchmark
+namespace CS6502.Debug
 {
     public static class P6502
     {

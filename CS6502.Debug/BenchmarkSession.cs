@@ -1,16 +1,13 @@
 ﻿using CS6502.Core;
-using System;
-using System.Collections.Generic;
-using System.IO;
 
-namespace CS6502.Benchmark
+namespace CS6502.Debug
 {
     /// <summary>
     /// Class to load a benchmark file and orchestrate a session.
     /// Does a comparison for the CPU output and the benchmark and
     /// flags any discrepencies.
     /// </summary>
-    internal class BenchmarkSession
+    public class BenchmarkSession
     {
         public BenchmarkSession()
         {
@@ -72,32 +69,46 @@ namespace CS6502.Benchmark
             }
         }
 
-        public void Run(string path, int startingOffset = 0)
+        public BenchmarkResult Run(string path, int startingOffset = 0)
         {
-            Run(MemoryTools.LoadDataFromFile(path));
+            return Run(MemoryTools.LoadDataFromFile(path));
         }
 
-        public void Run(byte[] data, int startingOffset = 0)
+        public BenchmarkResult Run(byte[] data, int startingOffset = 0)
         {
             BasicCpuSystem system = new BasicCpuSystem(data);
+
+            List<ComparisonResult> successfulCycles = new List<ComparisonResult>();
+            List<ComparisonResult> failedCycles = new List<ComparisonResult>();
 
             for (int i = startingOffset; i < cycleStates.Count; i++)
             {
                 system.Cycle();
 
                 ComparisonResult result =
-                    cycleStates[i].Compare(
+                    ComparisonResult.CompareCycles(
+                        cycleStates[i],
                         system.GetCurrentCycleState(),
                         startingOffset
                     );
 
                 if (!result.IsCompleteMatch)
                 {
-                    System.Console.WriteLine(result.ToString());
+                    failedCycles.Add(result);
+                }
+                else
+                {
+                    successfulCycles.Add(result);
                 }
             }
+
+            return
+                new BenchmarkResult(
+                    successfulCycles,
+                    failedCycles
+                );
         }
 
-        List<CycleState> cycleStates;
+        private List<CycleState> cycleStates;
     }
 }
