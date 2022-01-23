@@ -38,8 +38,8 @@ namespace CS6502.Benchmark
         {
             Program p = new Program();
 
-            p.RunSingleTest("statusTests");
-            //p.RunAllEmbeddedBenchmarks();
+            //p.RunSingleTest("statusTests");
+            p.RunAllEmbeddedBenchmarks();
 
             System.Console.ReadLine();
         }
