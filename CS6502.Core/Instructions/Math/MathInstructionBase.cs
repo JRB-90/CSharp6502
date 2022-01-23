@@ -43,11 +43,11 @@ namespace CS6502.Core
             }
             else
             {
-                throw new ArgumentException($"AND does not support {AddressingMode.ToString()} addressing mode");
+                throw new ArgumentException($"{Name} does not support {AddressingMode.ToString()} addressing mode");
             }
         }
 
-        private CpuMicroCode Immediate(SignalEdge signalEdge, int instructionCycle)
+        protected virtual CpuMicroCode Immediate(SignalEdge signalEdge, int instructionCycle)
         {
             if (signalEdge == SignalEdge.FallingEdge)
             {
@@ -67,7 +67,7 @@ namespace CS6502.Core
             return new CpuMicroCode();
         }
 
-        private CpuMicroCode ZeroPage(SignalEdge signalEdge, int instructionCycle)
+        protected virtual CpuMicroCode ZeroPage(SignalEdge signalEdge, int instructionCycle)
         {
             int startingCycle = 2;
             if (AddressingMode == AddressingMode.ZeroPageX)
@@ -124,7 +124,7 @@ namespace CS6502.Core
             return new CpuMicroCode();
         }
 
-        private CpuMicroCode Absolute(
+        protected virtual CpuMicroCode Absolute(
             SignalEdge signalEdge,
             int instructionCycle,
             bool wasPageBoundaryCrossed)
@@ -195,7 +195,7 @@ namespace CS6502.Core
             return new CpuMicroCode();
         }
 
-        private CpuMicroCode Indirect(
+        protected virtual CpuMicroCode Indirect(
             SignalEdge signalEdge,
             int instructionCycle,
             bool wasPageBoundaryCrossed)
