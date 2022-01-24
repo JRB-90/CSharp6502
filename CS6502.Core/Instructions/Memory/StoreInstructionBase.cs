@@ -40,7 +40,7 @@ namespace CS6502.Core
             }
             else
             {
-                throw new ArgumentException($"STA does not support {AddressingMode.ToString()} addressing mode");
+                throw new ArgumentException($"{Name} does not support {AddressingMode.ToString()} addressing mode");
             }
         }
 
