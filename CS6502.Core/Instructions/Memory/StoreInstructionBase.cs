@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    internal class StoreInstructionBase : InstructionBase
+    internal abstract class StoreInstructionBase : InstructionBase
     {
         public StoreInstructionBase(
             string name, 

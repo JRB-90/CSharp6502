@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CS6502.Core
 {
-    internal class CompareInstructionBase : InstructionBase
+    internal abstract class CompareInstructionBase : InstructionBase
     {
         public CompareInstructionBase(
             string name, 
@@ -18,6 +14,7 @@ namespace CS6502.Core
         {
             this.compareInstruction = compareInstruction;
         }
+
         public override CpuMicroCode Execute(
             SignalEdge signalEdge,
             int instructionCycle,

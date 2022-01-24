@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    internal class ShiftInstructionBase : InstructionBase
+    internal abstract class ShiftInstructionBase : InstructionBase
     {
         public ShiftInstructionBase(
             string name,

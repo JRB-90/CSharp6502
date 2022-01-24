@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    internal class LoadInstructionBase : InstructionBase
+    internal abstract class LoadInstructionBase : InstructionBase
     {
         public LoadInstructionBase(
             string name, 

@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    internal class MathInstructionBase : InstructionBase
+    internal abstract class MathInstructionBase : InstructionBase
     {
         public MathInstructionBase(
             string name, 

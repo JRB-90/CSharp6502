@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    internal class BranchInstructionBase : InstructionBase
+    internal abstract class BranchInstructionBase : InstructionBase
     {
         public BranchInstructionBase(
             string name, 
