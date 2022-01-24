@@ -17,33 +17,9 @@ namespace CS6502.Core
             this.shiftInstruction_A = shiftInstruction_A;
         }
 
-        public override CpuMicroCode Execute(
-            SignalEdge signalEdge,
-            int instructionCycle,
-            StatusRegister status,
-            bool wasPageBoundaryCrossed)
-        {
-            if (AddressingMode == AddressingMode.Immediate)
-            {
-                return Immediate(signalEdge, instructionCycle);
-            }
-            if (AddressingMode == AddressingMode.ZeroPage ||
-                AddressingMode == AddressingMode.ZeroPageX)
-            {
-                return ZeroPage(signalEdge, instructionCycle);
-            }
-            else if (AddressingMode == AddressingMode.Absolute ||
-                     AddressingMode == AddressingMode.AbsoluteX)
-            {
-                return Absolute(signalEdge, instructionCycle, wasPageBoundaryCrossed);
-            }
-            else
-            {
-                throw new ArgumentException($"{Name} does not support {AddressingMode.ToString()} addressing mode");
-            }
-        }
-
-        protected virtual CpuMicroCode Immediate(SignalEdge signalEdge, int instructionCycle)
+        protected override CpuMicroCode Immediate(
+            SignalEdge signalEdge, 
+            int instructionCycle)
         {
             IsInstructionComplete = true;
 
@@ -54,7 +30,9 @@ namespace CS6502.Core
                 );
         }
 
-        protected virtual CpuMicroCode ZeroPage(SignalEdge signalEdge, int instructionCycle)
+        protected override CpuMicroCode ZeroPage(
+            SignalEdge signalEdge, 
+            int instructionCycle)
         {
             int startingCycle = 2;
             if (AddressingMode == AddressingMode.ZeroPageX)
@@ -118,7 +96,7 @@ namespace CS6502.Core
             return new CpuMicroCode();
         }
 
-        protected virtual CpuMicroCode Absolute(
+        protected override CpuMicroCode Absolute(
             SignalEdge signalEdge,
             int instructionCycle,
             bool wasPageBoundaryCrossed)

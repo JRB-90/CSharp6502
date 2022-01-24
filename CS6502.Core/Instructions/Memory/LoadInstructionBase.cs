@@ -15,40 +15,7 @@ namespace CS6502.Core
             this.loadInstruction = loadInstruction;
         }
 
-        public override CpuMicroCode Execute(
-            SignalEdge signalEdge,
-            int instructionCycle,
-            StatusRegister status,
-            bool wasPageBoundaryCrossed)
-        {
-            if (AddressingMode == AddressingMode.Immediate)
-            {
-                return Immediate(signalEdge, instructionCycle);
-            }
-            else if (AddressingMode == AddressingMode.ZeroPage ||
-                     AddressingMode == AddressingMode.ZeroPageX ||
-                     AddressingMode == AddressingMode.ZeroPageY)
-            {
-                return ZeroPage(signalEdge, instructionCycle);
-            }
-            else if (AddressingMode == AddressingMode.Absolute ||
-                     AddressingMode == AddressingMode.AbsoluteX ||
-                     AddressingMode == AddressingMode.AbsoluteY)
-            {
-                return Absolute(signalEdge, instructionCycle, wasPageBoundaryCrossed);
-            }
-            else if (AddressingMode == AddressingMode.XIndirect ||
-                     AddressingMode == AddressingMode.IndirectY)
-            {
-                return Indirect(signalEdge, instructionCycle, wasPageBoundaryCrossed);
-            }
-            else
-            {
-                throw new ArgumentException($"{Name} does not support {AddressingMode.ToString()} addressing mode");
-            }
-        }
-
-        protected virtual CpuMicroCode Immediate(SignalEdge signalEdge, int instructionCycle)
+        protected override CpuMicroCode Immediate(SignalEdge signalEdge, int instructionCycle)
         {
             if (signalEdge == SignalEdge.FallingEdge)
             {
@@ -68,7 +35,7 @@ namespace CS6502.Core
             return new CpuMicroCode();
         }
 
-        protected virtual CpuMicroCode ZeroPage(SignalEdge signalEdge, int instructionCycle)
+        protected override CpuMicroCode ZeroPage(SignalEdge signalEdge, int instructionCycle)
         {
             int startingCycle = 2;
             if (AddressingMode == AddressingMode.ZeroPageX ||
@@ -127,7 +94,7 @@ namespace CS6502.Core
             return new CpuMicroCode();
         }
 
-        protected virtual CpuMicroCode Absolute(
+        protected override CpuMicroCode Absolute(
             SignalEdge signalEdge,
             int instructionCycle,
             bool wasPageBoundaryCrossed)
@@ -200,7 +167,7 @@ namespace CS6502.Core
             return new CpuMicroCode();
         }
 
-        protected virtual CpuMicroCode Indirect(
+        protected override CpuMicroCode Indirect(
             SignalEdge signalEdge,
             int instructionCycle,
             bool wasPageBoundaryCrossed)

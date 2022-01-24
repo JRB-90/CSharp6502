@@ -15,11 +15,11 @@ namespace CS6502.Core
             this.branchTest = branchTest;
         }
 
-        public override CpuMicroCode Execute(
-            SignalEdge signalEdge,
-            int instructionCycle,
-            StatusRegister status,
-            bool wasPageBoundaryCrossed)
+        protected override CpuMicroCode Relative(
+            SignalEdge signalEdge, 
+            int instructionCycle, 
+            bool wasPageBoundaryCrossed,
+            StatusRegister status)
         {
             if (signalEdge == SignalEdge.FallingEdge)
             {
