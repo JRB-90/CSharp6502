@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    internal class STY : InstructionBase
+    internal class STY : StoreInstructionBase
     {
         public static STY CreateSTY(AddressingMode addressingMode)
         {
@@ -22,122 +22,6 @@ namespace CS6502.Core
             }
         }
 
-        public override CpuMicroCode Execute(
-            SignalEdge signalEdge,
-            int instructionCycle,
-            StatusRegister status,
-            bool wasPageBoundaryCrossed)
-        {
-            if (AddressingMode == AddressingMode.ZeroPage ||
-                AddressingMode == AddressingMode.ZeroPageX)
-            {
-                return ZeroPage(signalEdge, instructionCycle);
-            }
-            else if (AddressingMode == AddressingMode.Absolute)
-            {
-                return Absolute(signalEdge, instructionCycle);
-            }
-            else
-            {
-                throw new ArgumentException($"STY does not support {AddressingMode.ToString()} addressing mode");
-            }
-        }
-
-        private CpuMicroCode ZeroPage(SignalEdge signalEdge, int instructionCycle)
-        {
-            int startingCycle = 2;
-            if (AddressingMode == AddressingMode.ZeroPageX)
-            {
-                startingCycle = 3;
-            }
-
-            if (signalEdge == SignalEdge.FallingEdge)
-            {
-                if (instructionCycle == startingCycle)
-                {
-                    CpuMicroCode cpuMicroCode =
-                        new CpuMicroCode(
-                           
-                           MicroCodeInstruction.LatchDILIntoDOR,
-                           MicroCodeInstruction.SetToWrite
-                       );
-
-                    if (AddressingMode == AddressingMode.ZeroPage)
-                    {
-                        cpuMicroCode.Add(MicroCodeInstruction.TransferZPDataToAB);
-                        cpuMicroCode.Add(MicroCodeInstruction.IncrementPC);
-                    }
-                    else if (AddressingMode == AddressingMode.ZeroPageX)
-                    {
-                        cpuMicroCode.Add(MicroCodeInstruction.IncrementABByX_NoCarry);
-                    }
-
-                    return cpuMicroCode;
-                }
-                if (instructionCycle == startingCycle + 1)
-                {
-                    IsInstructionComplete = true;
-
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.TransferPCToPCS
-                        );
-                }
-            }
-            else
-            {
-                if (instructionCycle == startingCycle)
-                {
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.LatchYIntoDOR,
-                            MicroCodeInstruction.TransferPCToPCS
-                        );
-                }
-            }
-
-            return new CpuMicroCode();
-        }
-
-        private CpuMicroCode Absolute(SignalEdge signalEdge, int instructionCycle)
-        {
-            if (signalEdge == SignalEdge.FallingEdge)
-            {
-                if (instructionCycle == 3)
-                {
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.SetToWrite,
-                            MicroCodeInstruction.LatchDILIntoDOR,
-                            MicroCodeInstruction.TransferDILToPCHS,
-                            MicroCodeInstruction.TransferPCSToAddressBus,
-                            MicroCodeInstruction.IncrementPC
-                        );
-                }
-                else if (instructionCycle == 4)
-                {
-                    IsInstructionComplete = true;
-
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.TransferPCToPCS
-                        );
-                }
-            }
-            else
-            {
-                if (instructionCycle == 3)
-                {
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.LatchYIntoDOR
-                        );
-                }
-            }
-
-            return new CpuMicroCode();
-        }
-
         private STY(
             byte opcode,
             AddressingMode addressingMode)
@@ -145,7 +29,8 @@ namespace CS6502.Core
             base(
                 "STY",
                 opcode,
-                addressingMode)
+                addressingMode,
+                MicroCodeInstruction.LatchYIntoDOR)
         {
         }
     }

@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    internal class LDY : InstructionBase
+    internal class LDY : LoadInstructionBase
     {
         public static LDY CreateLDY(AddressingMode addressingMode)
         {
@@ -28,177 +28,6 @@ namespace CS6502.Core
             }
         }
 
-        public override CpuMicroCode Execute(
-            SignalEdge signalEdge,
-            int instructionCycle,
-            StatusRegister status,
-            bool wasPageBoundaryCrossed)
-        {
-            if (AddressingMode == AddressingMode.Immediate)
-            {
-                return Immediate(signalEdge, instructionCycle);
-            }
-            else if (AddressingMode == AddressingMode.ZeroPage ||
-                     AddressingMode == AddressingMode.ZeroPageX)
-            {
-                return ZeroPage(signalEdge, instructionCycle);
-            }
-            else if (AddressingMode == AddressingMode.Absolute ||
-                     AddressingMode == AddressingMode.AbsoluteX)
-            {
-                return Absolute(signalEdge, instructionCycle, wasPageBoundaryCrossed);
-            }
-            else
-            {
-                throw new ArgumentException($"LDA does not support {AddressingMode.ToString()} addressing mode");
-            }
-        }
-
-        private CpuMicroCode Immediate(SignalEdge signalEdge, int instructionCycle)
-        {
-            if (signalEdge == SignalEdge.FallingEdge)
-            {
-                IsInstructionComplete = true;
-
-                if (instructionCycle == 2)
-                {
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.LatchDILIntoY,
-                            MicroCodeInstruction.IncrementPC,
-                            MicroCodeInstruction.TransferPCToPCS
-                        );
-                }
-            }
-
-            return new CpuMicroCode();
-        }
-
-        private CpuMicroCode ZeroPage(SignalEdge signalEdge, int instructionCycle)
-        {
-            int startingCycle = 2;
-            if (AddressingMode == AddressingMode.ZeroPageX)
-            {
-                startingCycle = 3;
-            }
-
-            if (signalEdge == SignalEdge.FallingEdge)
-            {
-                if (instructionCycle == startingCycle)
-                {
-                    CpuMicroCode cpuMicroCode =
-                        new CpuMicroCode(
-                           MicroCodeInstruction.LatchDataIntoDIL,
-                           MicroCodeInstruction.SetToRead
-                       );
-
-                    if (AddressingMode == AddressingMode.ZeroPage)
-                    {
-                        cpuMicroCode.Add(MicroCodeInstruction.TransferZPDataToAB);
-                        cpuMicroCode.Add(MicroCodeInstruction.IncrementPC);
-                    }
-                    else if (AddressingMode == AddressingMode.ZeroPageX)
-                    {
-                        cpuMicroCode.Add(MicroCodeInstruction.IncrementABByX_NoCarry);
-                    }
-
-                    return cpuMicroCode;
-                }
-                if (instructionCycle == startingCycle + 1)
-                {
-                    IsInstructionComplete = true;
-
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.LatchDILIntoY
-                        );
-                }
-            }
-            else
-            {
-                if (instructionCycle == startingCycle)
-                {
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.TransferPCToPCS
-                        );
-                }
-            }
-
-            return new CpuMicroCode();
-        }
-
-        private CpuMicroCode Absolute(
-            SignalEdge signalEdge,
-            int instructionCycle,
-            bool wasPageBoundaryCrossed)
-        {
-            int startingCycle = 3;
-            if (AddressingMode == AddressingMode.AbsoluteX)
-            {
-                startingCycle = 4;
-            }
-
-            if (signalEdge == SignalEdge.FallingEdge)
-            {
-                if (instructionCycle == startingCycle)
-                {
-                    CpuMicroCode cpuMicroCode =
-                        new CpuMicroCode(
-                            MicroCodeInstruction.SetToRead
-                        );
-
-                    if (AddressingMode == AddressingMode.Absolute)
-                    {
-                        cpuMicroCode.Add(MicroCodeInstruction.TransferDILToPCHS);
-                        cpuMicroCode.Add(MicroCodeInstruction.TransferPCSToAddressBus);
-                        cpuMicroCode.Add(MicroCodeInstruction.IncrementPC);
-                    }
-
-                    if (AddressingMode == AddressingMode.AbsoluteX)
-                    {
-                        if (wasPageBoundaryCrossed)
-                        {
-                            cpuMicroCode.Add(MicroCodeInstruction.IncrementABH);
-                            cpuMicroCode.Add(MicroCodeInstruction.ClearPageBoundaryCrossed);
-                        }
-                        else
-                        {
-                            IsInstructionComplete = true;
-                            cpuMicroCode.Add(MicroCodeInstruction.LatchDataIntoDIL);
-                            cpuMicroCode.Add(MicroCodeInstruction.LatchDILIntoY);
-                            cpuMicroCode.Add(MicroCodeInstruction.TransferPCToPCS);
-                        }
-                    }
-
-                    return cpuMicroCode;
-                }
-                else if (instructionCycle == startingCycle + 1)
-                {
-                    IsInstructionComplete = true;
-
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.LatchDataIntoDIL,
-                            MicroCodeInstruction.LatchDILIntoY,
-                            MicroCodeInstruction.TransferPCToPCS
-                        );
-                }
-            }
-            else
-            {
-                if (instructionCycle == startingCycle)
-                {
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.LatchDataIntoDIL
-                        );
-                }
-            }
-
-            return new CpuMicroCode();
-        }
-
         private LDY(
             byte opcode,
             AddressingMode addressingMode)
@@ -206,7 +35,8 @@ namespace CS6502.Core
             base(
                 "LDY",
                 opcode,
-                addressingMode)
+                addressingMode,
+                MicroCodeInstruction.LatchDILIntoY)
         {
         }
     }
