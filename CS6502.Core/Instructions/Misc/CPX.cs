@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    internal class CPX : CompareInstructionBase
+    internal class CPX : LoadInstructionBase
     {
         public static CPX CreateCPX(AddressingMode addressingMode)
         {

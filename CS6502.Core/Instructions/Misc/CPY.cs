@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    internal class CPY : CompareInstructionBase
+    internal class CPY : LoadInstructionBase
     {
         public static CPY CreateCPY(AddressingMode addressingMode)
         {

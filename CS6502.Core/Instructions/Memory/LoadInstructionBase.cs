@@ -15,7 +15,9 @@ namespace CS6502.Core
             this.loadInstruction = loadInstruction;
         }
 
-        protected override CpuMicroCode Immediate(SignalEdge signalEdge, int instructionCycle)
+        protected override CpuMicroCode Immediate(
+            SignalEdge signalEdge, 
+            int instructionCycle)
         {
             if (signalEdge == SignalEdge.FallingEdge)
             {
@@ -35,7 +37,9 @@ namespace CS6502.Core
             return new CpuMicroCode();
         }
 
-        protected override CpuMicroCode ZeroPage(SignalEdge signalEdge, int instructionCycle)
+        protected override CpuMicroCode ZeroPage(
+            SignalEdge signalEdge, 
+            int instructionCycle)
         {
             int startingCycle = 2;
             if (AddressingMode == AddressingMode.ZeroPageX ||
@@ -246,7 +250,7 @@ namespace CS6502.Core
             }
             else
             {
-                if (instructionCycle == 3)
+                if (instructionCycle == startingCycle)
                 {
                     return
                         new CpuMicroCode(

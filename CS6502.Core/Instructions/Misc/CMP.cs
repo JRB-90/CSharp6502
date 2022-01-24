@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    internal class CMP : CompareInstructionBase
+    internal class CMP : LoadInstructionBase
     {
         public static CMP CreateCMP(AddressingMode addressingMode)
         {
