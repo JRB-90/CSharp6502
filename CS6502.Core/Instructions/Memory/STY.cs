@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    internal class STY : StoreInstructionBase
+    internal class STY : MemoryInstructionBase
     {
         public static STY CreateSTY(AddressingMode addressingMode)
         {
@@ -30,6 +30,7 @@ namespace CS6502.Core
                 "STY",
                 opcode,
                 addressingMode,
+                RWState.Write,
                 MicroCodeInstruction.LatchYIntoDOR)
         {
         }

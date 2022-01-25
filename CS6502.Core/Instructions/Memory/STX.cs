@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    internal class STX : StoreInstructionBase
+    internal class STX : MemoryInstructionBase
     {
         public static STX CreateSTX(AddressingMode addressingMode)
         {
@@ -30,6 +30,7 @@ namespace CS6502.Core
                 "STX",
                 opcode,
                 addressingMode,
+                RWState.Write,
                 MicroCodeInstruction.LatchXIntoDOR)
         {
         }

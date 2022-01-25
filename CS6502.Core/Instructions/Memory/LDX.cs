@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    internal class LDX : LoadInstructionBase
+    internal class LDX : MemoryInstructionBase
     {
         public static LDX CreateLDX(AddressingMode addressingMode)
         {
@@ -36,6 +36,7 @@ namespace CS6502.Core
                 "LDX",
                 opcode,
                 addressingMode,
+                RWState.Read,
                 MicroCodeInstruction.LatchDILIntoX)
         {
         }

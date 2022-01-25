@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    internal class CPX : LoadInstructionBase
+    internal class CPX : MemoryInstructionBase
     {
         public static CPX CreateCPX(AddressingMode addressingMode)
         {
@@ -30,6 +30,7 @@ namespace CS6502.Core
                 "CPX",
                 opcode,
                 addressingMode,
+                RWState.Read,
                 MicroCodeInstruction.CMP_X)
         {
         }

@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    internal class LDY : LoadInstructionBase
+    internal class LDY : MemoryInstructionBase
     {
         public static LDY CreateLDY(AddressingMode addressingMode)
         {
@@ -36,6 +36,7 @@ namespace CS6502.Core
                 "LDY",
                 opcode,
                 addressingMode,
+                RWState.Read,
                 MicroCodeInstruction.LatchDILIntoY)
         {
         }

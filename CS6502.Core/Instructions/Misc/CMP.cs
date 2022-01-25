@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    internal class CMP : LoadInstructionBase
+    internal class CMP : MemoryInstructionBase
     {
         public static CMP CreateCMP(AddressingMode addressingMode)
         {
@@ -45,6 +45,7 @@ namespace CS6502.Core
                 "CMP",
                 opcode,
                 addressingMode,
+                RWState.Read,
                 MicroCodeInstruction.CMP_A)
         {
         }

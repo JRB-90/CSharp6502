@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    internal class STA : StoreInstructionBase
+    internal class STA : MemoryInstructionBase
     {
         public static STA CreateSTA(AddressingMode addressingMode)
         {
@@ -42,6 +42,7 @@ namespace CS6502.Core
                 "STA",
                 opcode,
                 addressingMode,
+                RWState.Write,
                 MicroCodeInstruction.LatchAIntoDOR)
         {
         }

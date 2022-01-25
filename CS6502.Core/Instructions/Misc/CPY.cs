@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    internal class CPY : LoadInstructionBase
+    internal class CPY : MemoryInstructionBase
     {
         public static CPY CreateCPY(AddressingMode addressingMode)
         {
@@ -30,6 +30,7 @@ namespace CS6502.Core
                 "CPY",
                 opcode,
                 addressingMode,
+                RWState.Read,
                 MicroCodeInstruction.CMP_Y)
         {
         }

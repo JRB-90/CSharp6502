@@ -2,7 +2,7 @@
 
 namespace CS6502.Core
 {
-    internal class LDA : LoadInstructionBase
+    internal class LDA : MemoryInstructionBase
     {
         public static LDA CreateLDA(AddressingMode addressingMode)
         {
@@ -45,6 +45,7 @@ namespace CS6502.Core
                 "LDA",
                 opcode,
                 addressingMode,
+                RWState.Read,
                 MicroCodeInstruction.LatchDILIntoA)
         {
         }
