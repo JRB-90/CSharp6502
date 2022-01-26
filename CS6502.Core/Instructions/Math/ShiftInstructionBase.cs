@@ -57,7 +57,6 @@ namespace CS6502.Core
                     {
                         return
                             new CpuMicroCode(
-                                MicroCodeInstruction.LatchDataIntoDIL,
                                 MicroCodeInstruction.SetToRead,
                                 MicroCodeInstruction.IncrementABByX_NoCarry
                             );
@@ -157,14 +156,7 @@ namespace CS6502.Core
             }
             else
             {
-                if (instructionCycle == startingCycle)
-                {
-                    return
-                        new CpuMicroCode(
-                            MicroCodeInstruction.LatchDataIntoDIL
-                        );
-                }
-                else if (instructionCycle == startingCycle + 2)
+                if (instructionCycle == startingCycle + 2)
                 {
                     return
                         new CpuMicroCode(

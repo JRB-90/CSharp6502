@@ -22,27 +22,10 @@ namespace CS6502.Core
             }
         }
 
-        public override CpuMicroCode Execute(
-            SignalEdge signalEdge,
+        protected override CpuMicroCode Absolute(
+            SignalEdge signalEdge, 
             int instructionCycle,
-            StatusRegister status,
             bool wasPageBoundaryCrossed)
-        {
-            if (AddressingMode == AddressingMode.Absolute)
-            {
-                return ExecuteAbsolute(signalEdge, instructionCycle);
-            }
-            else if (AddressingMode == AddressingMode.Indirect)
-            {
-                return ExecuteIndirect(signalEdge, instructionCycle);
-            }
-            else
-            {
-                throw new ArgumentException($"JMP does not support {AddressingMode.ToString()} addressing mode");
-            }
-        }
-
-        private CpuMicroCode ExecuteAbsolute(SignalEdge signalEdge, int instructionCycle)
         {
             IsInstructionComplete = true;
 
@@ -53,7 +36,10 @@ namespace CS6502.Core
                 );
         }
 
-        private CpuMicroCode ExecuteIndirect(SignalEdge signalEdge, int instructionCycle)
+        protected override CpuMicroCode Indirect(
+            SignalEdge signalEdge, 
+            int instructionCycle,
+            bool wasPageBoundaryCrossed)
         {
             IsInstructionComplete = true;
 

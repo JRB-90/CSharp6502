@@ -209,19 +209,12 @@
             {
                 if (instructionCycle == startingCycle)
                 {
-                    if (rw == RWState.Read)
+                    if (rw == RWState.Write)
                     {
                         return
                             new CpuMicroCode(
-                                MicroCodeInstruction.LatchDataIntoDIL
+                                memoryInstruction
                             );
-                    }
-                    else
-                    {
-                        return
-                        new CpuMicroCode(
-                            memoryInstruction
-                        );
                     }
                 }
             }
@@ -303,7 +296,6 @@
                     {
                         return
                             new CpuMicroCode(
-                                MicroCodeInstruction.LatchDataIntoDIL,
                                 memoryInstruction,
                                 MicroCodeInstruction.TransferPCToPCS
                             );
@@ -321,14 +313,7 @@
             {
                 if (instructionCycle == startingCycle)
                 {
-                    if (rw == RWState.Read)
-                    {
-                        return
-                            new CpuMicroCode(
-                                MicroCodeInstruction.LatchDataIntoDIL
-                            );
-                    }
-                    else
+                    if (rw == RWState.Write)
                     {
                         return
                             new CpuMicroCode(
