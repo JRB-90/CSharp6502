@@ -1,9 +1,7 @@
-﻿using CS6502.UIConsole.Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Avalonia.Controls;
+using Avalonia.Media;
+using CS6502.UIConsole.Models;
+using CS6502.UIConsole.Shared;
 
 namespace CS6502.UIConsole.ViewModels
 {
@@ -27,6 +25,20 @@ namespace CS6502.UIConsole.ViewModels
                     charWidth,
                     charHeight
                 );
+
+            pixelCanvasModel = 
+                new PixelCanvasModel(
+                    width,
+                    height,
+                    assetManager.Font
+                );
+
+            ImageControl =
+                new Image()
+                {
+                    Source = pixelCanvasModel.Bitmap,
+                    Stretch = Stretch.Uniform,
+                };
         }
 
         public int Width { get; }
@@ -39,6 +51,9 @@ namespace CS6502.UIConsole.ViewModels
 
         public double AspectRatio { get; }
 
+        public Image ImageControl { get; }
+
         private AssetManager assetManager;
+        private PixelCanvasModel pixelCanvasModel;
     }
 }
