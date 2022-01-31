@@ -4,7 +4,10 @@ namespace CS6502.UIConsole.Shared
 {
     internal class AssetManager
     {
-        public AssetManager(string fontName)
+        public AssetManager(
+            string fontName,
+            int charWidth,
+            int charHeight)
         {
             Dictionary<byte, int> asciiToCharMap = new Dictionary<byte, int>();
             
@@ -16,8 +19,8 @@ namespace CS6502.UIConsole.Shared
             Font =
                 BitmapFontLoader.LoadFromEmbeddedFile(
                     "dogica.png",
-                    8,
-                    8,
+                    charWidth,
+                    charHeight,
                     asciiToCharMap
                 );
         }
