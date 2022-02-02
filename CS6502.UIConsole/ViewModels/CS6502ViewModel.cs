@@ -1,4 +1,6 @@
-﻿namespace CS6502.UIConsole.ViewModels
+﻿using CS6502.UIConsole.Shared;
+
+namespace CS6502.UIConsole.ViewModels
 {
     public class CS6502ViewModel : ViewModelBase
     {
@@ -11,8 +13,15 @@
                     8,
                     8
                 );
+
+            cpuManager = new CpuManager();
+
+            var charData = cpuManager.GetVRAMCharData();
+            Console.SetCharData(charData);
         }
 
         public ConsoleViewModel Console { get; }
+
+        private CpuManager cpuManager;
     }
 }
