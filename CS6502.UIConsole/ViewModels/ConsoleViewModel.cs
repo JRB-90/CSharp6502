@@ -45,7 +45,7 @@ namespace CS6502.UIConsole.ViewModels
 
             charData = new byte[CharsPerRow * CharsPerCol];
 
-            timer = new Timer(100);
+            timer = new Timer(50);
             timer.AutoReset = true;
             timer.Elapsed += Timer_Elapsed;
             timer.Start();

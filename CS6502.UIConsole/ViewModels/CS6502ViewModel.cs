@@ -1,9 +1,14 @@
 ﻿using CS6502.UIConsole.Shared;
+using System;
+using System.IO;
+using System.Threading;
 
 namespace CS6502.UIConsole.ViewModels
 {
-    public class CS6502ViewModel : ViewModelBase
+    public class CS6502ViewModel : ViewModelBase, IDisposable
     {
+        const string PROG_PATH = @"C:\Development\Sim6502\asm\consoleasm\consoleTests.bin";
+
         public CS6502ViewModel()
         {
             Console = 
@@ -15,13 +20,34 @@ namespace CS6502.UIConsole.ViewModels
                 );
 
             cpuManager = new CpuManager();
+            cpuManager.LoadProgram(File.ReadAllBytes(PROG_PATH));
 
-            var charData = cpuManager.GetVRAMCharData();
-            Console.SetCharData(charData);
+            isRunning = true;
+            cpuThread = new Thread(CpuWorker);
+            cpuThread.Start();
+        }
+
+        public void Dispose()
+        {
+            isRunning = false;
+            cpuThread.Join();
         }
 
         public ConsoleViewModel Console { get; }
 
+        private void CpuWorker()
+        {
+            while (isRunning)
+            {
+                cpuManager.Cycle();
+                var charData = cpuManager.GetVRAMCharData();
+                Console.SetCharData(charData);
+                //Thread.Sleep(1);
+            }
+        }
+
         private CpuManager cpuManager;
+        private Thread cpuThread;
+        private bool isRunning;
     }
 }

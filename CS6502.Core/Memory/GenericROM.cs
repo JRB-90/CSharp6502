@@ -1,4 +1,6 @@
-﻿namespace CS6502.Core
+﻿using System;
+
+namespace CS6502.Core
 {
     /// <summary>
     /// Represents a generic Read Only Memory (ROM) device.
@@ -42,6 +44,16 @@
                 oe_n = value;
                 oe_n.StateChanged += EnablePin_StateChanged;
             }
+        }
+
+        public void LoadData(byte[] data)
+        {
+            if (data.Length != Size)
+            {
+                throw new ArgumentException("Data to load into ROM of incorrect size");
+            }
+
+            this.data = data;
         }
 
         protected override void InputChanged()

@@ -18,14 +18,14 @@ namespace CS6502.UIConsole.Shared
 
             rom =
                 new GenericROM(
-                    ushort.MaxValue / 2,
+                    (ushort.MaxValue / 2) + 1,
                     16,
                     8
                 );
 
             ram =
                 new GenericRAM(
-                    ushort.MaxValue / 2,
+                    (ushort.MaxValue / 2) + 1,
                     16,
                     8
                 );
@@ -47,16 +47,14 @@ namespace CS6502.UIConsole.Shared
 
         public ClockGenerator ClockGenerator => clock;
 
-        public void Cycle(bool printState = false)
+        public void LoadProgram(byte[] program)
+        {
+            rom.LoadData(program);
+        }
+
+        public void Cycle()
         {
             clock.Cycle();
-
-            if (printState)
-            {
-                string stateStr = cpu.GetCurrentStateString('\t');
-                System.Console.WriteLine($"{halfCycleCount}\t{stateStr}");
-            }
-
             halfCycleCount++;
         }
 
@@ -133,6 +131,7 @@ namespace CS6502.UIConsole.Shared
             return bytes;
         }
 
+        private bool programLoaded;
         private WD65C02 cpu;
         private GenericROM rom;
         private GenericRAM ram;
