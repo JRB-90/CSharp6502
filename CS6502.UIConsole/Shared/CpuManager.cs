@@ -36,7 +36,7 @@ namespace CS6502.UIConsole.Shared
                     new AddressSpace(RAM_START, RAM_END)
                 );
 
-            clock = new ClockGenerator(ClockMode.StepHalfCycle);
+            clock = new ClockGenerator(ClockMode.FreeRunning);
 
             res_n = new Pin(TriState.True);
             irq_n = new Pin(TriState.True);
@@ -45,27 +45,58 @@ namespace CS6502.UIConsole.Shared
             ConnectBusesAndWires();
         }
 
-        public ClockGenerator ClockGenerator => clock;
-
         public void LoadProgram(byte[] program)
         {
-            rom.LoadData(program);
+            lock (memoryLock)
+            {
+                rom.LoadData(program);
+                programLoaded = true;
+            }
+        }
+
+        public void Start()
+        {
+            if (!programLoaded)
+            {
+                throw new InvalidOperationException("No program loaded");
+            }
+
+            clock.Start();
+        }
+
+        public void Stop()
+        {
+            clock.Stop();
         }
 
         public void Cycle()
         {
-            clock.Cycle();
-            halfCycleCount++;
+            if (!programLoaded)
+            {
+                throw new InvalidOperationException("No program loaded");
+            }
+
+            lock (memoryLock)
+            {
+                clock.Cycle();
+                halfCycleCount++;
+            }
         }
 
         public CycleState GetCurrentCycleState()
         {
-            return cpu.GetCurrentCycleState(halfCycleCount - 1);
+            lock (memoryLock)
+            {
+                return cpu.GetCurrentCycleState(halfCycleCount - 1);
+            }
         }
 
         public byte[] GetVRAMCharData()
         {
-            return GetGloballyAddressedBytes(VRAM_START, VRAM_END - VRAM_START);
+            lock (memoryLock)
+            {
+                return GetGloballyAddressedBytes(VRAM_START, VRAM_END - VRAM_START);
+            }
         }
 
         private void ConnectBusesAndWires()
@@ -103,32 +134,38 @@ namespace CS6502.UIConsole.Shared
 
         private byte GetGloballyAddressedByte(ushort address)
         {
-            if (address >= RAM_START &&
+            lock (memoryLock)
+            {
+                if (address >= RAM_START &&
                 address <= RAM_END)
-            {
-                return ram.Data[address - RAM_START];
-            }
-            else
-            {
-                return rom.Data[address - ROM_START];
+                {
+                    return ram.Data[address - RAM_START];
+                }
+                else
+                {
+                    return rom.Data[address - ROM_START];
+                }
             }
         }
 
         private byte[] GetGloballyAddressedBytes(ushort start, ushort length)
         {
-            byte[] bytes = new byte[length];
-
-            if (start >= RAM_START &&
-                start <= RAM_END)
+            lock (memoryLock)
             {
-                Array.Copy(ram.Data, start - RAM_START, bytes, 0, length);
-            }
-            else
-            {
-                Array.Copy(rom.Data, start - ROM_START, bytes, 0, length);
-            }
+                byte[] bytes = new byte[length];
 
-            return bytes;
+                if (start >= RAM_START &&
+                    start <= RAM_END)
+                {
+                    Array.Copy(ram.Data, start - RAM_START, bytes, 0, length);
+                }
+                else
+                {
+                    Array.Copy(rom.Data, start - ROM_START, bytes, 0, length);
+                }
+
+                return bytes;
+            }
         }
 
         private bool programLoaded;
@@ -141,5 +178,7 @@ namespace CS6502.UIConsole.Shared
         private Pin irq_n;
         private Pin nmi_n;
         private int halfCycleCount;
+
+        private static object memoryLock = new object();
     }
 }

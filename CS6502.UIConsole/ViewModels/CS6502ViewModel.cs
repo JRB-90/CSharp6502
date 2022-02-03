@@ -37,13 +37,15 @@ namespace CS6502.UIConsole.ViewModels
 
         private void CpuWorker()
         {
+            cpuManager.Start();
+
             while (isRunning)
             {
-                cpuManager.Cycle();
-                var charData = cpuManager.GetVRAMCharData();
-                Console.SetCharData(charData);
-                //Thread.Sleep(1);
+                Console.SetCharData(cpuManager.GetVRAMCharData());
+                Thread.Sleep(1 / 30);
             }
+
+            cpuManager.Stop();
         }
 
         private CpuManager cpuManager;
