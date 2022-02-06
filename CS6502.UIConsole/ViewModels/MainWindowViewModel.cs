@@ -3,7 +3,7 @@ using Avalonia.Logging;
 
 namespace CS6502.UIConsole.ViewModels
 {
-    public class MainWindowViewModel : ViewModelBase
+    internal class MainWindowViewModel : ViewModelBase
     {
         public MainWindowViewModel()
         {

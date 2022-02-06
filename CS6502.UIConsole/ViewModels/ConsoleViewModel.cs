@@ -6,7 +6,7 @@ using System.Timers;
 
 namespace CS6502.UIConsole.ViewModels
 {
-    public class ConsoleViewModel : ViewModelBase
+    internal class ConsoleViewModel : ViewModelBase
     {
         public ConsoleViewModel(
             int width,

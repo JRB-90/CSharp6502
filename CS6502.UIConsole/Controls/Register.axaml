@@ -2,24 +2,27 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 xmlns:shared="using:CS6502.UIConsole.Shared"
-             mc:Ignorable="d" d:DesignWidth="620" d:DesignHeight="512"
-             x:Class="CS6502.UIConsole.Views.CS6502View">
+             mc:Ignorable="d" d:DesignWidth="150" d:DesignHeight="50"
+             x:Class="CS6502.UIConsole.Controls.Register"
+			 DataContext="{Binding RelativeSource={RelativeSource Self}}">
+
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="Auto"/>
 			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
-		
-		<shared:AspectRatioLayoutDecorator 
+
+		<TextBlock
 			Grid.Column="0"
-			AspectRatio="{Binding Console.AspectRatio}">
-			<ContentControl
-				Content="{Binding Console}"/>
-		</shared:AspectRatioLayoutDecorator>
+			Margin="5"
+			FontFamily="Courier New"
+			Text="{Binding RegisterName}"/>
 		
-		<ContentControl
+		<TextBlock
 			Grid.Column="1"
-			Content="{Binding CpuState}"/>
+			Margin="5"
+			FontFamily="Courier New"
+			HorizontalAlignment="Right"
+			Text="{Binding ValueString}"/>
 	</Grid>
 </UserControl>
