@@ -10,16 +10,30 @@
 			<ColumnDefinition Width="Auto"/>
 			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
-		
-		<shared:AspectRatioLayoutDecorator 
+
+		<shared:AspectRatioLayoutDecorator
 			Grid.Column="0"
 			AspectRatio="{Binding Console.AspectRatio}">
 			<ContentControl
 				Content="{Binding Console}"/>
 		</shared:AspectRatioLayoutDecorator>
-		
-		<ContentControl
-			Grid.Column="1"
-			Content="{Binding CpuState}"/>
+
+		<Grid
+			Grid.Column="1">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>
+
+			<ContentControl
+				Grid.Row="0"
+				Content="{Binding CpuState}"/>
+			
+			<ContentControl
+				Grid.Row="2"
+				Content="{Binding CycleControl}"/>
+
+		</Grid>
 	</Grid>
 </UserControl>

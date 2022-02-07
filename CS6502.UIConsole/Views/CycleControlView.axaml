@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="CS6502.UIConsole.Views.CycleControlView">
+	<Grid>
+		<StackPanel
+				Grid.Row="2">
+
+			<Button
+				Width="100"
+				Margin="5"
+				HorizontalAlignment="Center"
+				HorizontalContentAlignment="Center"
+				Command="{Binding Start}"
+				Content="Start"/>
+
+			<Button
+				Width="100"
+				Margin="5"
+				HorizontalAlignment="Center"
+				HorizontalContentAlignment="Center"
+				Command="{Binding Stop}"
+				Content="Stop"/>
+
+			<Button
+				Width="100"
+				Margin="5"
+				HorizontalAlignment="Center"
+				HorizontalContentAlignment="Center"
+				Command="{Binding Reset}"
+				Content="Reset"/>
+
+			<TextBlock
+				Margin="5"
+				HorizontalAlignment="Center"
+				FontFamily="Courier New"
+				Text="{Binding RunStatus}"/>
+
+		</StackPanel>
+	</Grid>
+</UserControl>

@@ -2,23 +2,32 @@
 using Avalonia.Media;
 using CS6502.UIConsole.Models;
 using CS6502.UIConsole.Shared;
-using System.Timers;
+using System;
+using System.Reactive.Linq;
 
 namespace CS6502.UIConsole.ViewModels
 {
     internal class ConsoleViewModel : ViewModelBase
     {
+        readonly CpuModel cpu;
+
         public ConsoleViewModel(
+            CpuModel cpu,
             int width,
             int height,
             int charWidth,
             int charHeight)
         {
+            this.cpu = cpu;
             Width = width;
             Height = height;
             CharsPerRow = width / charWidth;
             CharsPerCol = height / charHeight;
             AspectRatio = (double)width / (double)height;
+
+            cpu.ConsoleChars
+                .Sample(TimeSpan.FromMilliseconds(50))
+                .Subscribe(charData => RenderChars(charData));
 
             assetManager = 
                 new AssetManager(
@@ -42,13 +51,6 @@ namespace CS6502.UIConsole.ViewModels
                     Source = pixelCanvasModel.Bitmap,
                     Stretch = Stretch.Uniform,
                 };
-
-            charData = new byte[CharsPerRow * CharsPerCol];
-
-            timer = new Timer(50);
-            timer.AutoReset = true;
-            timer.Elapsed += Timer_Elapsed;
-            timer.Start();
         }
 
         public int Width { get; }
@@ -63,32 +65,14 @@ namespace CS6502.UIConsole.ViewModels
 
         public Image ImageControl { get; }
 
-        public void SetCharData(byte[] charData)
+        private void RenderChars(byte[] charData)
         {
-            lock (renderLock)
-            {
-                this.charData = charData;
-            }
+            pixelCanvasModel.DrawCharData(charData);
+            ImageControl.InvalidateVisual();
         }
 
-        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            UpdateChars();
-        }
-
-        private void UpdateChars()
-        {
-            lock (renderLock)
-            {
-                pixelCanvasModel.DrawCharData(charData);
-                ImageControl.InvalidateVisual();
-            }
-        }
-
-        private Timer timer;
         private AssetManager assetManager;
         private PixelCanvasModel pixelCanvasModel;
-        private byte[] charData;
 
         private static object renderLock = new object();
     }

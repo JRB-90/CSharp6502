@@ -6,158 +6,120 @@
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="450"
              x:Class="CS6502.UIConsole.Views.CpuStateView">
 	<Grid>
-
-		<Grid>
+		<Grid
+			Grid.Row="0">
 			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="*"/>
-				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto" SharedSizeGroup="A"/>
+				<RowDefinition Height="Auto" SharedSizeGroup="A"/>
+				<RowDefinition Height="Auto" SharedSizeGroup="A"/>
+				<RowDefinition Height="Auto" SharedSizeGroup="A"/>
+				<RowDefinition Height="Auto" SharedSizeGroup="A"/>
+				<RowDefinition Height="Auto" SharedSizeGroup="A"/>
+				<RowDefinition Height="Auto" SharedSizeGroup="A"/>
 			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" SharedSizeGroup="B"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
 			
-			<Grid
-				Grid.Row="0">
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto" SharedSizeGroup="A"/>
-					<RowDefinition Height="Auto" SharedSizeGroup="A"/>
-					<RowDefinition Height="Auto" SharedSizeGroup="A"/>
-					<RowDefinition Height="Auto" SharedSizeGroup="A"/>
-					<RowDefinition Height="Auto" SharedSizeGroup="A"/>
-					<RowDefinition Height="Auto" SharedSizeGroup="A"/>
-					<RowDefinition Height="Auto" SharedSizeGroup="A"/>
-				</Grid.RowDefinitions>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="Auto" SharedSizeGroup="B"/>
-					<ColumnDefinition Width="*"/>
-				</Grid.ColumnDefinitions>
+			<TextBlock
+				Grid.Row="0"
+				Grid.Column="0"
+				Margin="5"
+				FontFamily="Courier New"
+				Text="A"/>
+			<TextBlock
+				Grid.Row="0"
+				Grid.Column="1"
+				Margin="5"
+				HorizontalAlignment="Right"
+				FontFamily="Courier New"
+				Text="{Binding AHex}"/>
+
+			<TextBlock
+				Grid.Row="1"
+				Grid.Column="0"
+				Margin="5"
+				FontFamily="Courier New"
+				Text="X"/>
+			<TextBlock
+				Grid.Row="1"
+				Grid.Column="1"
+				Margin="5"
+				HorizontalAlignment="Right"
+				FontFamily="Courier New"
+				Text="{Binding XHex}"/>
+
+			<TextBlock
+				Grid.Row="2"
+				Grid.Column="0"
+				Margin="5"
+				FontFamily="Courier New"
+				Text="Y"/>
+			<TextBlock
+				Grid.Row="2"
+				Grid.Column="1"
+				Margin="5"
+				HorizontalAlignment="Right"
+				FontFamily="Courier New"
+				Text="{Binding YHex}"/>
+
+			<TextBlock
+				Grid.Row="3"
+				Grid.Column="0"
+				Margin="5"
+				FontFamily="Courier New"
+				Text="IR"/>
+			<TextBlock
+				Grid.Row="3"
+				Grid.Column="1"
+				Margin="5"
+				HorizontalAlignment="Right"
+				FontFamily="Courier New"
+				Text="{Binding IRHex}"/>
+
+			<TextBlock
+				Grid.Row="4"
+				Grid.Column="0"
+				Margin="5"
+				FontFamily="Courier New"
+				Text="SP"/>
+			<TextBlock
+				Grid.Row="4"
+				Grid.Column="1"
+				Margin="5"
+				HorizontalAlignment="Right"
+				FontFamily="Courier New"
+				Text="{Binding SPHex}"/>
+
+			<TextBlock
+				Grid.Row="5"
+				Grid.Column="0"
+				Margin="5"
+				FontFamily="Courier New"
+				Text="Addr"/>
+			<TextBlock
+				Grid.Row="5"
+				Grid.Column="1"
+				Margin="5"
+				HorizontalAlignment="Right"
+				FontFamily="Courier New"
+				Text="{Binding AddrHex}"/>
+
+			<TextBlock
+				Grid.Row="6"
+				Grid.Column="0"
+				Margin="5"
+				FontFamily="Courier New"
+				Text="PC"/>
+			<TextBlock
+				Grid.Row="6"
+				Grid.Column="1"
+				Margin="5"
+				HorizontalAlignment="Right"
+				FontFamily="Courier New"
+				Text="{Binding PCHex}"/>
 			
-				<TextBlock
-					Grid.Row="0"
-					Grid.Column="0"
-					Margin="5"
-					FontFamily="Courier New"
-					Text="A"/>
-				<TextBlock
-					Grid.Row="0"
-					Grid.Column="1"
-					Margin="5"
-					HorizontalAlignment="Right"
-					FontFamily="Courier New"
-					Text="{Binding AHex}"/>
-
-				<TextBlock
-					Grid.Row="1"
-					Grid.Column="0"
-					Margin="5"
-					FontFamily="Courier New"
-					Text="X"/>
-				<TextBlock
-					Grid.Row="1"
-					Grid.Column="1"
-					Margin="5"
-					HorizontalAlignment="Right"
-					FontFamily="Courier New"
-					Text="{Binding XHex}"/>
-
-				<TextBlock
-					Grid.Row="2"
-					Grid.Column="0"
-					Margin="5"
-					FontFamily="Courier New"
-					Text="Y"/>
-				<TextBlock
-					Grid.Row="2"
-					Grid.Column="1"
-					Margin="5"
-					HorizontalAlignment="Right"
-					FontFamily="Courier New"
-					Text="{Binding YHex}"/>
-
-				<TextBlock
-					Grid.Row="3"
-					Grid.Column="0"
-					Margin="5"
-					FontFamily="Courier New"
-					Text="IR"/>
-				<TextBlock
-					Grid.Row="3"
-					Grid.Column="1"
-					Margin="5"
-					HorizontalAlignment="Right"
-					FontFamily="Courier New"
-					Text="{Binding IRHex}"/>
-
-				<TextBlock
-					Grid.Row="4"
-					Grid.Column="0"
-					Margin="5"
-					FontFamily="Courier New"
-					Text="SP"/>
-				<TextBlock
-					Grid.Row="4"
-					Grid.Column="1"
-					Margin="5"
-					HorizontalAlignment="Right"
-					FontFamily="Courier New"
-					Text="{Binding SPHex}"/>
-
-				<TextBlock
-					Grid.Row="5"
-					Grid.Column="0"
-					Margin="5"
-					FontFamily="Courier New"
-					Text="Addr"/>
-				<TextBlock
-					Grid.Row="5"
-					Grid.Column="1"
-					Margin="5"
-					HorizontalAlignment="Right"
-					FontFamily="Courier New"
-					Text="{Binding AddrHex}"/>
-
-				<TextBlock
-					Grid.Row="6"
-					Grid.Column="0"
-					Margin="5"
-					FontFamily="Courier New"
-					Text="PC"/>
-				<TextBlock
-					Grid.Row="6"
-					Grid.Column="1"
-					Margin="5"
-					HorizontalAlignment="Right"
-					FontFamily="Courier New"
-					Text="{Binding PCHex}"/>
-			
-			</Grid>
-
-			<StackPanel
-				Grid.Row="2">
-				
-				<Button
-					Width="100"
-					Margin="5"
-					HorizontalAlignment="Center"
-					HorizontalContentAlignment="Center"
-					Command="{Binding Start}"
-					Content="Start"/>
-
-				<Button
-					Width="100"
-					Margin="5"
-					HorizontalAlignment="Center"
-					HorizontalContentAlignment="Center"
-					Command="{Binding Stop}"
-					Content="Stop"/>
-
-				<Button
-					Width="100"
-					Margin="5"
-					HorizontalAlignment="Center"
-					HorizontalContentAlignment="Center"
-					Command="{Binding Reset}"
-					Content="Reset"/>
-				
-			</StackPanel>
 		</Grid>
 	</Grid>
 </UserControl>

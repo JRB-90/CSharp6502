@@ -47,6 +47,8 @@ namespace CS6502.Core
             RDY_N.ConnectPin(rdy_n);
         }
 
+        public event EventHandler ClockTicked;
+
         public void Dispose()
         {
             if (mode == ClockMode.FreeRunning)
@@ -129,6 +131,8 @@ namespace CS6502.Core
                 default:
                     throw new InvalidOperationException($"Cannot manual cycle in {mode.ToString()} mode");
             }
+
+            ClockTicked?.Invoke(this, new EventArgs());
         }
 
         public void Start()
@@ -175,6 +179,7 @@ namespace CS6502.Core
                 {
                     clk.State = clk.State == TriState.False ? TriState.True : TriState.False;
                     lastTime = currentTime;
+                    ClockTicked?.Invoke(this, new EventArgs());
                 }
 
                 Thread.Sleep(0);
