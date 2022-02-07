@@ -1,12 +1,11 @@
 ﻿using CS6502.Core;
-using CS6502.UIConsole.Shared;
 using System;
 using System.IO;
 using System.Reactive.Subjects;
 
 namespace CS6502.UIConsole.Models
 {
-    internal class CpuModel
+    internal class CS6502Model
     {
         const string PROG_PATH = @"C:\Development\Sim6502\asm\consoleasm\consoleTests.bin";
         const ushort RAM_START = 0x0000;
@@ -16,13 +15,50 @@ namespace CS6502.UIConsole.Models
         const ushort VRAM_START = 0x6000;
         const ushort VRAM_END = 0x7FFF;
 
-        public CpuModel()
+        public CS6502Model()
+        {
+            isRunning = new Subject<bool>();
+            cycleState = new Subject<CycleState>();
+            consoleChars = new Subject<byte[]>();
+            Init();
+        }
+
+        public IObservable<bool> IsRunning => isRunning;
+
+        public IObservable<CycleState> CycleState => cycleState;
+
+        public IObservable<byte[]> ConsoleChars => consoleChars;
+
+        public void Start()
+        {
+            if (!memory.IsProgramLoaded)
+            {
+                throw new InvalidOperationException("No program loaded");
+            }
+
+            clock.Start();
+            isRunning.OnNext(clock.IsRunning);
+        }
+
+        public void Stop()
+        {
+            clock.Stop();
+            isRunning.OnNext(clock.IsRunning);
+        }
+
+        public void Reset()
+        {
+            Stop();
+            Init();
+        }
+
+        private void Init()
         {
             halfCycleCount = 0;
             clock = new ClockGenerator(ClockMode.FreeRunning);
             clock.ClockTicked += Clock_ClockTicked;
 
-            memory = 
+            memory =
                 new MemoryModel(
                     RAM_START, RAM_END,
                     ROM_START, ROM_END,
@@ -35,55 +71,6 @@ namespace CS6502.UIConsole.Models
                     new AddressSpace(RAM_START, RAM_END)
                 );
 
-            system = 
-                new SystemModel(
-                    clock,
-                    memory,
-                    decoder
-                );
-            
-            // TODO - Temp
-            memory.LoadProgram(File.ReadAllBytes(PROG_PATH));
-            cycleState = new Subject<CycleState>();
-            cycleState.OnNext(system.GetCurrentCycleState(halfCycleCount));
-            consoleChars = new Subject<byte[]>();
-        }
-
-        public bool IsRunning
-        {
-            get => isRunning;
-            set
-            {
-                isRunning = value;
-                RunStateChanged?.Invoke(this, new EventArgs());
-            }
-        }
-
-        public IObservable<CycleState> CycleState => cycleState;
-
-        public IObservable<byte[]> ConsoleChars => consoleChars;
-
-        public event EventHandler RunStateChanged;
-
-        public void Start()
-        {
-            if (!memory.IsProgramLoaded)
-            {
-                throw new InvalidOperationException("No program loaded");
-            }
-
-            clock.Start();
-        }
-
-        public void Stop()
-        {
-            clock.Stop();
-        }
-
-        public void Reset()
-        {
-            Stop();
-
             system =
                 new SystemModel(
                     clock,
@@ -91,8 +78,10 @@ namespace CS6502.UIConsole.Models
                     decoder
                 );
 
-            halfCycleCount = 0;
+            // TODO - Temp
             memory.LoadProgram(File.ReadAllBytes(PROG_PATH));
+            
+            isRunning.OnNext(false);
             cycleState.OnNext(system.GetCurrentCycleState(halfCycleCount));
             consoleChars.OnNext(memory.GetVRAMCharData());
         }
@@ -104,8 +93,8 @@ namespace CS6502.UIConsole.Models
             halfCycleCount++;
         }
 
-        private bool isRunning;
         private int halfCycleCount;
+        private Subject<bool> isRunning;
         private Subject<CycleState> cycleState;
         private Subject<byte[]> consoleChars;
         private SystemModel system;

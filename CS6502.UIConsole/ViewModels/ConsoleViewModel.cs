@@ -9,10 +9,11 @@ namespace CS6502.UIConsole.ViewModels
 {
     internal class ConsoleViewModel : ViewModelBase
     {
-        readonly CpuModel cpu;
+        readonly CS6502Model cpu;
 
         public ConsoleViewModel(
-            CpuModel cpu,
+            CS6502Model cpu,
+            double updateInterval,
             int width,
             int height,
             int charWidth,
@@ -26,7 +27,7 @@ namespace CS6502.UIConsole.ViewModels
             AspectRatio = (double)width / (double)height;
 
             cpu.ConsoleChars
-                .Sample(TimeSpan.FromMilliseconds(50))
+                .Sample(TimeSpan.FromMilliseconds(updateInterval))
                 .Subscribe(charData => RenderChars(charData));
 
             assetManager = 

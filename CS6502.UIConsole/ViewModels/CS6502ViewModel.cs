@@ -4,20 +4,30 @@ namespace CS6502.UIConsole.ViewModels
 {
     internal class CS6502ViewModel : ViewModelBase
     {
+        const double UPDATE_INTERVAL = 50;
+
+        readonly CS6502Model cpu;
+
         public CS6502ViewModel()
         {
-            cpu = new CpuModel();
+            cpu = new CS6502Model();
 
             Console = 
                 new ConsoleViewModel(
                     cpu,
+                    UPDATE_INTERVAL,
                     320,
                     256,
                     8,
                     8
                 );
 
-            CpuState = new CpuStateViewModel(cpu);
+            CpuState =
+                new CpuStateViewModel(
+                    cpu, 
+                    UPDATE_INTERVAL
+                );
+
             CycleControl = new CycleControlViewModel(cpu);
         }
 
@@ -26,7 +36,5 @@ namespace CS6502.UIConsole.ViewModels
         public CpuStateViewModel CpuState { get; }
 
         public CycleControlViewModel CycleControl { get; }
-
-        private CpuModel cpu;
     }
 }
