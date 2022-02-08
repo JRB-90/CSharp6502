@@ -9,7 +9,15 @@
 				Grid.Row="2">
 
 			<Button
-				Width="100"
+				Width="120"
+				Margin="5"
+				HorizontalAlignment="Center"
+				HorizontalContentAlignment="Center"
+				Command="{Binding LoadProgram}"
+				Content="Load Program"/>
+
+			<Button
+				Width="120"
 				Margin="5"
 				HorizontalAlignment="Center"
 				HorizontalContentAlignment="Center"
@@ -17,7 +25,7 @@
 				Content="Start"/>
 
 			<Button
-				Width="100"
+				Width="120"
 				Margin="5"
 				HorizontalAlignment="Center"
 				HorizontalContentAlignment="Center"
@@ -25,7 +33,7 @@
 				Content="Stop"/>
 
 			<Button
-				Width="100"
+				Width="120"
 				Margin="5"
 				HorizontalAlignment="Center"
 				HorizontalContentAlignment="Center"

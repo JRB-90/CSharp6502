@@ -1,4 +1,5 @@
 ﻿using CS6502.UIConsole.Models;
+using CS6502.UIConsole.Shared;
 
 namespace CS6502.UIConsole.ViewModels
 {
@@ -6,10 +7,12 @@ namespace CS6502.UIConsole.ViewModels
     {
         const double UPDATE_INTERVAL = 50;
 
+        readonly DialogService dialogService;
         readonly CS6502Model cpu;
 
-        public CS6502ViewModel()
+        public CS6502ViewModel(DialogService dialogService)
         {
+            this.dialogService = dialogService;
             cpu = new CS6502Model();
 
             Console = 
@@ -28,7 +31,11 @@ namespace CS6502.UIConsole.ViewModels
                     UPDATE_INTERVAL
                 );
 
-            CycleControl = new CycleControlViewModel(cpu);
+            CycleControl =
+                new CycleControlViewModel(
+                    dialogService,
+                    cpu
+                );
         }
 
         public ConsoleViewModel Console { get; }

@@ -7,7 +7,6 @@ namespace CS6502.UIConsole.Models
 {
     internal class CS6502Model
     {
-        const string PROG_PATH = @"C:\Development\Sim6502\asm\consoleasm\consoleTests.bin";
         const ushort RAM_START = 0x0000;
         const ushort RAM_END = 0x7FFF;
         const ushort ROM_START = 0x8000;
@@ -17,17 +16,47 @@ namespace CS6502.UIConsole.Models
 
         public CS6502Model()
         {
-            isRunning = new Subject<bool>();
             cycleState = new Subject<CycleState>();
             consoleChars = new Subject<byte[]>();
             Init();
         }
 
-        public IObservable<bool> IsRunning => isRunning;
+        public bool IsRunning
+        {
+            get => isRunning;
+            set
+            {
+                isRunning = value;
+                RunStateChanged?.Invoke(this, isRunning);
+            }
+        }
+
+        public bool IsProgramLoaded
+        {
+            get => isProgramLoaded;
+            set
+            {
+                isProgramLoaded = value;
+                ProgramLoadedChanged?.Invoke(this, isProgramLoaded);
+            }
+        }
 
         public IObservable<CycleState> CycleState => cycleState;
 
         public IObservable<byte[]> ConsoleChars => consoleChars;
+
+        public event EventHandler<bool> RunStateChanged;
+
+        public event EventHandler<bool> ProgramLoadedChanged;
+
+        public void LoadProgram(string path)
+        {
+            if (!isRunning)
+            {
+                memory.LoadProgram(File.ReadAllBytes(path));
+                IsProgramLoaded = memory.IsProgramLoaded;
+            }
+        }
 
         public void Start()
         {
@@ -37,13 +66,13 @@ namespace CS6502.UIConsole.Models
             }
 
             clock.Start();
-            isRunning.OnNext(clock.IsRunning);
+            IsRunning = clock.IsRunning;
         }
 
         public void Stop()
         {
             clock.Stop();
-            isRunning.OnNext(clock.IsRunning);
+            IsRunning = clock.IsRunning;
         }
 
         public void Reset()
@@ -78,10 +107,8 @@ namespace CS6502.UIConsole.Models
                     decoder
                 );
 
-            // TODO - Temp
-            memory.LoadProgram(File.ReadAllBytes(PROG_PATH));
-            
-            isRunning.OnNext(false);
+            IsRunning = clock.IsRunning;
+            IsProgramLoaded = memory.IsProgramLoaded;
             cycleState.OnNext(system.GetCurrentCycleState(halfCycleCount));
             consoleChars.OnNext(memory.GetVRAMCharData());
         }
@@ -94,7 +121,8 @@ namespace CS6502.UIConsole.Models
         }
 
         private int halfCycleCount;
-        private Subject<bool> isRunning;
+        private bool isRunning;
+        private bool isProgramLoaded;
         private Subject<CycleState> cycleState;
         private Subject<byte[]> consoleChars;
         private SystemModel system;
