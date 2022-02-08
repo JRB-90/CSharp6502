@@ -6,12 +6,17 @@
              mc:Ignorable="d" d:DesignWidth="620" d:DesignHeight="512"
              x:Class="CS6502.UIConsole.Views.CS6502View">
 	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="Auto"/>
 			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
 
 		<shared:AspectRatioLayoutDecorator
+			Grid.Row="0"
 			Grid.Column="0"
 			AspectRatio="{Binding Console.AspectRatio}">
 			<ContentControl
@@ -19,6 +24,7 @@
 		</shared:AspectRatioLayoutDecorator>
 
 		<Grid
+			Grid.Row="0"
 			Grid.Column="1">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto"/>
@@ -35,5 +41,11 @@
 				Content="{Binding CycleControl}"/>
 
 		</Grid>
+		
+		<ContentControl
+			Grid.Row="1"
+			Grid.Column="0"
+			Grid.ColumnSpan="2"
+			Content="{Binding ClockControl}"/>
 	</Grid>
 </UserControl>

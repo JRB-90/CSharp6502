@@ -16,6 +16,7 @@ namespace CS6502.UIConsole.Models
 
         public CS6502Model()
         {
+            runFrequency = new Subject<int>();
             cycleState = new Subject<CycleState>();
             consoleChars = new Subject<byte[]>();
             Init();
@@ -28,6 +29,15 @@ namespace CS6502.UIConsole.Models
             {
                 isRunning = value;
                 RunStateChanged?.Invoke(this, isRunning);
+
+                if (isRunning)
+                {
+                    previousTime = DateTime.Now.Ticks;
+                }
+                else
+                {
+                    runFrequency.OnNext(-1);
+                }
             }
         }
 
@@ -40,6 +50,8 @@ namespace CS6502.UIConsole.Models
                 ProgramLoadedChanged?.Invoke(this, isProgramLoaded);
             }
         }
+
+        public IObservable<int> RunFrequency => runFrequency;
 
         public IObservable<CycleState> CycleState => cycleState;
 
@@ -109,20 +121,34 @@ namespace CS6502.UIConsole.Models
 
             IsRunning = clock.IsRunning;
             IsProgramLoaded = memory.IsProgramLoaded;
+            runFrequency.OnNext(-1);
             cycleState.OnNext(system.GetCurrentCycleState(halfCycleCount));
             consoleChars.OnNext(memory.GetVRAMCharData());
+        }
+
+        private int CalculateFrequency()
+        {
+            var currentTime = DateTime.Now.Ticks;
+            var ticksPassed = currentTime - previousTime;
+            var secondsPassed = ((double)ticksPassed / (double)TimeSpan.TicksPerSecond);
+            previousTime = currentTime;
+
+            return (int)(1.0 / secondsPassed);
         }
 
         private void Clock_ClockTicked(object? sender, EventArgs e)
         {
             cycleState.OnNext(system.GetCurrentCycleState(halfCycleCount));
             consoleChars.OnNext(memory.GetVRAMCharData());
+            runFrequency.OnNext(CalculateFrequency());
             halfCycleCount++;
         }
 
         private int halfCycleCount;
+        private long previousTime;
         private bool isRunning;
         private bool isProgramLoaded;
+        private Subject<int> runFrequency;
         private Subject<CycleState> cycleState;
         private Subject<byte[]> consoleChars;
         private SystemModel system;

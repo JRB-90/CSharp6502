@@ -6,6 +6,8 @@ namespace CS6502.UIConsole.ViewModels
     internal class CS6502ViewModel : ViewModelBase
     {
         const double UPDATE_INTERVAL = 50;
+        const int MIN_FREQ = 1;
+        const int MAX_FREQ = 10000;
 
         readonly DialogService dialogService;
         readonly CS6502Model cpu;
@@ -36,6 +38,14 @@ namespace CS6502.UIConsole.ViewModels
                     dialogService,
                     cpu
                 );
+
+            ClockControl =
+                new ClockControlViewModel(
+                    cpu,
+                    UPDATE_INTERVAL,
+                    MIN_FREQ,
+                    MAX_FREQ
+                );
         }
 
         public ConsoleViewModel Console { get; }
@@ -43,5 +53,7 @@ namespace CS6502.UIConsole.ViewModels
         public CpuStateViewModel CpuState { get; }
 
         public CycleControlViewModel CycleControl { get; }
+
+        public ClockControlViewModel ClockControl { get; }
     }
 }
