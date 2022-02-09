@@ -5,7 +5,8 @@ namespace CS6502.UIConsole.ViewModels
 {
     internal class CS6502ViewModel : ViewModelBase
     {
-        const double UPDATE_INTERVAL = 50;
+        const double UPDATE_FREQ_HZ = 60.0;
+        const double UPDATE_INTERVAL_MS = (1.0 / UPDATE_FREQ_HZ) * 1000.0;
         const int MIN_FREQ = 1;
         const int MAX_FREQ = 10000;
 
@@ -20,7 +21,7 @@ namespace CS6502.UIConsole.ViewModels
             Console = 
                 new ConsoleViewModel(
                     cpu,
-                    UPDATE_INTERVAL,
+                    UPDATE_INTERVAL_MS,
                     320,
                     256,
                     8,
@@ -30,7 +31,7 @@ namespace CS6502.UIConsole.ViewModels
             CpuState =
                 new CpuStateViewModel(
                     cpu, 
-                    UPDATE_INTERVAL
+                    UPDATE_INTERVAL_MS
                 );
 
             CycleControl =
@@ -42,7 +43,7 @@ namespace CS6502.UIConsole.ViewModels
             ClockControl =
                 new ClockControlViewModel(
                     cpu,
-                    UPDATE_INTERVAL,
+                    UPDATE_INTERVAL_MS,
                     MIN_FREQ,
                     MAX_FREQ
                 );

@@ -1,6 +1,8 @@
 ﻿using CS6502.UIConsole.Models;
+using CS6502.UIConsole.Shared;
 using ReactiveUI;
 using System;
+using System.Linq;
 using System.Reactive.Linq;
 
 namespace CS6502.UIConsole.ViewModels
@@ -21,9 +23,16 @@ namespace CS6502.UIConsole.ViewModels
             TargetFrequency = MaxFreq;
             ActualFrequency = -1;
 
+            // Instantaneous
             cpu.RunFrequency
                 .Sample(TimeSpan.FromMilliseconds(updateInterval))
                 .Subscribe(freq => ActualFrequency = freq);
+
+            //Rolling average(1s)
+            //cpu.RunFrequency
+            //    .BackBuffer(TimeSpan.FromMilliseconds(updateInterval))
+            //    .Select(list => list.Average())
+            //    .Subscribe(freq => ActualFrequency = (int)freq);
         }
 
         public int MinFreq { get; }
@@ -33,7 +42,11 @@ namespace CS6502.UIConsole.ViewModels
         public int TargetFrequency
         {
             get => targetFrequency;
-            set => this.RaiseAndSetIfChanged(ref targetFrequency, value, nameof(TargetFrequency));
+            set
+            {
+                this.RaiseAndSetIfChanged(ref targetFrequency, value, nameof(TargetFrequency));
+                cpu.SetTargetFrequency(targetFrequency);
+            }
         }
 
         public int ActualFrequency

@@ -93,6 +93,11 @@ namespace CS6502.UIConsole.Models
             Init();
         }
 
+        public void SetTargetFrequency(int targetFrequency)
+        {
+            clock.TargetFrequency = targetFrequency;
+        }
+
         private void Init()
         {
             halfCycleCount = 0;

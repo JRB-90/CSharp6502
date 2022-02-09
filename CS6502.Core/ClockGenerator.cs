@@ -57,7 +57,27 @@ namespace CS6502.Core
             }
         }
 
-        public int TargetFrequency { get; }
+        public int TargetFrequency
+        {
+            get => targetFrequency;
+            set
+            {
+                targetFrequency = value;
+
+                lock (timeLock)
+                {
+                    if (value <= 0)
+                    {
+                        tickInterval = 0;
+                    }
+                    else
+                    {
+                        double period = 1.0 / (double)TargetFrequency;
+                        tickInterval = (long)((double)TimeSpan.TicksPerSecond * period);
+                    }
+                }
+            }
+        }
 
         public bool IsRunning => isRunning;
 
@@ -160,26 +180,22 @@ namespace CS6502.Core
 
         private void ClockWorker()
         {
-            long tickInterval = 0;
             long lastTime = DateTime.Now.Ticks; ;
             long currentTime;
 
-            if (TargetFrequency > 0)
-            {
-                double period = 1.0 / (double)TargetFrequency;
-                tickInterval = (long)((double)TimeSpan.TicksPerSecond * period);
-            }
-
             while (isRunning)
             {
-                currentTime = DateTime.Now.Ticks;
-                long delta = currentTime - lastTime;
-
-                if (delta >= tickInterval)
+                lock (timeLock)
                 {
-                    clk.State = clk.State == TriState.False ? TriState.True : TriState.False;
-                    lastTime = currentTime;
-                    ClockTicked?.Invoke(this, new EventArgs());
+                    currentTime = DateTime.Now.Ticks;
+                    long delta = currentTime - lastTime;
+
+                    if (delta >= tickInterval)
+                    {
+                        clk.State = clk.State == TriState.False ? TriState.True : TriState.False;
+                        lastTime = currentTime;
+                        ClockTicked?.Invoke(this, new EventArgs());
+                    }
                 }
 
                 Thread.Sleep(0);
@@ -187,10 +203,14 @@ namespace CS6502.Core
         }
 
         private bool isRunning;
+        private int targetFrequency;
+        private long tickInterval;
         private Thread clockThread;
         private ClockMode mode;
         private Pin clk;
         private Pin rdy_n;
         private Wire sync_n;
+
+        private static object timeLock = new object();
     }
 }
