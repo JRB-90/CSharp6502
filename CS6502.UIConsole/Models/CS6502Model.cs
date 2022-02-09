@@ -16,6 +16,7 @@ namespace CS6502.UIConsole.Models
 
         public CS6502Model()
         {
+            targetFrequency = -1;
             runFrequency = new Subject<int>();
             cycleState = new Subject<CycleState>();
             consoleChars = new Subject<byte[]>();
@@ -96,12 +97,14 @@ namespace CS6502.UIConsole.Models
         public void SetTargetFrequency(int targetFrequency)
         {
             clock.TargetFrequency = targetFrequency;
+            this.targetFrequency = targetFrequency;
         }
 
         private void Init()
         {
             halfCycleCount = 0;
             clock = new ClockGenerator(ClockMode.FreeRunning);
+            clock.TargetFrequency = targetFrequency;
             clock.ClockTicked += Clock_ClockTicked;
 
             memory =
@@ -150,6 +153,7 @@ namespace CS6502.UIConsole.Models
         }
 
         private int halfCycleCount;
+        private int targetFrequency;
         private long previousTime;
         private bool isRunning;
         private bool isProgramLoaded;

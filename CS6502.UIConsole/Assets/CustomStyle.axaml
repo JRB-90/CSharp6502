@@ -1,0 +1,28 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Design.PreviewWith>
+		<Border Padding="20"/>
+	</Design.PreviewWith>
+
+	<Styles.Resources>
+		<SolidColorBrush x:Key="DarkBlueBackground" Color="#323256" />
+		<SolidColorBrush x:Key="LightBlueBackground" Color="#6464AC" />
+		<SolidColorBrush x:Key="LightGrayForeground" Color="WhiteSmoke" />
+	</Styles.Resources>
+
+	<Style Selector="Grid">
+		<Setter Property="Background" Value="{StaticResource DarkBlueBackground}"/>
+	</Style>
+
+	<Style Selector="TextBlock">
+		<Setter Property="Background" Value="{StaticResource DarkBlueBackground}"/>
+		<Setter Property="Foreground" Value="{StaticResource LightGrayForeground}"/>
+		<Setter Property="FontFamily" Value="Consolas" />
+	</Style>
+
+	<Style Selector="Button">
+		<Setter Property="Background" Value="{StaticResource LightBlueBackground}"/>
+		<Setter Property="Foreground" Value="{StaticResource LightGrayForeground}"/>
+	</Style>
+</Styles>

@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:shared="using:CS6502.UIConsole.Shared"
-             mc:Ignorable="d" d:DesignWidth="620" d:DesignHeight="512"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
              x:Class="CS6502.UIConsole.Views.CS6502View">
 	<Grid>
 		<Grid.RowDefinitions>
@@ -18,14 +18,17 @@
 		<shared:AspectRatioLayoutDecorator
 			Grid.Row="0"
 			Grid.Column="0"
+			Margin="10"
 			AspectRatio="{Binding Console.AspectRatio}">
 			<ContentControl
+				Background="Black"
 				Content="{Binding Console}"/>
 		</shared:AspectRatioLayoutDecorator>
 
 		<Grid
 			Grid.Row="0"
-			Grid.Column="1">
+			Grid.Column="1"
+			Margin="10">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="*"/>
@@ -45,6 +48,7 @@
 		<ContentControl
 			Grid.Row="1"
 			Grid.Column="0"
+			Margin="10"
 			Content="{Binding ClockControl}"/>
 	</Grid>
 </UserControl>

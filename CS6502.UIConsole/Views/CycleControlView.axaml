@@ -43,7 +43,6 @@
 			<TextBlock
 				Margin="5"
 				HorizontalAlignment="Center"
-				FontFamily="Courier New"
 				Text="{Binding RunStatus}"/>
 
 		</StackPanel>

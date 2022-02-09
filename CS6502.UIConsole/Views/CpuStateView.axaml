@@ -28,14 +28,12 @@
 				Grid.Row="0"
 				Grid.Column="0"
 				Margin="5"
-				FontFamily="Courier New"
 				Text="Cycle"/>
 			<TextBlock
 				Grid.Row="0"
 				Grid.Column="1"
 				Margin="5"
 				HorizontalAlignment="Right"
-				FontFamily="Courier New"
 				Text="{Binding CycleCount}"/>
 
 			<TextBlock
@@ -49,7 +47,6 @@
 				Grid.Column="1"
 				Margin="5"
 				HorizontalAlignment="Right"
-				FontFamily="Courier New"
 				Text="{Binding AHex}"/>
 
 			<TextBlock
@@ -63,7 +60,6 @@
 				Grid.Column="1"
 				Margin="5"
 				HorizontalAlignment="Right"
-				FontFamily="Courier New"
 				Text="{Binding XHex}"/>
 
 			<TextBlock
@@ -77,7 +73,6 @@
 				Grid.Column="1"
 				Margin="5"
 				HorizontalAlignment="Right"
-				FontFamily="Courier New"
 				Text="{Binding YHex}"/>
 
 			<TextBlock
@@ -91,7 +86,6 @@
 				Grid.Column="1"
 				Margin="5"
 				HorizontalAlignment="Right"
-				FontFamily="Courier New"
 				Text="{Binding IRHex}"/>
 
 			<TextBlock
@@ -105,49 +99,42 @@
 				Grid.Column="1"
 				Margin="5"
 				HorizontalAlignment="Right"
-				FontFamily="Courier New"
 				Text="{Binding SPHex}"/>
 
 			<TextBlock
 				Grid.Row="6"
 				Grid.Column="0"
 				Margin="5"
-				FontFamily="Courier New"
 				Text="Addr"/>
 			<TextBlock
 				Grid.Row="6"
 				Grid.Column="1"
 				Margin="5"
 				HorizontalAlignment="Right"
-				FontFamily="Courier New"
 				Text="{Binding AddrHex}"/>
 
 			<TextBlock
 				Grid.Row="7"
 				Grid.Column="0"
 				Margin="5"
-				FontFamily="Courier New"
 				Text="PC"/>
 			<TextBlock
 				Grid.Row="7"
 				Grid.Column="1"
 				Margin="5"
 				HorizontalAlignment="Right"
-				FontFamily="Courier New"
 				Text="{Binding PCHex}"/>
 
 			<TextBlock
 				Grid.Row="8"
 				Grid.Column="0"
 				Margin="5"
-				FontFamily="Courier New"
 				Text="Data"/>
 			<TextBlock
 				Grid.Row="8"
 				Grid.Column="1"
 				Margin="5"
 				HorizontalAlignment="Right"
-				FontFamily="Courier New"
 				Text="{Binding DataHex}"/>
 			
 		</Grid>
