@@ -100,6 +100,11 @@ namespace CS6502.UIConsole.Models
             this.targetFrequency = targetFrequency;
         }
 
+        public byte[] GetMemoryBlock(AddressSpace addressSpace)
+        {
+            return memory.GetMemoryBlock(addressSpace);
+        }
+
         private void Init()
         {
             halfCycleCount = 0;

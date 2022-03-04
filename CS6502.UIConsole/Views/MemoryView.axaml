@@ -1,0 +1,133 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="CS6502.UIConsole.Views.MemoryView">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		
+		<DataGrid
+			Grid.Row="0"
+			SelectionMode="Single"
+			CanUserReorderColumns="False"
+			CanUserResizeColumns="False"
+			CanUserSortColumns="False"
+			GridLinesVisibility="All"
+			IsReadOnly="True"
+			Items="{Binding MemoryPage.PageData}">
+
+			<DataGrid.Columns>
+				<DataGridTextColumn
+					Header="Page"
+					Width="2*"
+					Binding="{Binding [0].AddressHexString}"/>
+				
+				<DataGridTextColumn
+					Header="0x00"
+					Width="*"
+					Binding="{Binding [0].ValueHexString}"/>
+
+				<DataGridTextColumn
+					Header="0x01"
+					Width="*"
+					Binding="{Binding [1].ValueHexString}"/>
+
+				<DataGridTextColumn
+					Header="0x02"
+					Width="*"
+					Binding="{Binding [2].ValueHexString}"/>
+
+				<DataGridTextColumn
+					Header="0x03"
+					Width="*"
+					Binding="{Binding [3].ValueHexString}"/>
+
+				<DataGridTextColumn
+					Header="0x04"
+					Width="*"
+					Binding="{Binding [4].ValueHexString}"/>
+
+				<DataGridTextColumn
+					Header="0x05"
+					Width="*"
+					Binding="{Binding [5].ValueHexString}"/>
+
+				<DataGridTextColumn
+					Header="0x06"
+					Width="*"
+					Binding="{Binding [6].ValueHexString}"/>
+
+				<DataGridTextColumn
+					Header="0x07"
+					Width="*"
+					Binding="{Binding [7].ValueHexString}"/>
+
+				<DataGridTextColumn
+					Header="0x08"
+					Width="*"
+					Binding="{Binding [8].ValueHexString}"/>
+
+				<DataGridTextColumn
+					Header="0x09"
+					Width="*"
+					Binding="{Binding [9].ValueHexString}"/>
+
+				<DataGridTextColumn
+					Header="0x10"
+					Width="*"
+					Binding="{Binding [10].ValueHexString}"/>
+
+				<DataGridTextColumn
+					Header="0x11"
+					Width="*"
+					Binding="{Binding [11].ValueHexString}"/>
+
+				<DataGridTextColumn
+					Header="0x12"
+					Width="*"
+					Binding="{Binding [12].ValueHexString}"/>
+
+				<DataGridTextColumn
+					Header="0x13"
+					Width="*"
+					Binding="{Binding [13].ValueHexString}"/>
+
+				<DataGridTextColumn
+					Header="0x14"
+					Width="*"
+					Binding="{Binding [14].ValueHexString}"/>
+
+				<DataGridTextColumn
+					Header="0x15"
+					Width="*"
+					Binding="{Binding [15].ValueHexString}"/>
+			</DataGrid.Columns>
+		</DataGrid>
+
+		<StackPanel
+			Grid.Row="1"
+			Orientation="Horizontal"
+			VerticalAlignment="Center"
+			HorizontalAlignment="Center">
+			<Button
+				Width="80"
+				Margin="5"
+				HorizontalAlignment="Center"
+				HorizontalContentAlignment="Center"
+				Command="{Binding ShowZP}"
+				Content="ZP"/>
+
+			<Button
+				Width="80"
+				Margin="5"
+				HorizontalAlignment="Center"
+				HorizontalContentAlignment="Center"
+				Command="{Binding ShowCode}"
+				Content="Code"/>
+		</StackPanel>
+	</Grid>
+</UserControl>

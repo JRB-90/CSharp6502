@@ -7,8 +7,10 @@
 
 	<Styles.Resources>
 		<SolidColorBrush x:Key="DarkBlueBackground" Color="#323256" />
+		<SolidColorBrush x:Key="MidBlueBackground" Color="#4B4B81" />
 		<SolidColorBrush x:Key="LightBlueBackground" Color="#6464AC" />
-		<SolidColorBrush x:Key="LightGrayForeground" Color="WhiteSmoke" />
+		<SolidColorBrush x:Key="WhiteForeground" Color="WhiteSmoke" />
+		<SolidColorBrush x:Key="LightGrayForeground" Color="Gray" />
 	</Styles.Resources>
 
 	<Style Selector="Grid">
@@ -17,12 +19,37 @@
 
 	<Style Selector="TextBlock">
 		<Setter Property="Background" Value="{StaticResource DarkBlueBackground}"/>
-		<Setter Property="Foreground" Value="{StaticResource LightGrayForeground}"/>
+		<Setter Property="Foreground" Value="{StaticResource WhiteForeground}"/>
 		<Setter Property="FontFamily" Value="Consolas" />
 	</Style>
 
 	<Style Selector="Button">
 		<Setter Property="Background" Value="{StaticResource LightBlueBackground}"/>
-		<Setter Property="Foreground" Value="{StaticResource LightGrayForeground}"/>
+		<Setter Property="Foreground" Value="{StaticResource WhiteForeground}"/>
+	</Style>
+
+	<Style Selector="DataGrid">
+		<Setter Property="Background" Value="{StaticResource DarkBlueBackground}"/>
+		<Setter Property="Foreground" Value="{StaticResource WhiteForeground}"/>
+		<Setter Property="GridLinesVisibility" Value="All"/>
+		<Setter Property="VerticalGridLinesBrush" Value="{StaticResource LightGrayForeground}"/>
+		<Setter Property="HorizontalGridLinesBrush" Value="{StaticResource LightGrayForeground}"/>
+		<Setter Property="BorderBrush" Value="{StaticResource LightGrayForeground}"/>
+		<Setter Property="FontFamily" Value="Consolas"/>
+	</Style>
+
+	<Style Selector="DataGridColumnHeader">
+		<Setter Property="Background" Value="{StaticResource DarkBlueBackground}"/>
+		<Setter Property="Foreground" Value="{StaticResource WhiteForeground}"/>
+		<Setter Property="SeparatorBrush" Value="{StaticResource LightGrayForeground}"/>
+		<Setter Property="AreSeparatorsVisible" Value="True"/>
+		<Setter Property="BorderBrush" Value="{StaticResource LightGrayForeground}"/>
+		<Setter Property="FontFamily" Value="Consolas"/>
+		<Setter Property="FontWeight" Value="Bold"/>
+		<Setter Property="FontSize" Value="16"/>
+	</Style>
+
+	<Style Selector="DataGridCell">
+		<Setter Property="Background" Value="{StaticResource DarkBlueBackground}"/>
 	</Style>
 </Styles>

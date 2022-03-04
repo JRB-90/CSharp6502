@@ -74,6 +74,18 @@ namespace CS6502.UIConsole.Models
             }
         }
 
+        public byte[] GetMemoryBlock(AddressSpace addressSpace)
+        {
+            lock (memoryLock)
+            {
+                return
+                    GetGloballyAddressedBytes(
+                        (ushort)addressSpace.StartAddress,
+                        (ushort)(addressSpace.EndAddress - addressSpace.StartAddress + 1)
+                    );
+            }
+        }
+
         private byte[] GetGloballyAddressedBytes(
             ushort start, 
             ushort length)

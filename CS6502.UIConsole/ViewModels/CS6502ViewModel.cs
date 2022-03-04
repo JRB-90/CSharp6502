@@ -47,6 +47,12 @@ namespace CS6502.UIConsole.ViewModels
                     MIN_FREQ,
                     MAX_FREQ
                 );
+
+            MemoryView = 
+                new MemoryViewModel(
+                    cpu,
+                    UPDATE_INTERVAL_MS
+                );
         }
 
         public ConsoleViewModel Console { get; }
@@ -56,5 +62,7 @@ namespace CS6502.UIConsole.ViewModels
         public CycleControlViewModel CycleControl { get; }
 
         public ClockControlViewModel ClockControl { get; }
+
+        public MemoryViewModel MemoryView { get; }
     }
 }
