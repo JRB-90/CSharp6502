@@ -17,14 +17,21 @@ namespace CS6502.UIConsole.ViewModels
             double updateInterval)
         {
             this.cpu = cpu;
-            ShowCode();
+            currentAddressSpace = new AddressSpace(0x8000, 0x80FF);
+
+            MemoryLines =
+                new ObservableCollection<MemoryLineViewModel>(
+                    CreateMemoryLines(
+                        cpu.GetMemoryBlock(currentAddressSpace)
+                    )
+                );
 
             timer =
                 new Timer(
                     new TimerCallback(UpdateMemoryView),
                     null,
                     0,
-                    500
+                    (int)updateInterval
                 );
         }
 
@@ -32,12 +39,6 @@ namespace CS6502.UIConsole.ViewModels
         {
             get => memoryLines;
             set => this.RaiseAndSetIfChanged(ref memoryLines, value);
-        }
-
-        public MemoryPageModel MemoryPage
-        {
-            get => memoryPage;
-            set => this.RaiseAndSetIfChanged(ref memoryPage, value, nameof(MemoryPage));
         }
 
         public void ShowZP()
@@ -97,17 +98,10 @@ namespace CS6502.UIConsole.ViewModels
                         data.Skip(i * 16).Take(16).ToArray()
                     );
                 }
-
-                //MemoryPage =
-                //    new MemoryPageModel(
-                //        (ushort)currentAddressSpace.StartAddress,
-                //        data
-                //    );
             }
         }
 
         private Timer timer;
-        private MemoryPageModel memoryPage;
         private AddressSpace currentAddressSpace;
         private ObservableCollection<MemoryLineViewModel> memoryLines;
 

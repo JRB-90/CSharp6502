@@ -18,93 +18,93 @@
 			CanUserSortColumns="False"
 			GridLinesVisibility="All"
 			IsReadOnly="True"
-			Items="{Binding MemoryPage.PageData}">
+			Items="{Binding MemoryLines}">
 
 			<DataGrid.Columns>
 				<DataGridTextColumn
 					Header="Page"
 					Width="2*"
-					Binding="{Binding [0].AddressHexString}"/>
+					Binding="{Binding AddressHexString}"/>
 				
 				<DataGridTextColumn
 					Header="0x00"
 					Width="*"
-					Binding="{Binding [0].ValueHexString}"/>
+					Binding="{Binding HexValue0}"/>
 
 				<DataGridTextColumn
 					Header="0x01"
 					Width="*"
-					Binding="{Binding [1].ValueHexString}"/>
+					Binding="{Binding HexValue1}"/>
 
 				<DataGridTextColumn
 					Header="0x02"
 					Width="*"
-					Binding="{Binding [2].ValueHexString}"/>
+					Binding="{Binding HexValue2}"/>
 
 				<DataGridTextColumn
 					Header="0x03"
 					Width="*"
-					Binding="{Binding [3].ValueHexString}"/>
+					Binding="{Binding HexValue3}"/>
 
 				<DataGridTextColumn
 					Header="0x04"
 					Width="*"
-					Binding="{Binding [4].ValueHexString}"/>
+					Binding="{Binding HexValue4}"/>
 
 				<DataGridTextColumn
 					Header="0x05"
 					Width="*"
-					Binding="{Binding [5].ValueHexString}"/>
+					Binding="{Binding HexValue5}"/>
 
 				<DataGridTextColumn
 					Header="0x06"
 					Width="*"
-					Binding="{Binding [6].ValueHexString}"/>
+					Binding="{Binding HexValue6}"/>
 
 				<DataGridTextColumn
 					Header="0x07"
 					Width="*"
-					Binding="{Binding [7].ValueHexString}"/>
+					Binding="{Binding HexValue7}"/>
 
 				<DataGridTextColumn
 					Header="0x08"
 					Width="*"
-					Binding="{Binding [8].ValueHexString}"/>
+					Binding="{Binding HexValue8}"/>
 
 				<DataGridTextColumn
 					Header="0x09"
 					Width="*"
-					Binding="{Binding [9].ValueHexString}"/>
+					Binding="{Binding HexValue9}"/>
 
 				<DataGridTextColumn
 					Header="0x10"
 					Width="*"
-					Binding="{Binding [10].ValueHexString}"/>
+					Binding="{Binding HexValue10}"/>
 
 				<DataGridTextColumn
 					Header="0x11"
 					Width="*"
-					Binding="{Binding [11].ValueHexString}"/>
+					Binding="{Binding HexValue11}"/>
 
 				<DataGridTextColumn
 					Header="0x12"
 					Width="*"
-					Binding="{Binding [12].ValueHexString}"/>
+					Binding="{Binding HexValue12}"/>
 
 				<DataGridTextColumn
 					Header="0x13"
 					Width="*"
-					Binding="{Binding [13].ValueHexString}"/>
+					Binding="{Binding HexValue13}"/>
 
 				<DataGridTextColumn
 					Header="0x14"
 					Width="*"
-					Binding="{Binding [14].ValueHexString}"/>
+					Binding="{Binding HexValue14}"/>
 
 				<DataGridTextColumn
 					Header="0x15"
 					Width="*"
-					Binding="{Binding [15].ValueHexString}"/>
+					Binding="{Binding HexValue15}"/>
 			</DataGrid.Columns>
 		</DataGrid>
 
