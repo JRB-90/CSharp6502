@@ -1,0 +1,142 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:controls="using:CS6502.UIConsole.Controls"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="450"
+             x:Class="CS6502.UIConsole.Views.CpuStateView">
+	<Grid>
+		<Grid
+			Grid.Row="0">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" SharedSizeGroup="A"/>
+				<RowDefinition Height="Auto" SharedSizeGroup="A"/>
+				<RowDefinition Height="Auto" SharedSizeGroup="A"/>
+				<RowDefinition Height="Auto" SharedSizeGroup="A"/>
+				<RowDefinition Height="Auto" SharedSizeGroup="A"/>
+				<RowDefinition Height="Auto" SharedSizeGroup="A"/>
+				<RowDefinition Height="Auto" SharedSizeGroup="A"/>
+				<RowDefinition Height="Auto" SharedSizeGroup="A"/>
+				<RowDefinition Height="Auto" SharedSizeGroup="A"/>
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" SharedSizeGroup="B"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+
+			<TextBlock
+				Grid.Row="0"
+				Grid.Column="0"
+				Margin="5"
+				Text="Cycle"/>
+			<TextBlock
+				Grid.Row="0"
+				Grid.Column="1"
+				Margin="5"
+				HorizontalAlignment="Right"
+				Text="{Binding CycleCount}"/>
+
+			<TextBlock
+				Grid.Row="1"
+				Grid.Column="0"
+				Margin="5"
+				FontFamily="Courier New"
+				Text="A"/>
+			<TextBlock
+				Grid.Row="1"
+				Grid.Column="1"
+				Margin="5"
+				HorizontalAlignment="Right"
+				Text="{Binding AHex}"/>
+
+			<TextBlock
+				Grid.Row="2"
+				Grid.Column="0"
+				Margin="5"
+				FontFamily="Courier New"
+				Text="X"/>
+			<TextBlock
+				Grid.Row="2"
+				Grid.Column="1"
+				Margin="5"
+				HorizontalAlignment="Right"
+				Text="{Binding XHex}"/>
+
+			<TextBlock
+				Grid.Row="3"
+				Grid.Column="0"
+				Margin="5"
+				FontFamily="Courier New"
+				Text="Y"/>
+			<TextBlock
+				Grid.Row="3"
+				Grid.Column="1"
+				Margin="5"
+				HorizontalAlignment="Right"
+				Text="{Binding YHex}"/>
+
+			<TextBlock
+				Grid.Row="4"
+				Grid.Column="0"
+				Margin="5"
+				FontFamily="Courier New"
+				Text="IR"/>
+			<TextBlock
+				Grid.Row="4"
+				Grid.Column="1"
+				Margin="5"
+				HorizontalAlignment="Right"
+				Text="{Binding IRHex}"/>
+
+			<TextBlock
+				Grid.Row="5"
+				Grid.Column="0"
+				Margin="5"
+				FontFamily="Courier New"
+				Text="SP"/>
+			<TextBlock
+				Grid.Row="5"
+				Grid.Column="1"
+				Margin="5"
+				HorizontalAlignment="Right"
+				Text="{Binding SPHex}"/>
+
+			<TextBlock
+				Grid.Row="6"
+				Grid.Column="0"
+				Margin="5"
+				Text="Addr"/>
+			<TextBlock
+				Grid.Row="6"
+				Grid.Column="1"
+				Margin="5"
+				HorizontalAlignment="Right"
+				Text="{Binding AddrHex}"/>
+
+			<TextBlock
+				Grid.Row="7"
+				Grid.Column="0"
+				Margin="5"
+				Text="PC"/>
+			<TextBlock
+				Grid.Row="7"
+				Grid.Column="1"
+				Margin="5"
+				HorizontalAlignment="Right"
+				Text="{Binding PCHex}"/>
+
+			<TextBlock
+				Grid.Row="8"
+				Grid.Column="0"
+				Margin="5"
+				Text="Data"/>
+			<TextBlock
+				Grid.Row="8"
+				Grid.Column="1"
+				Margin="5"
+				HorizontalAlignment="Right"
+				Text="{Binding DataHex}"/>
+			
+		</Grid>
+	</Grid>
+</UserControl>

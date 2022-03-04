@@ -1,0 +1,54 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:shared="using:CS6502.UIConsole.Shared"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="CS6502.UIConsole.Views.CS6502View">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto"/>
+			<ColumnDefinition Width="*"/>
+		</Grid.ColumnDefinitions>
+
+		<shared:AspectRatioLayoutDecorator
+			Grid.Row="0"
+			Grid.Column="0"
+			Margin="10"
+			AspectRatio="{Binding Console.AspectRatio}">
+			<ContentControl
+				Background="Black"
+				Content="{Binding Console}"/>
+		</shared:AspectRatioLayoutDecorator>
+
+		<Grid
+			Grid.Row="0"
+			Grid.Column="1"
+			Margin="10">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>
+
+			<ContentControl
+				Grid.Row="0"
+				Content="{Binding CpuState}"/>
+			
+			<ContentControl
+				Grid.Row="2"
+				Content="{Binding CycleControl}"/>
+
+		</Grid>
+		
+		<ContentControl
+			Grid.Row="1"
+			Grid.Column="0"
+			Margin="10"
+			Content="{Binding ClockControl}"/>
+	</Grid>
+</UserControl>
